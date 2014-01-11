@@ -226,6 +226,7 @@ func (this *contentExtractor) calculateBestNode(article *Article) *goquery.Selec
 	doc := article.Doc
 	var topNode *goquery.Selection
 	nodesToCheck := this.nodesToCheck(doc)
+
 	startingBoost := 1.0
 	cnt := 0
 	i := 0
@@ -289,7 +290,7 @@ func (this *contentExtractor) calculateBestNode(article *Article) *goquery.Selec
 	for _, p := range parentNodesArray {
 		e := p.(*goquery.Selection)
 		score := this.getScore(e)
-		if score > topNodeScore {
+		if score >= topNodeScore {
 			topNode = e
 			topNodeScore = score
 		}
@@ -321,9 +322,9 @@ func (this *contentExtractor) updateScore(node *goquery.Selection, addToScore in
 	scoreString, _ := node.Attr("gravityScore")
 	if scoreString != "" {
 		currentScore, _ = strconv.Atoi(scoreString)
-		newScore := currentScore + addToScore
-		this.setAttr(node, "gravityScore", strconv.Itoa(newScore))
 	}
+	newScore := currentScore + addToScore
+	this.setAttr(node, "gravityScore", strconv.Itoa(newScore))
 }
 
 func (this *contentExtractor) updateNodeCount(node *goquery.Selection, addToCount int) {
@@ -331,9 +332,9 @@ func (this *contentExtractor) updateNodeCount(node *goquery.Selection, addToCoun
 	scoreString, _ := node.Attr("gravityNodes")
 	if scoreString != "" {
 		currentScore, _ = strconv.Atoi(scoreString)
-		newScore := currentScore + addToCount
-		this.setAttr(node, "gravityNodes", strconv.Itoa(newScore))
 	}
+	newScore := currentScore + addToCount
+	this.setAttr(node, "gravityNodes", strconv.Itoa(newScore))
 }
 
 func (this *contentExtractor) isBoostable(node *goquery.Selection) bool {
@@ -386,8 +387,6 @@ func (this *contentExtractor) isHighLinkDensity(node *goquery.Selection) bool {
 		return false
 	}
 	text := node.Text()
-	text = strings.Trim(text, " ")
-	text = strings.Trim(text, "\t")
 	words := strings.Split(text, " ")
 	nwords := len(words)
 	sb := make([]string, 0)
@@ -401,6 +400,7 @@ func (this *contentExtractor) isHighLinkDensity(node *goquery.Selection) bool {
 	nlinks := links.Size()
 	linkDivisor := float64(nlinkWords) / float64(nwords)
 	score := linkDivisor * float64(nlinks)
+
 	if score > 1.0 {
 		return true
 	}
