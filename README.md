@@ -55,6 +55,8 @@ TODO
 
 THANKS TO
 =========
+```
 @Martin Angers for goquery
 @Fatih Arslan for set
-@GoLang team for the amazing language and net/html
+GoLang team for the amazing language and net/html
+```
