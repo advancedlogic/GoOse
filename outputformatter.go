@@ -1,3 +1,24 @@
+/*
+This is a golang port of "Goose" originaly licensed to Gravity.com
+under one or more contributor license agreements.  See the NOTICE file
+distributed with this work for additional information
+regarding copyright ownership.
+
+Golang port was written by Antonio Linari
+
+Gravity.com licenses this file
+to you under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance
+with the License.  You may obtain a copy of the License at
+
+http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+*/
 package goose
 
 import (
@@ -8,40 +29,42 @@ import (
 	"strings"
 )
 
-type OutputFormatter struct {
+type outputFormatter struct {
 	topNode  *goquery.Selection
-	config   Configuration
+	config   configuration
 	language string
-	parser   Parser
 }
 
-func (of *OutputFormatter) getLanguage(article *Article) string {
-	if of.config.UseMetaLanguage {
+func (this *outputFormatter) getLanguage(article *Article) string {
+	if this.config.useMetaLanguage {
 		if article.MetaLang != "" {
 			return article.MetaLang
 		}
 	}
-	return of.config.TargetLanguage
+	return this.config.targetLanguage
 }
 
-func (of *OutputFormatter) getTopNode() *goquery.Selection {
-	return of.topNode
+func (this *outputFormatter) getTopNode() *goquery.Selection {
+	return this.topNode
 }
 
-func (of *OutputFormatter) getFormattedText(article *Article) string {
-	of.topNode = article.TopNode
-	of.language = of.getLanguage(article)
-	of.removeNegativescoresNodes()
-	of.linksToText()
-	of.replaceTagsWithText()
-	of.removeParagraphsWithFewWords()
-
-	return of.getOutputText()
+func (this *outputFormatter) getFormattedText(article *Article) string {
+	this.topNode = article.TopNode
+	this.language = this.getLanguage(article)
+	if this.language == "" {
+		this.language = "en"
+	}
+	this.removeNegativescoresNodes()
+	this.linksToText()
+	this.replaceTagsWithText()
+	this.removeParagraphsWithFewWords()
+	println(this.topNode.Text())
+	return this.getOutputText()
 }
 
-func (of *OutputFormatter) convertToText() string {
+func (this *outputFormatter) convertToText() string {
 	txts := make([]string, 0)
-	selections := of.topNode
+	selections := this.topNode
 	selections.Each(func(i int, s *goquery.Selection) {
 		txt := s.Text()
 		if txt != "" {
@@ -53,8 +76,8 @@ func (of *OutputFormatter) convertToText() string {
 	return strings.Join(txts, "\n\n")
 }
 
-func (of *OutputFormatter) linksToText() {
-	links := of.topNode.Find("a")
+func (this *outputFormatter) linksToText() {
+	links := this.topNode.Find("a")
 	links.Each(func(i int, a *goquery.Selection) {
 		imgs := a.Find("img")
 		if imgs.Length() == 0 {
@@ -66,9 +89,9 @@ func (of *OutputFormatter) linksToText() {
 	})
 }
 
-func (of *OutputFormatter) getOutputText() string {
+func (this *outputFormatter) getOutputText() string {
 	sb := make([]string, 0)
-	nodes := of.topNode.Find("*")
+	nodes := this.topNode.Find("*")
 	nodes.Each(func(i int, s *goquery.Selection) {
 		tag := s.Get(0).DataAtom
 		if tag == atom.P {
@@ -80,8 +103,8 @@ func (of *OutputFormatter) getOutputText() string {
 	return strings.Join(sb, "")
 }
 
-func (of *OutputFormatter) removeNegativescoresNodes() {
-	gravityItems := of.topNode.Find("*[gravityScore]")
+func (this *outputFormatter) removeNegativescoresNodes() {
+	gravityItems := this.topNode.Find("*[gravityScore]")
 	gravityItems.Each(func(i int, s *goquery.Selection) {
 		score := 0
 		sscore, exists := s.Attr("gravityScore")
@@ -96,8 +119,8 @@ func (of *OutputFormatter) removeNegativescoresNodes() {
 	})
 }
 
-func (of *OutputFormatter) replaceTagsWithText() {
-	strongs := of.topNode.Find("strong")
+func (this *outputFormatter) replaceTagsWithText() {
+	strongs := this.topNode.Find("strong")
 	strongs.Each(func(i int, strong *goquery.Selection) {
 		text := strong.Text()
 		node := strong.Get(0)
@@ -105,7 +128,7 @@ func (of *OutputFormatter) replaceTagsWithText() {
 		node.Data = text
 	})
 
-	bolds := of.topNode.Find("b")
+	bolds := this.topNode.Find("b")
 	bolds.Each(func(i int, bold *goquery.Selection) {
 		text := bold.Text()
 		node := bold.Get(0)
@@ -113,7 +136,7 @@ func (of *OutputFormatter) replaceTagsWithText() {
 		node.Data = text
 	})
 
-	italics := of.topNode.Find("i")
+	italics := this.topNode.Find("i")
 	italics.Each(func(i int, italic *goquery.Selection) {
 		text := italic.Text()
 		node := italic.Get(0)
@@ -122,15 +145,15 @@ func (of *OutputFormatter) replaceTagsWithText() {
 	})
 }
 
-func (of *OutputFormatter) removeParagraphsWithFewWords() {
-	language := of.language
+func (this *outputFormatter) removeParagraphsWithFewWords() {
+	language := this.language
 	if language == "" {
 		language = "en"
 	}
-	allNodes := of.topNode.Find("*")
+	allNodes := this.topNode.Find("*")
 	allNodes.Each(func(i int, s *goquery.Selection) {
-		stopWordsCount := gooseStopWordsCount(language, s.Text())
-		if stopWordsCount < 5 && s.Find("object").Length() == 0 && s.Find("embed").Length() == 0 {
+		sw := this.config.stopWords.stopWordsCount(language, s.Text())
+		if sw.wordCount < 5 && s.Find("object").Length() == 0 && s.Find("embed").Length() == 0 {
 			node := s.Get(0)
 			node.Parent.RemoveChild(node)
 		}
