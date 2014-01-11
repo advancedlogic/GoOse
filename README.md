@@ -26,6 +26,7 @@ limitations under the License.
 HOW TO USE IT
 =============
 
+```Go
 package main
 
 import (
@@ -42,14 +43,15 @@ func main() {
 	println("url", article.FinalUrl)
 	println("top image", article.TopImage)
 }
+```
 
 TODO
 ====
 
-1) better organize code
-2) add comments and godoc
-3) improve "xpath" like queries
-4) add other image extractions techniques (imagemagick)
+- [ ] better organize code
+- [ ] add comments and godoc
+- [ ] improve "xpath" like queries
+- [ ] add other image extractions techniques (imagemagick)
 
 THANKS TO
 =========
