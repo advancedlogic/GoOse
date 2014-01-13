@@ -58,7 +58,6 @@ func (this *outputFormatter) getFormattedText(article *Article) string {
 	this.linksToText()
 	this.replaceTagsWithText()
 	this.removeParagraphsWithFewWords()
-	println(this.topNode.Text())
 	return this.getOutputText()
 }
 
