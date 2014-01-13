@@ -204,39 +204,15 @@ func (this *cleaner) getReplacementNodes(doc *goquery.Document, div *goquery.Sel
 	nodesToRemove := make([]*goquery.Selection, 0)
 
 	children := make([]*goquery.Selection, 0)
-	div.Each(func(i int, s *goquery.Selection) {
-		siblings := s.Siblings()
-		siblings.Each(func(i int, ss *goquery.Selection) {
-			println("sib", ss.Get(0).Type, ss.Text())
-			ssiblings := ss.Siblings()
-			ssiblings.Each(func(i int, sss *goquery.Selection) {
-				println("ssib", sss.Get(0).Type, sss.Text())
-			})
-		})
-		/*
-			itext := s.Text()
-			if text != "" {
-				children = append(children, s)
-			}
-		*/
-	})
-
-	//for _, kid := range children {
-	//html, _ := kid.Html()
-	//println(html)
-	//}
-
 	for _, kid := range children {
 		kid.EachWithBreak(func(i int, s *goquery.Selection) bool {
 			node := s.Get(0)
 			if s.Children().Size() == 0 {
-				//println("type", node.Type, "text", s.Text())
 				if node.Data == "#text" {
 					text := kid.Text()
 					if text == "" {
 						return false
 					}
-					//println("divToPara", text)
 					text = strings.Replace(text, "\n", "\n\n", -1)
 					text = tabsRegEx.ReplaceAllString(text, "")
 					if len(text) > 1 {
@@ -257,9 +233,6 @@ func (this *cleaner) getReplacementNodes(doc *goquery.Document, div *goquery.Sel
 
 	}
 	replacement := strings.Join(replacementText, "")
-	if replacement != "" {
-		//println("replacement", replacement)
-	}
 
 	if len(replacementText) > 0 {
 		newNode := this.getFlushedBuffer(replacement)
@@ -306,29 +279,11 @@ func (this *cleaner) convertDivsToParagraphs(doc *goquery.Document, domType stri
 
 			div.Children().EachWithBreak(func(i int, kid *goquery.Selection) bool {
 				kidNode := kid.Get(0)
-				/*
-					kidHtml, _ := kid.Html()
-					println("text & html", kid.Text(), kidHtml)
-					println(kid.Text())
-					kid.Each(func(i int, k *goquery.Selection) {
-						println("ktext", k.Text())
-					})
-					for i := 0; i < kid.Size(); i++ {
-						n := kid.Get(i)
-						attrs := ""
-						for _, att := range n.Attr {
-							attrs += att.Key + "=" + att.Val + " "
-						}
-						attrs = strings.Trim(attrs, " ")
-						println("kid", i, n.Type, n.Data, n.Namespace, attrs)
-					}
-				*/
 				if kidNode.Type == html.TextNode {
 					text := kid.Text()
 					if text == "" {
 						return false
 					}
-					//println("Text", text)
 					text = strings.Replace(text, "\n", "\n\n", -1)
 					text = tabsRegEx.ReplaceAllString(text, "")
 					if len(text) > 1 {
