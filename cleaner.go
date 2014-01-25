@@ -37,6 +37,7 @@ func NewCleaner() cleaner {
 	return cleaner{}
 }
 
+var divToPElementsPattern = regexp.MustCompile("<(a|blockquote|dl|div|img|ol|p|pre|table|ul)")
 var tabsRegEx, _ = regexp.Compile("\\t|^\\s+$]")
 var REMOVENODES_RE = regexp.MustCompile("^side$|combx|retweet|mediaarticlerelated|menucontainer|navbar|comment|PopularQuestions|contact|foot|footer|Footer|footnote|cnn_strycaptiontxt|cnn_html_slideshow|cnn_strylftcntnt|links|meta$|scroll|shoutbox|sponsor|tags|socialnetworking|socialNetworking|cnnStryHghLght|cnn_stryspcvbx|^inset$|pagetools|post-attributes|welcome_form|contentTools2|the_answers|communitypromo|runaroundLeft|subscribe|vcard|articleheadings|date|^print$|popup|author-dropdown|tools|socialtools|byline|konafilter|KonaFilter|breadcrumbs|^fn$|wp-caption-text|legende|ajoutVideo|timestamp|js_replies")
 var CAPTIONS_RE = regexp.MustCompile("^caption$")
@@ -51,6 +52,7 @@ func (this *cleaner) clean(article *Article) *goquery.Document {
 	docToClean = this.cleanArticleTags(docToClean)
 	docToClean = this.cleanEMTags(docToClean)
 	docToClean = this.dropCaps(docToClean)
+	docToClean = this.removeScriptsStyle(docToClean)
 	docToClean = this.removeNodesRegEx(docToClean, REMOVENODES_RE)
 	docToClean = this.removeNodesRegEx(docToClean, CAPTIONS_RE)
 	docToClean = this.removeNodesRegEx(docToClean, GOOGLE_RE)
@@ -58,10 +60,11 @@ func (this *cleaner) clean(article *Article) *goquery.Document {
 	docToClean = this.removeNodesRegEx(docToClean, FACEBOOK_RE)
 	docToClean = this.removeNodesRegEx(docToClean, FACEBOOK_BROADCASTING_RE)
 	docToClean = this.removeNodesRegEx(docToClean, TWITTER_RE)
-	docToClean = this.removeScriptsStyle(docToClean)
+
 	docToClean = this.cleanParaSpans(docToClean)
 	docToClean = this.convertDivsToParagraphs(docToClean, "div")
 	docToClean = this.convertDivsToParagraphs(docToClean, "span")
+	docToClean = this.convertDivsToParagraphs(docToClean, "article")
 	return docToClean
 }
 
@@ -82,8 +85,8 @@ func (this *cleaner) cleanEMTags(doc *goquery.Document) *goquery.Document {
 		images := s.Find("img")
 		if images.Length() == 0 {
 			node := s.Get(0)
-			node.Type = html.TextNode
 			node.Data = s.Text()
+			node.Type = html.TextNode
 		}
 	})
 	return doc
@@ -171,7 +174,6 @@ func (this *cleaner) removeNodesRegEx(doc *goquery.Document, pattern *regexp.Reg
 		naughtyList.Each(func(i int, s *goquery.Selection) {
 			attribute, _ := s.Attr(selector)
 			if this.matchNodeRegEx(attribute, pattern) {
-				//println("removeNodesRegEx", s.Text())
 				node := s.Get(0)
 				node.Parent.RemoveChild(node)
 			}
@@ -181,10 +183,13 @@ func (this *cleaner) removeNodesRegEx(doc *goquery.Document, pattern *regexp.Reg
 }
 
 func (this *cleaner) cleanParaSpans(doc *goquery.Document) *goquery.Document {
-	spans := doc.Find("p > span")
+	spans := doc.Find("span")
 	spans.Each(func(i int, s *goquery.Selection) {
-		node := s.Get(0)
-		node.Parent.RemoveChild(node)
+		if s.Parent().Get(0).DataAtom == atom.P {
+			node := s.Get(0)
+			node.Data = s.Text()
+			node.Type = html.TextNode
+		}
 	})
 	return doc
 }
@@ -198,58 +203,10 @@ func (this *cleaner) getFlushedBuffer(replacementText string) *goquery.Selection
 	return nil
 }
 
-func (this *cleaner) getReplacementNodes(doc *goquery.Document, div *goquery.Selection) []*goquery.Selection {
-	replacementText := make([]string, 0)
-	nodesToReturn := make([]*goquery.Selection, 0)
-	nodesToRemove := make([]*goquery.Selection, 0)
-
-	children := make([]*goquery.Selection, 0)
-	for _, kid := range children {
-		kid.EachWithBreak(func(i int, s *goquery.Selection) bool {
-			node := s.Get(0)
-			if s.Children().Size() == 0 {
-				if node.Data == "#text" {
-					text := kid.Text()
-					if text == "" {
-						return false
-					}
-					text = strings.Replace(text, "\n", "\n\n", -1)
-					text = tabsRegEx.ReplaceAllString(text, "")
-					if len(text) > 1 {
-						prev := node.PrevSibling
-						if prev != nil {
-							if prev.DataAtom == atom.A {
-								html, _ := kid.Html()
-								replacementText = append(replacementText, html)
-							}
-						}
-						replacementText = append(replacementText, text)
-						nodesToRemove = append(nodesToRemove, kid)
-					}
-				}
-			}
-			return true
-		})
-
-	}
-	replacement := strings.Join(replacementText, "")
-
-	if len(replacementText) > 0 {
-		newNode := this.getFlushedBuffer(replacement)
-		nodesToReturn = append(nodesToReturn, newNode)
-		replacementText = nil
-	}
-
-	for _, s := range nodesToRemove {
-		node := s.Get(0)
-		node.Parent.RemoveChild(node)
-	}
-
-	return nodesToReturn
-}
-
 func (this *cleaner) replaceWithPara(div *goquery.Selection) {
 	node := div.Get(0)
+	node.Data = div.Text()
+	node.Type = html.ElementNode
 	node.DataAtom = atom.P
 }
 
@@ -257,101 +214,73 @@ func (this *cleaner) convertDivsToParagraphs(doc *goquery.Document, domType stri
 	badDivs := 0
 	convertedTextNodes := 0
 	divs := doc.Find(domType)
-	tags := [...]string{"a", "blockquote", "q", "cite", "dl", "div", "img", "ol", "p", "pre", "table", "ul"}
 
 	divs.Each(func(i int, div *goquery.Selection) {
-		var items *goquery.Selection
-		for _, tag := range tags {
-			tmpItems := div.Find(tag)
-			if items == nil {
-				items = tmpItems
-			} else {
-				items.Union(tmpItems)
-			}
-		}
+		h, _ := div.Html()
+		h = strings.ToLower(h)
 
-		if items == nil || items.Length() == 0 {
+		if divToPElementsPattern.Match([]byte(h)) {
 			this.replaceWithPara(div)
 			badDivs++
 		} else {
 			replacementText := make([]string, 0)
-			nodesToRemove := make([]*goquery.Selection, 0)
+			nodesToRemove := list.New()
 
-			div.Children().EachWithBreak(func(i int, kid *goquery.Selection) bool {
+			div.Siblings().EachWithBreak(func(i int, kid *goquery.Selection) bool {
 				kidNode := kid.Get(0)
-				if kidNode.Type == html.TextNode {
-					text := kid.Text()
-					if text == "" {
-						return false
-					}
-					text = strings.Replace(text, "\n", "\n\n", -1)
-					text = tabsRegEx.ReplaceAllString(text, "")
-					if len(text) > 1 {
-						previousSib := kid.Prev()
-						if previousSib != nil {
-							html, _ := previousSib.Html()
-							replacementText = append(replacementText, html)
+				if kidNode != nil {
+					child := kidNode.FirstChild
+					for child != nil {
+						text := child.Data
+						if text == "" {
+							return false
 						}
-					}
+						if child.DataAtom == atom.P && len(replacementText) > 0 {
+							node := new(html.Node)
+							node.DataAtom = atom.P
+							node.Data = kid.Text()
+							node.Type = html.ElementNode
+							div.Children().AddNodes(node)
+							replacementText = make([]string, 0)
+						} else if child.Type == html.TextNode {
+							text = strings.Replace(text, "\n", "", -1)
+							text = tabsRegEx.ReplaceAllString(text, "")
+							if len(text) > 1 {
+								prev := child.PrevSibling
+								if prev != nil && prev.DataAtom == atom.A {
+									nodeSelection := kid.HasNodes(prev)
+									html, _ := nodeSelection.Siblings().Html()
+									replacementText = append(replacementText, html)
+								}
+								replacementText = append(replacementText, text)
+								nodesToRemove.PushBack(child)
+								convertedTextNodes++
+							}
 
-					replacementText = append(replacementText, text)
-					nodesToRemove = append(nodesToRemove, kid)
-					convertedTextNodes++
+						}
+						child = child.NextSibling
+					}
 				}
 				return true
 			})
 
-			newNode := this.getFlushedBuffer(strings.Join(replacementText, ""))
-			this.replaceWithPara(newNode)
-			div.Children().First().AddSelection(newNode)
-			for _, node := range nodesToRemove {
-				node.Get(0).Parent.RemoveChild(node.Get(0))
-			}
-		}
-	})
+			newNode := new(html.Node)
+			newNode.Type = html.ElementNode
+			newNode.Data = strings.Join(replacementText, "")
+			newNode.DataAtom = atom.P
+			div.First().AddNodes(newNode)
 
-	return doc
-
-}
-
-func (this *cleaner) divToPara(doc *goquery.Document, domType string) *goquery.Document {
-	badDivs := 0
-	elseDivs := 0
-	divs := doc.Find(domType)
-	tags := [...]string{"a", "blockquote", "q", "cite", "dl", "div", "img", "ol", "p", "pre", "table", "ul"}
-
-	divs.Each(func(i int, s *goquery.Selection) {
-		var items *goquery.Selection
-		for _, tag := range tags {
-			tmpItems := s.Find(tag)
-			if items == nil {
-				items = tmpItems
-			} else {
-				items.Union(tmpItems)
-			}
-		}
-		if s != nil && items.Length() == 0 {
-			this.replaceWithPara(s)
-			badDivs++
-		} else if s != nil {
-			replacesNodes := this.getReplacementNodes(doc, s)
-			children := s.Children()
-			node := s.Get(0)
-			for i := 0; i < children.Size(); i++ {
-				child := children.Get(i)
-				if children.Children().Size() == 0 {
-					node.RemoveChild(child)
+			for s := nodesToRemove.Front(); s != nil; s = s.Next() {
+				node := s.Value.(*html.Node)
+				if node != nil && node.Parent != nil {
+					node.Parent.RemoveChild(node)
 				}
 			}
-			s.Nodes = make([]*html.Node, 0)
-			for _, node := range replacesNodes {
-				s.AddSelection(node)
-			}
-			elseDivs++
 		}
 	})
 
 	return doc
+
 }
 
 func (this *cleaner) indexOfAttribute(selection *goquery.Selection, attr string) int {
