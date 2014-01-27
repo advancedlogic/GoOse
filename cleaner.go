@@ -53,7 +53,7 @@ func (this *cleaner) clean(article *Article) *goquery.Document {
 	docToClean = this.cleanEMTags(docToClean)
 	docToClean = this.dropCaps(docToClean)
 	docToClean = this.removeScriptsStyle(docToClean)
-	docToClean = this.removeNodesRegEx(docToClean, REMOVENODES_RE)
+	docToClean = this.cleanBadTags(docToClean)
 	docToClean = this.removeNodesRegEx(docToClean, CAPTIONS_RE)
 	docToClean = this.removeNodesRegEx(docToClean, GOOGLE_RE)
 	docToClean = this.removeNodesRegEx(docToClean, MORE_RE)
@@ -167,16 +167,39 @@ func (this *cleaner) matchNodeRegEx(attribute string, pattern *regexp.Regexp) bo
 }
 
 func (this *cleaner) removeNodesRegEx(doc *goquery.Document, pattern *regexp.Regexp) *goquery.Document {
-	//println("removeNodesRegEx")
 	selectors := [3]string{"id", "class", "name"}
 	for _, selector := range selectors {
-		naughtyList := doc.Find("*")
+		naughtyList := doc.Find("*[" + selector + "]")
 		naughtyList.Each(func(i int, s *goquery.Selection) {
 			attribute, _ := s.Attr(selector)
 			if this.matchNodeRegEx(attribute, pattern) {
 				node := s.Get(0)
-				node.Parent.RemoveChild(node)
+				if node.Parent != nil {
+					node.Parent.RemoveChild(node)
+				}
 			}
+		})
+	}
+	return doc
+}
+
+func (this *cleaner) cleanBadTags(doc *goquery.Document) *goquery.Document {
+	body := doc.Find("body")
+	children := body.Children()
+	selectors := [3]string{"id", "class", "name"}
+	for _, selector := range selectors {
+		children.Each(func(i int, s *goquery.Selection) {
+			naughtyList := s.Find("*[" + selector + "]")
+			naughtyList.Each(func(j int, e *goquery.Selection) {
+				attribute, _ := e.Attr(selector)
+				if this.matchNodeRegEx(attribute, REMOVENODES_RE) {
+					node := e.Get(0)
+					if node.Parent != nil {
+						node.Parent.RemoveChild(node)
+					}
+				}
+			})
+
 		})
 	}
 	return doc
