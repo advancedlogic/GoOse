@@ -209,7 +209,7 @@ func (this *cleaner) cleanParaSpans(doc *goquery.Document) *goquery.Document {
 	spans := doc.Find("span")
 	spans.Each(func(i int, s *goquery.Selection) {
 		parent := s.Parent()
-		if parent != nil && parent.Length > 0 && parent.DataAtom == atom.P {
+		if parent != nil && parent.Length() > 0 && parent.DataAtom == atom.P {
 			node := s.Get(0)
 			node.Data = s.Text()
 			node.Type = html.TextNode
