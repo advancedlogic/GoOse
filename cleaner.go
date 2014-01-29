@@ -208,7 +208,8 @@ func (this *cleaner) cleanBadTags(doc *goquery.Document) *goquery.Document {
 func (this *cleaner) cleanParaSpans(doc *goquery.Document) *goquery.Document {
 	spans := doc.Find("span")
 	spans.Each(func(i int, s *goquery.Selection) {
-		if s.Parent().Get(0).DataAtom == atom.P {
+		parent := s.Parent()
+		if parent != nil && parent.Length > 0 && parent.DataAtom == atom.P {
 			node := s.Get(0)
 			node.Data = s.Text()
 			node.Type = html.TextNode
