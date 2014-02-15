@@ -44,7 +44,7 @@ var ARROWS_SPLITTER = regexp.MustCompile("»")
 var COLON_SPLITTER = regexp.MustCompile(":")
 var SPACE_SPLITTER = regexp.MustCompile(" ")
 var A_REL_TAG_SELECTOR = "a[rel=tag]"
-var A_HREF_TAG_SELECTOR = "a[href*='/tag/'], a[href*='/tags/'], a[href*='/topic/'], a[href*='?keyword=']"
+var A_HREF_TAG_SELECTOR = [...]string{"/tag/", "/tags/", "/topic/", "?keyword"}
 var RE_LANG = "^[A-Za-z]{2}$"
 
 type contentExtractor struct {
@@ -207,16 +207,20 @@ func (this *contentExtractor) getTags(article *Article) *set.Set {
 	tags := set.New()
 	doc := article.Doc
 	selections := doc.Find(A_REL_TAG_SELECTOR)
-	if selections == nil {
-		selections = doc.Find(A_HREF_TAG_SELECTOR)
-		if selections == nil {
-			return tags
-		}
-
-	}
-
 	selections.Each(func(i int, s *goquery.Selection) {
+		println(s.Text())
 		tags.Add(s.Text())
+	})
+	selections = doc.Find("a")
+	selections.Each(func(i int, s *goquery.Selection) {
+		href, exists := s.Attr("href")
+		if exists {
+			for _, part := range A_HREF_TAG_SELECTOR {
+				if strings.Contains(href, part) {
+					tags.Add(s.Text())
+				}
+			}
+		}
 	})
 
 	return tags
