@@ -41,6 +41,7 @@ type configuration struct {
 	//path to the stopwords folder
 	stopWordsPath string
 	stopWords     StopWords
+	parser        *parser
 }
 
 func GetDefualtConfiguration(args ...string) configuration {
@@ -59,6 +60,7 @@ func GetDefualtConfiguration(args ...string) configuration {
 			additionalDataExtractor: false,
 			stopWordsPath:           "resources/stopwords",
 			stopWords:               NewStopwords(), //TODO with path
+			parser:                  NewParser(),
 		}
 	} else {
 		path := args[0]
@@ -82,6 +84,7 @@ func GetDefualtConfiguration(args ...string) configuration {
 			additionalDataExtractor: jsconfiguration.Bool("additionalDataExtractor", false), //TODO
 			stopWordsPath:           stopWordsPath,
 			stopWords:               stopWords,
+			parser:                  NewParser(),
 		}
 	}
 }
