@@ -31,10 +31,13 @@ import (
 )
 
 type cleaner struct {
+	config configuration
 }
 
-func NewCleaner() cleaner {
-	return cleaner{}
+func NewCleaner(config configuration) cleaner {
+	return cleaner{
+		config: config,
+	}
 }
 
 var divToPElementsPattern = regexp.MustCompile("<(a|blockquote|dl|div|img|ol|p|pre|table|ul)")
@@ -62,9 +65,11 @@ func (this *cleaner) clean(article *Article) *goquery.Document {
 	docToClean = this.removeNodesRegEx(docToClean, TWITTER_RE)
 
 	docToClean = this.cleanParaSpans(docToClean)
+
 	docToClean = this.convertDivsToParagraphs(docToClean, "div")
 	docToClean = this.convertDivsToParagraphs(docToClean, "span")
 	docToClean = this.convertDivsToParagraphs(docToClean, "article")
+
 	return docToClean
 }
 
@@ -73,7 +78,7 @@ func (this *cleaner) cleanArticleTags(doc *goquery.Document) *goquery.Document {
 	articles := doc.Find("article")
 	articles.Each(func(i int, s *goquery.Selection) {
 		for _, tag := range tags {
-			this.delAttr(s, tag)
+			this.config.parser.delAttr(s, tag)
 		}
 	})
 	return doc
@@ -84,9 +89,7 @@ func (this *cleaner) cleanEMTags(doc *goquery.Document) *goquery.Document {
 	ems.Each(func(i int, s *goquery.Selection) {
 		images := s.Find("img")
 		if images.Length() == 0 {
-			node := s.Get(0)
-			node.Data = s.Text()
-			node.Type = html.TextNode
+			this.config.parser.dropTag(s)
 		}
 	})
 	return doc
@@ -95,8 +98,7 @@ func (this *cleaner) cleanEMTags(doc *goquery.Document) *goquery.Document {
 func (this *cleaner) cleanCites(doc *goquery.Document) *goquery.Document {
 	cites := doc.Find("cite")
 	cites.Each(func(i int, s *goquery.Selection) {
-		node := s.Get(0)
-		node.Parent.RemoveChild(node)
+		this.config.parser.removeNode(s)
 	})
 	return doc
 }
@@ -124,8 +126,7 @@ func (this *cleaner) cleanDivs(doc *goquery.Document) *goquery.Document {
 			selections := framesNodes[text]
 			for s := selections.Front(); s != nil; s = s.Next() {
 				selection := s.Value.(*goquery.Selection)
-				node := selection.Get(0)
-				node.Parent.RemoveChild(node)
+				this.config.parser.removeNode(selection)
 			}
 		}
 	}
@@ -137,9 +138,7 @@ func (this *cleaner) dropCaps(doc *goquery.Document) *goquery.Document {
 	items.Each(func(i int, s *goquery.Selection) {
 		attribute, exists := s.Attr("class")
 		if exists && (strings.Contains(attribute, "dropcap") || strings.Contains(attribute, "drop_cap")) {
-			node := s.Get(0)
-			node.Type = html.TextNode
-			node.Data = s.Text()
+			this.config.parser.dropTag(s)
 		}
 	})
 	return doc
@@ -148,14 +147,12 @@ func (this *cleaner) dropCaps(doc *goquery.Document) *goquery.Document {
 func (this *cleaner) removeScriptsStyle(doc *goquery.Document) *goquery.Document {
 	scripts := doc.Find("script")
 	scripts.Each(func(i int, s *goquery.Selection) {
-		node := s.Get(0)
-		node.Parent.RemoveChild(node)
+		this.config.parser.removeNode(s)
 	})
 
 	styles := doc.Find("style")
 	styles.Each(func(i int, s *goquery.Selection) {
-		node := s.Get(0)
-		node.Parent.RemoveChild(node)
+		this.config.parser.removeNode(s)
 	})
 
 	//remove comments :) How????
@@ -173,10 +170,7 @@ func (this *cleaner) removeNodesRegEx(doc *goquery.Document, pattern *regexp.Reg
 		naughtyList.Each(func(i int, s *goquery.Selection) {
 			attribute, _ := s.Attr(selector)
 			if this.matchNodeRegEx(attribute, pattern) {
-				node := s.Get(0)
-				if node.Parent != nil {
-					node.Parent.RemoveChild(node)
-				}
+				this.config.parser.removeNode(s)
 			}
 		})
 	}
@@ -193,10 +187,7 @@ func (this *cleaner) cleanBadTags(doc *goquery.Document) *goquery.Document {
 			naughtyList.Each(func(j int, e *goquery.Selection) {
 				attribute, _ := e.Attr(selector)
 				if this.matchNodeRegEx(attribute, REMOVENODES_RE) {
-					node := e.Get(0)
-					if node.Parent != nil {
-						node.Parent.RemoveChild(node)
-					}
+					this.config.parser.removeNode(e)
 				}
 			})
 
@@ -218,20 +209,36 @@ func (this *cleaner) cleanParaSpans(doc *goquery.Document) *goquery.Document {
 	return doc
 }
 
-func (this *cleaner) getFlushedBuffer(replacementText string) *goquery.Selection {
-	reader := strings.NewReader(replacementText)
-	document, err := goquery.NewDocumentFromReader(reader)
-	if err == nil {
-		return document.Selection
+func (this *cleaner) getFlushedBuffer(fragment string) []*html.Node {
+	output := make([]*html.Node, 0)
+	reader := strings.NewReader(fragment)
+	document, _ := html.Parse(reader)
+	body := document.FirstChild.LastChild
+	for c := body.FirstChild; c != nil; c = c.NextSibling {
+		output = append(output, c)
+		c.Parent = nil
+		c.PrevSibling = nil
 	}
-	return nil
+
+	for _, o := range output {
+		o.NextSibling = nil
+	}
+	return output
 }
 
 func (this *cleaner) replaceWithPara(div *goquery.Selection) {
-	node := div.Get(0)
-	node.Data = div.Text()
-	node.Type = html.ElementNode
-	node.DataAtom = atom.P
+	if div.Size() > 0 {
+		node := div.Get(0)
+		node.Data = div.Text()
+		node.Type = html.ElementNode
+		node.DataAtom = atom.P
+	}
+}
+
+func (this *cleaner) tabsAndNewLinesReplacements(text string) string {
+	text = strings.Replace(text, "\n", "\n\n", -1)
+	text = tabsRegEx.ReplaceAllString(text, "")
+	return text
 }
 
 func (this *cleaner) convertDivsToParagraphs(doc *goquery.Document, domType string) *goquery.Document {
@@ -305,22 +312,4 @@ func (this *cleaner) convertDivsToParagraphs(doc *goquery.Document, domType stri
 
 	return doc
 
-}
-
-func (this *cleaner) indexOfAttribute(selection *goquery.Selection, attr string) int {
-	node := selection.Get(0)
-	for i, a := range node.Attr {
-		if a.Key == attr {
-			return i
-		}
-	}
-	return -1
-}
-
-func (this *cleaner) delAttr(selection *goquery.Selection, attr string) {
-	idx := this.indexOfAttribute(selection, attr)
-	if idx > -1 {
-		node := selection.Get(0)
-		node.Attr = append(node.Attr[:idx], node.Attr[idx+1:]...)
-	}
 }
