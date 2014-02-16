@@ -152,7 +152,7 @@ func (this *outputFormatter) removeParagraphsWithFewWords() {
 	if language == "" {
 		language = "en"
 	}
-	allNodes := this.topNode.Find("p")
+	allNodes := this.topNode.Children()
 	allNodes.Each(func(i int, s *goquery.Selection) {
 		sw := this.config.stopWords.stopWordsCount(language, s.Text())
 		if sw.wordCount < 5 && s.Find("object").Length() == 0 && s.Find("em").Length() == 0 {
