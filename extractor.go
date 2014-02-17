@@ -196,7 +196,7 @@ func (this *contentExtractor) getMetKeywords(article *Article) string {
 
 func (this *contentExtractor) getCanonicalLink(article *Article) string {
 	doc := article.Doc
-	metas := doc.Find("link[rel=canonical")
+	metas := doc.Find("link[rel=canonical]")
 	if metas.Length() > 0 {
 		meta := metas.First()
 		href, _ := meta.Attr("href")
