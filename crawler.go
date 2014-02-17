@@ -71,7 +71,7 @@ func (this Crawler) Crawl() *Article {
 
 		article.MetaDescription = extractor.getMetaContentWithSelector(article, "meta[name=description]")
 		article.MetaKeywords = extractor.getMetaContentWithSelector(article, "meta[name=keywords]")
-
+		article.CanonicalLink = extractor.getCanonicalLink(article)
 		article.Domain = extractor.getDomain(article)
 		article.Tags = extractor.getTags(article)
 
