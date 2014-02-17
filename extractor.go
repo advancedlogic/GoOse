@@ -208,7 +208,6 @@ func (this *contentExtractor) getTags(article *Article) *set.Set {
 	doc := article.Doc
 	selections := doc.Find(A_REL_TAG_SELECTOR)
 	selections.Each(func(i int, s *goquery.Selection) {
-		println(s.Text())
 		tags.Add(s.Text())
 	})
 	selections = doc.Find("a")
