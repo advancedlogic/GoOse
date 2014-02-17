@@ -194,6 +194,21 @@ func (this *contentExtractor) getMetKeywords(article *Article) string {
 	return this.getMetaContent(article, "keywords")
 }
 
+func (this *contentExtractor) getCanonicalLink(article *Article) string {
+	doc := article.Doc
+	metas := doc.Find("link[rel=canonical")
+	if metas.Length() > 0 {
+		meta := metas.First()
+		href, _ := meta.Attr("href")
+		href = strings.Trim(href, "\n")
+		href = strings.Trim(href, " ")
+		if href != "" {
+			return href
+		}
+	}
+	return article.FinalUrl
+}
+
 func (this *contentExtractor) getDomain(article *Article) string {
 	finalUrl := article.FinalUrl
 	u, err := url.Parse(finalUrl)
