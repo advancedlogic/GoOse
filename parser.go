@@ -61,6 +61,14 @@ func (this *parser) removeNode(selection *goquery.Selection) {
 	}
 }
 
+func (this *parser) name(selector string, selection *goquery.Selection) string {
+	value, exists := selection.Attr(selector)
+	if exists {
+		return value
+	}
+	return ""
+}
+
 func (this *parser) setAttr(selection *goquery.Selection, attr string, value string) {
 	node := selection.Get(0)
 
