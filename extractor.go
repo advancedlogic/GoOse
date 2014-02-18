@@ -24,8 +24,10 @@ package goose
 import (
 	"code.google.com/p/go.net/html"
 	"code.google.com/p/go.net/html/atom"
+	"container/list"
 	"github.com/PuerkitoBio/goquery"
 	"github.com/fatih/set"
+	"log"
 	"math"
 	"net/url"
 	"regexp"
@@ -57,6 +59,7 @@ func NewExtractor(config configuration) contentExtractor {
 	}
 }
 
+//if the article has a title set in the source, use that
 func (this *contentExtractor) getTitle(article *Article) string {
 	title := ""
 	doc := article.Doc
@@ -90,6 +93,11 @@ func (this *contentExtractor) getTitle(article *Article) string {
 	}
 
 	title = strings.Replace(titleText, MOTLEY_REPLACEMENT, "", -1)
+
+	if this.config.debug {
+		log.Printf("Page title is %s\n", title)
+	}
+
 	return title
 }
 
@@ -107,6 +115,7 @@ func (this *contentExtractor) splitTitle(titles []string) string {
 	return title
 }
 
+//if the article has meta language set in the source, use that
 func (this *contentExtractor) getMetaLanguage(article *Article) string {
 	language := ""
 	doc := article.Doc
@@ -131,6 +140,7 @@ func (this *contentExtractor) getMetaLanguage(article *Article) string {
 	return language
 }
 
+//if the article has favicon set in the source, use that
 func (this *contentExtractor) getFavicon(article *Article) string {
 	favicon := ""
 	doc := article.Doc
@@ -186,14 +196,17 @@ func (this *contentExtractor) getMetaContents(article *Article, metaNames *set.S
 	return contents
 }
 
+//if the article has meta description set in the source, use that
 func (this *contentExtractor) getMetaDescription(article *Article) string {
 	return this.getMetaContent(article, "description")
 }
 
+//if the article has meta keywords set in the source, use that
 func (this *contentExtractor) getMetKeywords(article *Article) string {
 	return this.getMetaContent(article, "keywords")
 }
 
+//if the article has meta canonical link set in the url
 func (this *contentExtractor) getCanonicalLink(article *Article) string {
 	doc := article.Doc
 	metas := doc.Find("link[rel=canonical]")
@@ -209,15 +222,17 @@ func (this *contentExtractor) getCanonicalLink(article *Article) string {
 	return article.FinalUrl
 }
 
+//extract domain and use that
 func (this *contentExtractor) getDomain(article *Article) string {
-	finalUrl := article.FinalUrl
-	u, err := url.Parse(finalUrl)
+	canonicalLink := article.CanonicalLink
+	u, err := url.Parse(canonicalLink)
 	if err == nil {
 		return u.Host
 	}
 	return ""
 }
 
+//if the article has tags set in the source, use that
 func (this *contentExtractor) getTags(article *Article) *set.Set {
 	tags := set.New()
 	doc := article.Doc
@@ -240,29 +255,39 @@ func (this *contentExtractor) getTags(article *Article) *set.Set {
 	return tags
 }
 
+//we're going to start looking for where the clusters of paragraphs are. We'll score a cluster based on the number of stopwords
+//and the number of consecutive paragraphs together, which should form the cluster of text that this node is around
+//also store on how high up the paragraphs are, comments are usually at the bottom and should get a lower score
 func (this *contentExtractor) calculateBestNode(article *Article) *goquery.Selection {
 	doc := article.Doc
 	var topNode *goquery.Selection
 	nodesToCheck := this.nodesToCheck(doc)
-
+	if this.config.debug {
+		log.Printf("Nodes to check %d\n", len(nodesToCheck))
+	}
 	startingBoost := 1.0
 	cnt := 0
 	i := 0
 	parentNodes := set.New()
-	nodesWithText := make([]*goquery.Selection, 0)
+	nodesWithText := list.New()
 	for _, node := range nodesToCheck {
 		textNode := node.Text()
 		ws := this.config.stopWords.stopWordsCount(this.config.targetLanguage, textNode)
 		highLinkDensity := this.isHighLinkDensity(node)
 		if ws.stopWordCount > 2 && !highLinkDensity {
-			nodesWithText = append(nodesWithText, node)
+			nodesWithText.PushBack(node)
 		}
 	}
-	nodesNumber := len(nodesWithText)
+	nodesNumber := nodesWithText.Len()
 	negativeScoring := 0
 	bottomNegativeScoring := float64(nodesNumber) * 0.25
 
-	for _, node := range nodesWithText {
+	if this.config.debug {
+		log.Printf("About to inspect num of nodes with text %d\n", nodesNumber)
+	}
+
+	for n := nodesWithText.Front(); n != nil; n = n.Next() {
+		node := n.Value.(*goquery.Selection)
 		boostScore := 0.0
 		if this.isBoostable(node) {
 			if cnt >= 0 {
@@ -282,6 +307,9 @@ func (this *contentExtractor) calculateBestNode(article *Article) *goquery.Selec
 			}
 		}
 
+		if this.config.debug {
+			log.Printf("Location Boost Score %1.5f on iteration %d id='%s' class='%s'\n", boostScore, i, this.config.parser.name("id", node), this.config.parser.name("class", node))
+		}
 		textNode := node.Text()
 		ws := this.config.stopWords.stopWordsCount(this.config.targetLanguage, textNode)
 		upScore := ws.stopWordCount + int(boostScore)
@@ -307,6 +335,9 @@ func (this *contentExtractor) calculateBestNode(article *Article) *goquery.Selec
 	parentNodesArray := parentNodes.List()
 	for _, p := range parentNodesArray {
 		e := p.(*goquery.Selection)
+		if this.config.debug {
+			log.Printf("ParentNode: score=%s nodeCount=%s id='%s' class='%s'\n", this.config.parser.name("gravityScore", e), this.config.parser.name("gravityNodes", e), this.config.parser.name("id", e), this.config.parser.name("class", e))
+		}
 		score := this.getScore(e)
 		if score >= topNodeScore {
 			topNode = e
@@ -319,6 +350,7 @@ func (this *contentExtractor) calculateBestNode(article *Article) *goquery.Selec
 	return topNode
 }
 
+//returns the gravityScore as an integer from this node
 func (this *contentExtractor) getScore(node *goquery.Selection) int {
 	return this.getNodeGravityScore(node)
 }
@@ -335,61 +367,76 @@ func (this *contentExtractor) getNodeGravityScore(node *goquery.Selection) int {
 	return grvScore
 }
 
+//adds a score to the gravityScore Attribute we put on divs
+//we'll get the current score then add the score we're passing in to the current
 func (this *contentExtractor) updateScore(node *goquery.Selection, addToScore int) {
 	currentScore := 0
+	var err error
 	scoreString, _ := node.Attr("gravityScore")
 	if scoreString != "" {
-		currentScore, _ = strconv.Atoi(scoreString)
+		currentScore, err = strconv.Atoi(scoreString)
+		if err != nil {
+			currentScore = 0
+		}
 	}
 	newScore := currentScore + addToScore
-	this.setAttr(node, "gravityScore", strconv.Itoa(newScore))
+	this.config.parser.setAttr(node, "gravityScore", strconv.Itoa(newScore))
 }
 
+//stores how many decent nodes are under a parent node
 func (this *contentExtractor) updateNodeCount(node *goquery.Selection, addToCount int) {
 	currentScore := 0
+	var err error
 	scoreString, _ := node.Attr("gravityNodes")
 	if scoreString != "" {
-		currentScore, _ = strconv.Atoi(scoreString)
+		currentScore, err = strconv.Atoi(scoreString)
+		if err != nil {
+			currentScore = 0
+		}
 	}
 	newScore := currentScore + addToCount
-	this.setAttr(node, "gravityNodes", strconv.Itoa(newScore))
+	this.config.parser.setAttr(node, "gravityNodes", strconv.Itoa(newScore))
 }
 
+//a lot of times the first paragraph might be the caption under an image so we'll want to make sure if we're going to
+//boost a parent node that it should be connected to other paragraphs, at least for the first n paragraphs
+//so we'll want to make sure that the next sibling is a paragraph and has at least some substatial weight to it
 func (this *contentExtractor) isBoostable(node *goquery.Selection) bool {
-	flag := false
-	para := "p"
 	stepsAway := 0
-	minimumStopwordCount := 5
-	maxStepsawayFromNode := 3
-
-	nodes := node.Siblings()
-	nodes.EachWithBreak(func(i int, s *goquery.Selection) bool {
-		currentNodeTag := s.Get(0).DataAtom.String()
-		if currentNodeTag == para {
-			if stepsAway >= maxStepsawayFromNode {
-				flag = false
+	next := node.Next()
+	for next != nil {
+		currentNodeTag := node.Get(0).DataAtom.String()
+		if currentNodeTag == "p" {
+			if stepsAway >= 3 {
+				if this.config.debug {
+					log.Println("Next paragraph is too far away, not boosting")
+				}
 				return false
 			}
-			paraText := s.Text()
+
+			paraText := node.Text()
 			ws := this.config.stopWords.stopWordsCount(this.config.targetLanguage, paraText)
-			if ws.stopWordCount > minimumStopwordCount {
-				flag = true
-				return false
+			if ws.stopWordCount > 5 {
+				if this.config.debug {
+					log.Println("We're gonna boost this node, seems content")
+				}
+				return true
 			}
-			stepsAway++
-			return true
 		}
-		return true
-	})
 
-	return flag
+		stepsAway++
+		next = next.Next()
+	}
+
+	return false
 }
 
+//returns a list of nodes we want to search on like paragraphs and tables
 func (this *contentExtractor) nodesToCheck(doc *goquery.Document) []*goquery.Selection {
 	output := make([]*goquery.Selection, 0)
 	tags := []string{"p", "pre", "td"}
 	for _, tag := range tags {
-		selections := doc.Find(tag)
+		selections := doc.Children().Find(tag)
 		if selections != nil {
 			selections.Each(func(i int, s *goquery.Selection) {
 				output = append(output, s)
@@ -399,6 +446,8 @@ func (this *contentExtractor) nodesToCheck(doc *goquery.Document) []*goquery.Sel
 	return output
 }
 
+//checks the density of links within a node, is there not much text and most of it contains bad links?
+//if so it's no good
 func (this *contentExtractor) isHighLinkDensity(node *goquery.Selection) bool {
 	links := node.Find("a")
 	if links == nil || links.Size() == 0 {
@@ -419,6 +468,15 @@ func (this *contentExtractor) isHighLinkDensity(node *goquery.Selection) bool {
 	linkDivisor := float64(nlinkWords) / float64(nwords)
 	score := linkDivisor * float64(nlinks)
 
+	if this.config.debug {
+		logText := ""
+		if len(node.Text()) >= 51 {
+			logText = node.Text()[0:50]
+		} else {
+			logText = node.Text()
+		}
+		log.Printf("Calculated link density score as %1.5f for node %s\n", score, logText)
+	}
 	if score > 1.0 {
 		return true
 	}
@@ -453,6 +511,10 @@ func (this *contentExtractor) isNodescoreThresholdMet(node *goquery.Selection, e
 	return true
 }
 
+//we could have long articles that have tons of paragraphs so if we tried to calculate the base score against
+//the total text score of those paragraphs it would be unfair. So we need to normalize the score based on the average scoring
+//of the paragraphs within the top node. For example if our total score of 10 paragraphs was 1000 but each had an average value of
+//100 then 100 should be our base.
 func (this *contentExtractor) getSiblingsScore(topNode *goquery.Selection) int {
 	base := 100000
 	paragraphNumber := 0
@@ -517,7 +579,11 @@ func (this *contentExtractor) walkSiblings(node *goquery.Selection) []*goquery.S
 	return b
 }
 
+//adds any siblings that may have a decent score to this node
 func (this *contentExtractor) addSiblings(topNode *goquery.Selection) *goquery.Selection {
+	if this.config.debug {
+		log.Println("Starting to add siblings")
+	}
 	baselinescoreSiblingsPara := this.getSiblingsScore(topNode)
 	results := this.walkSiblings(topNode)
 	for _, currentNode := range results {
@@ -534,38 +600,45 @@ func (this *contentExtractor) addSiblings(topNode *goquery.Selection) *goquery.S
 	return topNode
 }
 
+//remove any divs that looks like non-content, clusters of links, or paras with no gusto
 func (this *contentExtractor) postCleanup(targetNode *goquery.Selection) *goquery.Selection {
+	if this.config.debug {
+		log.Println("Starting cleanup Node")
+	}
 	node := this.addSiblings(targetNode)
 	children := node.Children()
 	children.Each(func(i int, s *goquery.Selection) {
-		sTag := s.Get(0).DataAtom.String()
-		if sTag != "p" {
-			if this.isHighLinkDensity(s) || this.isTableAndNoParaExist(s) || !this.isNodescoreThresholdMet(node, s) {
-				sNode := s.Get(0)
-				sNode.Parent.RemoveChild(sNode)
+		tag := s.Get(0).DataAtom.String()
+		if tag != "p" {
+			if this.config.debug {
+				log.Printf("CLEANUP  NODE: %s class: %s\n", this.config.parser.name("id", s), this.config.parser.name("class", s))
+			}
+			//if this.isHighLinkDensity(s) || this.isTableAndNoParaExist(s) || !this.isNodescoreThresholdMet(node, s) {
+			if this.isHighLinkDensity(s) {
+				this.config.parser.removeNode(s)
+				return
 			}
 
+			subParagraph := s.Find("p")
+			subParagraph.Each(func(j int, e *goquery.Selection) {
+				if len(e.Text()) < 25 {
+					this.config.parser.removeNode(e)
+				}
+			})
+
+			subParagraph2 := s.Find("p")
+			if subParagraph2.Length() == 0 && tag != "td" {
+				if this.config.debug {
+					log.Println("Removing node because it doesn't have any paragraphs")
+				}
+				this.config.parser.removeNode(s)
+			} else {
+				if this.config.debug {
+					log.Println("Not removing TD node")
+				}
+			}
+			return
 		}
 	})
 	return node
-}
-
-func (this *contentExtractor) setAttr(selection *goquery.Selection, attr string, value string) {
-	node := selection.Get(0)
-
-	for _, a := range node.Attr {
-		if a.Key == attr {
-			a.Val = value
-			return
-		}
-	}
-	attrs := make([]html.Attribute, len(node.Attr)+1)
-	for i, a := range node.Attr {
-		attrs[i+1] = a
-	}
-	newAttr := new(html.Attribute)
-	newAttr.Key = attr
-	newAttr.Val = value
-	attrs[0] = *newAttr
-	node.Attr = attrs
 }
