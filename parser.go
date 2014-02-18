@@ -71,20 +71,18 @@ func (this *parser) name(selector string, selection *goquery.Selection) string {
 
 func (this *parser) setAttr(selection *goquery.Selection, attr string, value string) {
 	node := selection.Get(0)
-
+	attrs := make([]html.Attribute, 0)
 	for _, a := range node.Attr {
-		if a.Key == attr {
-			a.Val = value
-			return
+		if a.Key != attr {
+			newAttr := new(html.Attribute)
+			newAttr.Key = a.Key
+			newAttr.Val = a.Val
+			attrs = append(attrs, *newAttr)
 		}
-	}
-	attrs := make([]html.Attribute, len(node.Attr)+1)
-	for i, a := range node.Attr {
-		attrs[i+1] = a
 	}
 	newAttr := new(html.Attribute)
 	newAttr.Key = attr
 	newAttr.Val = value
-	attrs[0] = *newAttr
+	attrs = append(attrs, *newAttr)
 	node.Attr = attrs
 }
