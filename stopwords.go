@@ -1,7 +1,7 @@
 package goose
 
 import (
-	"github.com/fatih/set"
+	"gopkg.in/fatih/set.v0"
 	//"io/ioutil"
 	"regexp"
 	"strings"
