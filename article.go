@@ -2,7 +2,7 @@ package goose
 
 import (
 	"github.com/PuerkitoBio/goquery"
-	"github.com/fatih/set"
+	"gopkg.in/fatih/set.v0"
 )
 
 type Article struct {
