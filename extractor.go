@@ -5,7 +5,7 @@ import (
 	"code.google.com/p/go.net/html/atom"
 	"container/list"
 	"github.com/PuerkitoBio/goquery"
-	"github.com/fatih/set"
+	"gopkg.in/fatih/set.v0"
 	"log"
 	"math"
 	"net/url"
