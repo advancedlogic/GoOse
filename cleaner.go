@@ -261,10 +261,9 @@ func (this *cleaner) convertDivsToParagraphs(doc *goquery.Document, domType stri
 	badDivs := 0
 	convertedTextNodes := 0
 	divs := doc.Find(domType)
-	tags := []string{"a", "blockquote", "dl", "div", "img", "ol", "p", "pre", "table", "ul"}
-
+	
 	divs.Each(func(i int, div *goquery.Selection) {
-		if this.config.parser.getElementsByTags(div, tags).Size() == 0 {
+		if divToPElementsPattern.Match([]byte(divHtml)) {
 			this.replaceWithPara(div)
 			badDivs++
 		} else {
