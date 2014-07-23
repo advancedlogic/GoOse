@@ -115,7 +115,12 @@ func (this *contentExtractor) getMetaLanguage(article *Article) string {
 			attr, _ = selection.Attr("content")
 		}
 	}
-	language = attr
+	idx := strings.LastIndex(attr, "-")
+	if idx == -1 {
+		language = attr
+	} else {
+		language = attr[0 : idx-1]
+	}
 	if language == "" {
 		language = DEFAULT_LANGUAGE
 	}
