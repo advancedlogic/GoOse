@@ -31,7 +31,7 @@ func (this *outputFormatter) getFormattedText(article *Article) string {
 	this.topNode = article.TopNode
 	this.language = this.getLanguage(article)
 	if this.language == "" {
-		this.language = "en"
+		this.language = this.config.targetLanguage
 	}
 	this.removeNegativescoresNodes()
 	this.linksToText()
