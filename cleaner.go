@@ -52,6 +52,7 @@ func (this *cleaner) clean(article *Article) *goquery.Document {
 	docToClean = this.convertDivsToParagraphs(docToClean, "div")
 	docToClean = this.convertDivsToParagraphs(docToClean, "span")
 	docToClean = this.convertDivsToParagraphs(docToClean, "article")
+	docToClean = this.convertDivsToParagraphs(docToClean, "pre")
 
 	return docToClean
 }
