@@ -98,8 +98,11 @@ func (this *contentExtractor) splitTitle(titles []string) string {
 func (this *contentExtractor) getMetaLanguage(article *Article) string {
 	language := ""
 	doc := article.Doc
-
-	attr, _ := doc.Attr("lang")
+	shtml := doc.Find("html")
+	attr, _ := shtml.Attr("lang")
+	if attr == "" {
+		attr, _ = doc.Attr("lang")
+	}
 	if attr == "" {
 		selection := doc.Find("meta").EachWithBreak(func(i int, s *goquery.Selection) bool {
 			attr, exists := s.Attr("http-equiv")
@@ -116,6 +119,7 @@ func (this *contentExtractor) getMetaLanguage(article *Article) string {
 	if language == "" {
 		language = DEFAULT_LANGUAGE
 	}
+	this.config.targetLanguage = language
 	return language
 }
 
