@@ -263,6 +263,7 @@ func (this *cleaner) convertDivsToParagraphs(doc *goquery.Document, domType stri
 	divs := doc.Find(domType)
 	
 	divs.Each(func(i int, div *goquery.Selection) {
+		divHtml,_ := div.Html()
 		if divToPElementsPattern.Match([]byte(divHtml)) {
 			this.replaceWithPara(div)
 			badDivs++
