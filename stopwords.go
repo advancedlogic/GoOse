@@ -87,6 +87,21 @@ func (this *StopWords) stopWordsCount(lang string, text string) wordStats {
 	return ws
 }
 
+func (this StopWords) SimpleLanguageDetector(text string) string {
+	max := 0
+	currentLang := "en"
+
+	for k, _ := range sw {
+		ws := this.stopWordsCount(k, text)
+		if ws.stopWordCount > max {
+			max = ws.stopWordCount
+			currentLang = k
+		}
+	}
+
+	return currentLang
+}
+
 var sw = map[string]string{
 	"ar": `
 فى
