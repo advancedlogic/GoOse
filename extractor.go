@@ -121,9 +121,16 @@ func (this *contentExtractor) getMetaLanguage(article *Article) string {
 	} else {
 		language = attr[0 : idx]
 	}
-	if language == "" {
-		language = DEFAULT_LANGUAGE
+	
+	_, ok := sw[language]
+
+	if language == "" || !ok {
+		language = this.config.stopWords.SimpleLanguageDetector(shtml.Text())
+		if language == "" {
+			language = DEFAULT_LANGUAGE
+		}
 	}
+	
 	this.config.targetLanguage = language
 	return language
 }
