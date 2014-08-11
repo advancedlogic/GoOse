@@ -140,21 +140,14 @@ func (this *cleaner) removeScriptsStyle(doc *goquery.Document) *goquery.Document
 	if this.config.debug {
 		log.Println("Starting to remove script tags")
 	}
-	scripts := doc.Find("script")
+	scripts := doc.Find("script,style")
 	scripts.Each(func(i int, s *goquery.Selection) {
 		this.config.parser.removeNode(s)
 	})
 	if this.config.debug {
-		log.Printf("Removed %d script tags\n", scripts.Size())
+		log.Printf("Removed %d script and style tags\n", scripts.Size())
 	}
 
-	styles := doc.Find("style")
-	styles.Each(func(i int, s *goquery.Selection) {
-		this.config.parser.removeNode(s)
-	})
-	if this.config.debug {
-		log.Printf("Removed %d styles tags\n", styles.Size())
-	}
 	//remove comments :) How????
 	return doc
 }
