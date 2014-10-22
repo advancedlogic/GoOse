@@ -26,8 +26,8 @@ func NewCrawler(config configuration, url string, rawHtml string) Crawler {
 
 func (this Crawler) Crawl() *Article {
 	article := new(Article)
-	this.assignParseCandidate()
 	this.assignHtml()
+	this.assignParseCandidate()
 
 	if this.rawHtml == "" {
 		return article
@@ -103,6 +103,7 @@ func (this *Crawler) assignHtml() {
 			resp, err := client.Do(req)
 			if err == nil {
 				defer resp.Body.Close()
+				this.url = resp.Request.URL.String()
 				contents, err := ioutil.ReadAll(resp.Body)
 				if err == nil {
 					this.rawHtml = string(contents)
