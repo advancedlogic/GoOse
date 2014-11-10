@@ -1,6 +1,8 @@
 package goose
 
 import (
+	"code.google.com/p/go-charset/charset"
+	_ "code.google.com/p/go-charset/data"
 	"github.com/PuerkitoBio/goquery"
 	"io/ioutil"
 	"log"
@@ -25,6 +27,7 @@ func NewCrawler(config configuration, url string, rawHtml string) Crawler {
 }
 
 func (this Crawler) Crawl() *Article {
+
 	article := new(Article)
 	this.assignParseCandidate()
 	this.assignHtml()
@@ -35,6 +38,34 @@ func (this Crawler) Crawl() *Article {
 
 	reader := strings.NewReader(this.rawHtml)
 	document, err := goquery.NewDocumentFromReader(reader)
+
+	if err != nil {
+		panic(err.Error())
+	}
+
+	attr := ""
+	selection := document.Find("meta").EachWithBreak(func(i int, s *goquery.Selection) bool {
+		attr, exists := s.Attr("http-equiv")
+		if exists && attr == "Content-Type" {
+			return false
+		}
+		return true
+	})
+
+	if selection != nil {
+		attr, _ = selection.Attr("content")
+		if strings.HasPrefix(attr, "text/html; charset=") {
+			cs := strings.TrimPrefix(attr, "text/html; charset=")
+
+			if cs != "utf-8" {
+				r, _ := charset.NewReader(cs, strings.NewReader(this.rawHtml))
+				utf8, _ := ioutil.ReadAll(r)
+				this.rawHtml = string(utf8)
+				reader = strings.NewReader(this.rawHtml)
+				document, err = goquery.NewDocumentFromReader(reader)
+			}
+		}
+	}
 
 	if err == nil {
 		extractor := NewExtractor(this.config)
