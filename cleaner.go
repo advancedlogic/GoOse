@@ -1,13 +1,14 @@
 package goose
 
 import (
-	"code.google.com/p/go.net/html"
-	"code.google.com/p/go.net/html/atom"
 	"container/list"
-	"github.com/PuerkitoBio/goquery"
 	"log"
 	"regexp"
 	"strings"
+
+	"github.com/PuerkitoBio/goquery"
+	"golang.org/x/net/html"
+	"golang.org/x/net/html/atom"
 )
 
 type cleaner struct {
