@@ -1,11 +1,12 @@
 package goose
 
 import (
-	"code.google.com/p/go.net/html"
-	"code.google.com/p/go.net/html/atom"
-	"github.com/PuerkitoBio/goquery"
 	"strconv"
 	"strings"
+
+	"github.com/PuerkitoBio/goquery"
+	"golang.org/x/net/html"
+	"golang.org/x/net/html/atom"
 )
 
 type outputFormatter struct {
