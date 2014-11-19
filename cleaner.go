@@ -1,10 +1,10 @@
 package goose
 
 import (
-	"code.google.com/p/go.net/html"
-	"code.google.com/p/go.net/html/atom"
 	"container/list"
 	"github.com/PuerkitoBio/goquery"
+	"golang.org/x/net/html"
+	"golang.org/x/net/html/atom"
 	"log"
 	"regexp"
 	"strings"
@@ -254,9 +254,9 @@ func (this *cleaner) convertDivsToParagraphs(doc *goquery.Document, domType stri
 	badDivs := 0
 	convertedTextNodes := 0
 	divs := doc.Find(domType)
-	
+
 	divs.Each(func(i int, div *goquery.Selection) {
-		divHtml,_ := div.Html()
+		divHtml, _ := div.Html()
 		if divToPElementsPattern.Match([]byte(divHtml)) {
 			this.replaceWithPara(div)
 			badDivs++
