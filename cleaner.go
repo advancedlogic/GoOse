@@ -1,8 +1,8 @@
 package goose
 
 import (
-	"code.google.com/p/go.net/html"
-	"code.google.com/p/go.net/html/atom"
+	"golang.org/x/net/html"
+	"golang.org/x/net/html/atom"
 	"container/list"
 	"github.com/PuerkitoBio/goquery"
 	"log"
