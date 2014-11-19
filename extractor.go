@@ -1,10 +1,10 @@
 package goose
 
 import (
-	"code.google.com/p/go.net/html"
-	"code.google.com/p/go.net/html/atom"
 	"container/list"
 	"github.com/PuerkitoBio/goquery"
+	"golang.org/x/net/html"
+	"golang.org/x/net/html/atom"
 	"gopkg.in/fatih/set.v0"
 	"log"
 	"math"
@@ -119,9 +119,9 @@ func (this *contentExtractor) getMetaLanguage(article *Article) string {
 	if idx == -1 {
 		language = attr
 	} else {
-		language = attr[0 : idx]
+		language = attr[0:idx]
 	}
-	
+
 	_, ok := sw[language]
 
 	if language == "" || !ok {
@@ -130,7 +130,7 @@ func (this *contentExtractor) getMetaLanguage(article *Article) string {
 			language = DEFAULT_LANGUAGE
 		}
 	}
-	
+
 	this.config.targetLanguage = language
 	return language
 }
