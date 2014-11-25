@@ -1,9 +1,9 @@
 package goose
 
 import (
-	"golang.org/x/net/html"
-	"golang.org/x/net/html/atom"
 	"github.com/PuerkitoBio/goquery"
+	"golang.org/x/net/html"
+	"regexp"
 	"strconv"
 	"strings"
 )
@@ -67,20 +67,29 @@ func (this *outputFormatter) linksToText() {
 }
 
 func (this *outputFormatter) getOutputText() string {
-	sb := make([]string, 0)
-	nodes := this.topNode.Find("*")
-	nodes.Each(func(i int, s *goquery.Selection) {
-		tag := s.Get(0).DataAtom
-		if tag == atom.P {
-			text := s.Text()
-			sb = append(sb, text)
-			sb = append(sb, "\n\n")
+
+	out := this.topNode.Text()
+	var normalizeWhitespaceRegexp = regexp.MustCompile(`[ \r\f\v\t]+`)
+	out = normalizeWhitespaceRegexp.ReplaceAllString(out, " ")
+
+	strArr := strings.Split(out, "\n")
+	resArr := []string{}
+
+	for i, v := range strArr {
+		v = strings.TrimSpace(v)
+		if v != "" {
+			resArr = append(resArr, v)
+		} else if i > 2 && strArr[i-2] != "" {
+			resArr = append(resArr, "")
 		}
-	})
-	out := strings.Join(sb, "")
-	out = strings.Trim(out, "\n")
-	out = strings.Trim(out, "\t")
-	out = strings.Trim(out, " ")
+	}
+
+	out = strings.Join(resArr, "\n")
+
+	var normalizeNl = regexp.MustCompile(`\n\n[\n]+`)
+	out = normalizeNl.ReplaceAllString(out, "\n\n")
+
+	out = strings.TrimSpace(out)
 	return out
 }
 
