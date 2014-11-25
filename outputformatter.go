@@ -8,6 +8,9 @@ import (
 	"strings"
 )
 
+var normalizeWhitespaceRegexp = regexp.MustCompile(`[ \r\f\v\t]+`)
+var normalizeNl = regexp.MustCompile(`\n\n[\n]+`)
+
 type outputFormatter struct {
 	topNode  *goquery.Selection
 	config   configuration
@@ -69,7 +72,6 @@ func (this *outputFormatter) linksToText() {
 func (this *outputFormatter) getOutputText() string {
 
 	out := this.topNode.Text()
-	var normalizeWhitespaceRegexp = regexp.MustCompile(`[ \r\f\v\t]+`)
 	out = normalizeWhitespaceRegexp.ReplaceAllString(out, " ")
 
 	strArr := strings.Split(out, "\n")
@@ -85,8 +87,6 @@ func (this *outputFormatter) getOutputText() string {
 	}
 
 	out = strings.Join(resArr, "\n")
-
-	var normalizeNl = regexp.MustCompile(`\n\n[\n]+`)
 	out = normalizeNl.ReplaceAllString(out, "\n\n")
 
 	out = strings.TrimSpace(out)
