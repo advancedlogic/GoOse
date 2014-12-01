@@ -6,7 +6,6 @@ import (
 	"golang.org/x/net/html"
 	"golang.org/x/net/html/atom"
 	"gopkg.in/fatih/set.v0"
-	"io/ioutil"
 	"log"
 	"math"
 	"net/url"
@@ -342,10 +341,6 @@ func (this *contentExtractor) calculateBestNode(article *Article) *goquery.Selec
 		if topNode == nil {
 			topNode = e
 		}
-	}
-	err := ioutil.WriteFile("responsemain", []byte(topNode.Text()), 0777)
-	if err != nil {
-		panic(err)
 	}
 	return topNode
 }
