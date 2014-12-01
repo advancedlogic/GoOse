@@ -93,6 +93,7 @@ func (this Crawler) Crawl() *Article {
 			article.TopNode = extractor.postCleanup(article.TopNode)
 
 			outputFormatter := new(outputFormatter)
+			outputFormatter.config = this.config
 			article.CleanedText = outputFormatter.getFormattedText(article)
 
 			videoExtractor := NewVideoExtractor()

@@ -19,9 +19,10 @@ func NewStopwords() StopWords {
 		lines := strings.Split(stopwords, "\n")
 		cachedStopWords[lang] = set.New()
 		for _, line := range lines {
-			line = strings.Trim(line, " ")
-			line = strings.Trim(line, "\t")
-			line = strings.Trim(line, "\r")
+			if strings.HasPrefix(line, "#") {
+				continue
+			}
+			line = strings.TrimSpace(line)
 			cachedStopWords[lang].Add(line)
 		}
 	}
@@ -68,7 +69,7 @@ func (this *StopWords) stopWordsCount(lang string, text string) wordStats {
 	ws := wordStats{}
 	stopWords := set.New()
 	text = strings.ToLower(text)
-	items := strings.Split(text, " ")
+	items := strings.Fields(text)
 	stops := this.cachedStopWords[lang]
 	count := 0
 	if stops != nil {
@@ -98,7 +99,6 @@ func (this StopWords) SimpleLanguageDetector(text string) string {
 			currentLang = k
 		}
 	}
-
 	return currentLang
 }
 
@@ -2136,7 +2136,7 @@ kritiserade
 诸
 自
 `,
-"ru": `
+	"ru": `
 а
 е
 и

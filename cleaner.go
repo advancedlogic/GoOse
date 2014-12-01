@@ -1,10 +1,10 @@
 package goose
 
 import (
-	"golang.org/x/net/html"
-	"golang.org/x/net/html/atom"
 	"container/list"
 	"github.com/PuerkitoBio/goquery"
+	"golang.org/x/net/html"
+	"golang.org/x/net/html/atom"
 	"log"
 	"regexp"
 	"strings"
@@ -49,10 +49,10 @@ func (this *cleaner) clean(article *Article) *goquery.Document {
 
 	docToClean = this.cleanParaSpans(docToClean)
 
-	docToClean = this.convertDivsToParagraphs(docToClean, "div")
 	docToClean = this.convertDivsToParagraphs(docToClean, "span")
-	docToClean = this.convertDivsToParagraphs(docToClean, "article")
 	docToClean = this.convertDivsToParagraphs(docToClean, "pre")
+	docToClean = this.convertDivsToParagraphs(docToClean, "article")
+	docToClean = this.convertDivsToParagraphs(docToClean, "div")
 
 	return docToClean
 }
@@ -235,6 +235,10 @@ func (this *cleaner) getFlushedBuffer(fragment string) []*html.Node {
 
 func (this *cleaner) replaceWithPara(div *goquery.Selection) {
 	if div.Size() > 0 {
+		fp := div.Find("p")
+		if fp.Length() > 0 {
+			return
+		}
 		node := div.Get(0)
 		node.Data = atom.P.String()
 		node.DataAtom = atom.P
@@ -254,9 +258,9 @@ func (this *cleaner) convertDivsToParagraphs(doc *goquery.Document, domType stri
 	badDivs := 0
 	convertedTextNodes := 0
 	divs := doc.Find(domType)
-	
+
 	divs.Each(func(i int, div *goquery.Selection) {
-		divHtml,_ := div.Html()
+		divHtml, _ := div.Html()
 		if divToPElementsPattern.Match([]byte(divHtml)) {
 			this.replaceWithPara(div)
 			badDivs++

@@ -1,8 +1,8 @@
 package goose
 
 import (
-	"fmt"
 	"io/ioutil"
+	"log"
 	"regexp"
 	"strings"
 	"time"
@@ -11,7 +11,7 @@ import (
 func ReadLinesOfFile(filename string) []string {
 	content, err := ioutil.ReadFile(filename)
 	if err != nil {
-		fmt.Println(err.Error())
+		log.Println(err.Error())
 	}
 	lines := strings.Split(string(content), "\n")
 	return lines

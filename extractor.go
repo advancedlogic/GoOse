@@ -1,11 +1,12 @@
 package goose
 
 import (
-	"golang.org/x/net/html"
-	"golang.org/x/net/html/atom"
 	"container/list"
 	"github.com/PuerkitoBio/goquery"
+	"golang.org/x/net/html"
+	"golang.org/x/net/html/atom"
 	"gopkg.in/fatih/set.v0"
+	"io/ioutil"
 	"log"
 	"math"
 	"net/url"
@@ -119,9 +120,9 @@ func (this *contentExtractor) getMetaLanguage(article *Article) string {
 	if idx == -1 {
 		language = attr
 	} else {
-		language = attr[0 : idx]
+		language = attr[0:idx]
 	}
-	
+
 	_, ok := sw[language]
 
 	if language == "" || !ok {
@@ -130,7 +131,7 @@ func (this *contentExtractor) getMetaLanguage(article *Article) string {
 			language = DEFAULT_LANGUAGE
 		}
 	}
-	
+
 	this.config.targetLanguage = language
 	return language
 }
@@ -341,6 +342,10 @@ func (this *contentExtractor) calculateBestNode(article *Article) *goquery.Selec
 		if topNode == nil {
 			topNode = e
 		}
+	}
+	err := ioutil.WriteFile("responsemain", []byte(topNode.Text()), 0777)
+	if err != nil {
+		panic(err)
 	}
 	return topNode
 }
@@ -615,14 +620,7 @@ func (this *contentExtractor) postCleanup(targetNode *goquery.Selection) *goquer
 			}
 
 			subParagraph := s.Find("p")
-			subParagraph.Each(func(j int, e *goquery.Selection) {
-				if len(e.Text()) < 25 {
-					this.config.parser.removeNode(e)
-				}
-			})
-
-			subParagraph2 := s.Find("p")
-			if subParagraph2.Length() == 0 && tag != "td" {
+			if subParagraph.Length() == 0 && tag != "td" {
 				if this.config.debug {
 					log.Println("Removing node because it doesn't have any paragraphs")
 				}
@@ -633,7 +631,15 @@ func (this *contentExtractor) postCleanup(targetNode *goquery.Selection) *goquer
 				}
 			}
 			return
+		} else {
+			if lenChar(s.Text()) < 25 {
+				this.config.parser.removeNode(s)
+			}
 		}
 	})
 	return node
+}
+
+func lenChar(s string) int {
+	return len(strings.Split(s, ""))
 }

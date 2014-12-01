@@ -3,7 +3,7 @@ package goose
 import (
 	"github.com/PuerkitoBio/goquery"
 	"golang.org/x/net/html"
-	"regexp"
+	"golang.org/x/net/html/atom"
 	"strconv"
 	"strings"
 )
@@ -67,30 +67,17 @@ func (this *outputFormatter) linksToText() {
 }
 
 func (this *outputFormatter) getOutputText() string {
-
-	out := this.topNode.Text()
-	var normalizeWhitespaceRegexp = regexp.MustCompile(`[ \r\f\v\t]+`)
-	out = normalizeWhitespaceRegexp.ReplaceAllString(out, " ")
-
-	strArr := strings.Split(out, "\n")
-	resArr := []string{}
-
-	for i, v := range strArr {
-		v = strings.TrimSpace(v)
-		if v != "" {
-			resArr = append(resArr, v)
-		} else if i > 2 && strArr[i-2] != "" {
-			resArr = append(resArr, "")
+	sb := []string{}
+	nodes := this.topNode.Find("*")
+	nodes.Each(func(i int, s *goquery.Selection) {
+		tag := s.Get(0).DataAtom
+		if tag == atom.P {
+			sb = append(sb, s.Text())
+			sb = append(sb, "\n\n")
 		}
-	}
-
-	out = strings.Join(resArr, "\n")
-
-	var normalizeNl = regexp.MustCompile(`\n\n[\n]+`)
-	out = normalizeNl.ReplaceAllString(out, "\n\n")
-
-	out = strings.TrimSpace(out)
-	return out
+	})
+	out := strings.Join(sb, "")
+	return strings.TrimSpace(out)
 }
 
 func (this *outputFormatter) removeNegativescoresNodes() {
@@ -140,10 +127,11 @@ func (this *outputFormatter) removeParagraphsWithFewWords() {
 	if language == "" {
 		language = "en"
 	}
-	allNodes := this.topNode.Children()
+	allNodes := this.topNode.Find("*")
 	allNodes.Each(func(i int, s *goquery.Selection) {
 		sw := this.config.stopWords.stopWordsCount(language, s.Text())
-		if sw.wordCount < 5 && s.Find("object").Length() == 0 && s.Find("em").Length() == 0 {
+		if sw.stopWordCount < 3 && s.Find("object").Length() == 0 &&
+			s.Find("object").Length() == 0 && s.Find("em").Length() == 0 {
 			node := s.Get(0)
 			node.Parent.RemoveChild(node)
 		}
