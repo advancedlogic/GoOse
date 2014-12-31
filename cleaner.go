@@ -1,10 +1,10 @@
 package goose
 
 import (
-	"golang.org/x/net/html"
-	"golang.org/x/net/html/atom"
 	"container/list"
 	"github.com/PuerkitoBio/goquery"
+	"golang.org/x/net/html"
+	"golang.org/x/net/html/atom"
 	"log"
 	"regexp"
 	"strings"

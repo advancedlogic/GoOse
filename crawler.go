@@ -1,14 +1,14 @@
 package goose
 
 import (
-	"code.google.com/p/go-charset/charset"
-	_ "code.google.com/p/go-charset/data"
-	"github.com/PuerkitoBio/goquery"
 	"io/ioutil"
 	"log"
 	"net/http"
 	"net/http/cookiejar"
 	"strings"
+
+	"code.google.com/p/go-charset/charset"
+	"github.com/PuerkitoBio/goquery"
 )
 
 type Crawler struct {
