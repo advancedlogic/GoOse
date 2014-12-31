@@ -1,10 +1,10 @@
 package goose
 
 import (
-	"golang.org/x/net/html"
-	"golang.org/x/net/html/atom"
 	"container/list"
 	"github.com/PuerkitoBio/goquery"
+	"golang.org/x/net/html"
+	"golang.org/x/net/html/atom"
 	"gopkg.in/fatih/set.v0"
 	"log"
 	"math"
@@ -77,7 +77,7 @@ func (this *contentExtractor) getTitle(article *Article) string {
 		log.Printf("Page title is %s\n", title)
 	}
 
-	return title
+	return strings.TrimSpace(title)
 }
 
 func (this *contentExtractor) splitTitle(titles []string) string {
@@ -119,9 +119,9 @@ func (this *contentExtractor) getMetaLanguage(article *Article) string {
 	if idx == -1 {
 		language = attr
 	} else {
-		language = attr[0 : idx]
+		language = attr[0:idx]
 	}
-	
+
 	_, ok := sw[language]
 
 	if language == "" || !ok {
@@ -130,7 +130,7 @@ func (this *contentExtractor) getMetaLanguage(article *Article) string {
 			language = DEFAULT_LANGUAGE
 		}
 	}
-	
+
 	this.config.targetLanguage = language
 	return language
 }
@@ -155,7 +155,7 @@ func (this *contentExtractor) getMetaContentWithSelector(article *Article, selec
 	doc := article.Doc
 	selection := doc.Find(selector)
 	content, _ = selection.Attr("content")
-	return content
+	return strings.TrimSpace(content)
 }
 
 func (this *contentExtractor) getMetaContent(article *Article, metaName string) string {

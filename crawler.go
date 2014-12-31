@@ -1,14 +1,14 @@
 package goose
 
 import (
-	"code.google.com/p/go-charset/charset"
-	_ "code.google.com/p/go-charset/data"
-	"github.com/PuerkitoBio/goquery"
 	"io/ioutil"
 	"log"
 	"net/http"
 	"net/http/cookiejar"
 	"strings"
+
+	"code.google.com/p/go-charset/charset"
+	"github.com/PuerkitoBio/goquery"
 )
 
 type Crawler struct {
@@ -54,8 +54,11 @@ func (this Crawler) Crawl() *Article {
 
 	if selection != nil {
 		attr, _ = selection.Attr("content")
-		if strings.HasPrefix(attr, "text/html; charset=") {
-			cs := strings.TrimPrefix(attr, "text/html; charset=")
+		attr = strings.Replace(attr, " ", "", -1)
+
+		if strings.HasPrefix(attr, "text/html;charset=") {
+			cs := strings.TrimPrefix(attr, "text/html;charset=")
+			cs = strings.ToLower(cs)
 
 			if cs != "utf-8" {
 				r, _ := charset.NewReader(cs, strings.NewReader(this.rawHtml))

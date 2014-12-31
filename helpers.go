@@ -16,7 +16,7 @@ type Helper struct {
 }
 
 func NewRawHelper(url string, rawHtml string) Helper {
-	if utf8.ValidString(rawHtml) {
+	if !utf8.ValidString(rawHtml) {
 		converter := latinx.Get(latinx.ISO_8859_1)
 		rawHtmlBytes, err := converter.Decode([]byte(rawHtml))
 		if err != nil {
@@ -24,6 +24,7 @@ func NewRawHelper(url string, rawHtml string) Helper {
 		}
 		rawHtml = string(rawHtmlBytes)
 	}
+
 	h := md5.New()
 	io.WriteString(h, url)
 	bytes := h.Sum(nil)
