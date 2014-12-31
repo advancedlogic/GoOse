@@ -54,8 +54,11 @@ func (this Crawler) Crawl() *Article {
 
 	if selection != nil {
 		attr, _ = selection.Attr("content")
-		if strings.HasPrefix(attr, "text/html; charset=") {
-			cs := strings.TrimPrefix(attr, "text/html; charset=")
+		attr = strings.Replace(attr, " ", "", -1)
+
+		if strings.HasPrefix(attr, "text/html;charset=") {
+			cs := strings.TrimPrefix(attr, "text/html;charset=")
+			cs = strings.ToLower(cs)
 
 			if cs != "utf-8" {
 				r, _ := charset.NewReader(cs, strings.NewReader(this.rawHtml))

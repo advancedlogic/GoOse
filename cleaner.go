@@ -22,7 +22,7 @@ func NewCleaner(config configuration) cleaner {
 
 var divToPElementsPattern = regexp.MustCompile("<(a|blockquote|dl|div|img|ol|p|pre|table|ul)")
 var tabsRegEx, _ = regexp.Compile("\\t|^\\s+$]")
-var REMOVENODES_RE = regexp.MustCompile("^side$|combx|retweet|mediaarticlerelated|menucontainer|navbar|comment|PopularQuestions|contact|foot|footer|Footer|footnote|cnn_strycaptiontxt|cnn_html_slideshow|cnn_strylftcntnt|links|meta$|scroll|shoutbox|sponsor|tags|socialnetworking|socialNetworking|cnnStryHghLght|cnn_stryspcvbx|^inset$|pagetools|post-attributes|welcome_form|contentTools2|the_answers|communitypromo|runaroundLeft|subscribe|vcard|articleheadings|date|^print$|popup|author-dropdown|tools|socialtools|byline|konafilter|KonaFilter|breadcrumbs|^fn$|wp-caption-text|legende|ajoutVideo|timestamp|js_replies")
+var REMOVENODES_RE = regexp.MustCompile("^side$|combx|retweet|mediaarticlerelated|menucontainer|navbar|comment|[Cc]omentario|PopularQuestions|contact|foot|[Ff]ooter|footnote|cnn_strycaptiontxt|cnn_html_slideshow|cnn_strylftcntnt|links|meta$|scroll|shoutbox|sponsor|tags|socialnetworking|socialNetworking|cnnStryHghLght|cnn_stryspcvbx|^inset$|pagetools|post-attributes|welcome_form|contentTools2|the_answers|communitypromo|runaroundLeft|subscribe|vcard|articleheadings|date|^print$|popup|author-dropdown|tools|socialtools|byline|konafilter|KonaFilter|breadcrumbs|^fn$|wp-caption-text|legende|ajoutVideo|timestamp|js_replies|widget|cabecalho|relacionado")
 var CAPTIONS_RE = regexp.MustCompile("^caption$")
 var GOOGLE_RE = regexp.MustCompile(" google ")
 var MORE_RE = regexp.MustCompile("^[^entry-]more.*$")
@@ -40,6 +40,8 @@ func (this *cleaner) clean(article *Article) *goquery.Document {
 	docToClean = this.dropCaps(docToClean)
 	docToClean = this.removeScriptsStyle(docToClean)
 	docToClean = this.cleanBadTags(docToClean)
+	docToClean = this.cleanFooter(docToClean)
+	docToClean = this.cleanAside(docToClean)
 	docToClean = this.removeNodesRegEx(docToClean, CAPTIONS_RE)
 	docToClean = this.removeNodesRegEx(docToClean, GOOGLE_RE)
 	docToClean = this.removeNodesRegEx(docToClean, MORE_RE)
@@ -79,6 +81,22 @@ func (this *cleaner) cleanEMTags(doc *goquery.Document) *goquery.Document {
 	if this.config.debug {
 		log.Printf("Cleaning %d EM tags\n", ems.Size())
 	}
+	return doc
+}
+
+func (this *cleaner) cleanFooter(doc *goquery.Document) *goquery.Document {
+	footer := doc.Find("footer")
+	footer.Each(func(i int, s *goquery.Selection) {
+		this.config.parser.removeNode(s)
+	})
+	return doc
+}
+
+func (this *cleaner) cleanAside(doc *goquery.Document) *goquery.Document {
+	aside := doc.Find("aside")
+	aside.Each(func(i int, s *goquery.Selection) {
+		this.config.parser.removeNode(s)
+	})
 	return doc
 }
 
@@ -254,9 +272,9 @@ func (this *cleaner) convertDivsToParagraphs(doc *goquery.Document, domType stri
 	badDivs := 0
 	convertedTextNodes := 0
 	divs := doc.Find(domType)
-	
+
 	divs.Each(func(i int, div *goquery.Selection) {
-		divHtml,_ := div.Html()
+		divHtml, _ := div.Html()
 		if divToPElementsPattern.Match([]byte(divHtml)) {
 			this.replaceWithPara(div)
 			badDivs++
