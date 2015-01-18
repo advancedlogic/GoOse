@@ -9,7 +9,7 @@ import (
 )
 
 var normalizeWhitespaceRegexp = regexp.MustCompile(`[ \r\f\v\t]+`)
-var normalizeNl = regexp.MustCompile(`\n\n[\n]+`)
+var normalizeNl = regexp.MustCompile(`[\n]+`)
 
 type outputFormatter struct {
 	topNode  *goquery.Selection
