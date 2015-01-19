@@ -2557,7 +2557,7 @@ kritiserade
 суть
 чуть
 тысяч`,
-	"sr" : `
+	"sr": `
 # Serbian Cyrillic - Српски Ћирилица
 
 а
