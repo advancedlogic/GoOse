@@ -1,8 +1,8 @@
 package goose
 
 import (
-	"golang.org/x/net/html"
 	"github.com/PuerkitoBio/goquery"
+	"golang.org/x/net/html"
 )
 
 type parser struct{}

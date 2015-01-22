@@ -22,7 +22,76 @@ func NewCleaner(config configuration) cleaner {
 
 var divToPElementsPattern = regexp.MustCompile("<(a|blockquote|dl|div|img|ol|p|pre|table|ul)")
 var tabsRegEx, _ = regexp.Compile("\\t|^\\s+$]")
-var REMOVENODES_RE = regexp.MustCompile("^side$|combx|retweet|mediaarticlerelated|menucontainer|navbar|comment|[Cc]omentario|PopularQuestions|contact|foot|[Ff]ooter|footnote|cnn_strycaptiontxt|cnn_html_slideshow|cnn_strylftcntnt|links|meta$|scroll|shoutbox|sponsor|tags|socialnetworking|socialNetworking|cnnStryHghLght|cnn_stryspcvbx|^inset$|pagetools|post-attributes|welcome_form|contentTools2|the_answers|communitypromo|runaroundLeft|subscribe|vcard|articleheadings|date|^print$|popup|author-dropdown|tools|socialtools|byline|konafilter|KonaFilter|breadcrumbs|^fn$|wp-caption-text|legende|ajoutVideo|timestamp|js_replies|widget|cabecalho|relacionado")
+var REMOVENODES_RE = regexp.MustCompile("" +
+	"PopularQuestions|" +
+	"[Cc]omentario|" +
+	"[Ff]ooter|" +
+	"^fn$|" +
+	"^inset$|" +
+	"^print$|" +
+	"^scroll$|" +
+	"^side$|" +
+	"^side_|" +
+	"^widget$|" +
+	"ajoutVideo|" +
+	"articleheadings|" +
+	"author-dropdown|" +
+	"blog-pager|" +
+	"breadcrumbs|" +
+	"byline|" +
+	"cabecalho|" +
+	"cnnStryHghLght|" +
+	"cnn_html_slideshow|" +
+	"cnn_strycaptiontxt|" +
+	"cnn_strylftcntnt|" +
+	"cnn_stryspcvbx|" +
+	"combx|" +
+	"comment|" +
+	"communitypromo|" +
+	"contact|" +
+	"contentTools2|" +
+	"controls|" +
+	"^date$|" +
+	"detail_new_|" +
+	"detail_related_|" +
+	"figcaption|" +
+	"footnote|" +
+	"foot|" +
+	"header|" +
+	"img_popup_single|" +
+	"js_replies|" +
+	"[Kk]ona[Ff]ilter|" +
+	"leading|" +
+	"legende|" +
+	"links|" +
+	"mediaarticlerelated|" +
+	"menucontainer|" +
+	"meta$|" +
+	"navbar|" +
+	"pagetools|" +
+	"popup|" +
+	"post-attributes|" +
+	"post-title|" +
+	"relacionado|" +
+	"retweet|" +
+	"runaroundLeft|" +
+	"shoutbox|" +
+	"site_nav|" +
+	"socialNetworking|" +
+	"social_|" +
+	"socialnetworking|" +
+	"socialtools|" +
+	"sponsor|" +
+	"sub_nav|" +
+	"subscribe|" +
+	"tag_|" +
+	"tags|" +
+	"the_answers|" +
+	"timestamp|" +
+	"tools|" +
+	"vcard|" +
+	"welcome_form|" +
+	"wp-caption-text")
 var CAPTIONS_RE = regexp.MustCompile("^caption$")
 var GOOGLE_RE = regexp.MustCompile(" google ")
 var MORE_RE = regexp.MustCompile("^[^entry-]more.*$")
@@ -48,7 +117,6 @@ func (this *cleaner) clean(article *Article) *goquery.Document {
 	docToClean = this.removeNodesRegEx(docToClean, FACEBOOK_RE)
 	docToClean = this.removeNodesRegEx(docToClean, FACEBOOK_BROADCASTING_RE)
 	docToClean = this.removeNodesRegEx(docToClean, TWITTER_RE)
-
 	docToClean = this.cleanParaSpans(docToClean)
 
 	docToClean = this.convertDivsToParagraphs(docToClean, "div")
@@ -158,7 +226,7 @@ func (this *cleaner) removeScriptsStyle(doc *goquery.Document) *goquery.Document
 	if this.config.debug {
 		log.Println("Starting to remove script tags")
 	}
-	scripts := doc.Find("script,style")
+	scripts := doc.Find("script,noscript,style")
 	scripts.Each(func(i int, s *goquery.Selection) {
 		this.config.parser.removeNode(s)
 	})
@@ -197,7 +265,7 @@ func (this *cleaner) removeNodesRegEx(doc *goquery.Document, pattern *regexp.Reg
 func (this *cleaner) cleanBadTags(doc *goquery.Document) *goquery.Document {
 	body := doc.Find("body")
 	children := body.Children()
-	selectors := [3]string{"id", "class", "name"}
+	selectors := []string{"id", "class", "name"}
 	for _, selector := range selectors {
 		children.Each(func(i int, s *goquery.Selection) {
 			naughtyList := s.Find("*[" + selector + "]")
@@ -213,7 +281,7 @@ func (this *cleaner) cleanBadTags(doc *goquery.Document) *goquery.Document {
 					cont++
 				}
 			})
-			if this.config.debug {
+			if this.config.debug && cont > 0 {
 				log.Printf("%d naughty %s elements found", cont, selector)
 			}
 		})

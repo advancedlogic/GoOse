@@ -43,7 +43,7 @@ func (this *contentExtractor) getTitle(article *Article) string {
 	title := ""
 	doc := article.Doc
 
-	titleElement := doc.Find("title")
+	titleElement := doc.Find("title,post-title,headline")
 	if titleElement == nil || titleElement.Size() == 0 {
 		return title
 	}
