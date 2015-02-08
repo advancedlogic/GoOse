@@ -8,7 +8,6 @@ import (
 	"strings"
 
 	"code.google.com/p/go-charset/charset"
-	_ "code.google.com/p/go-charset/data"
 	"github.com/PuerkitoBio/goquery"
 )
 
