@@ -65,7 +65,8 @@ func (this Crawler) Crawl() *Article {
 				r, _ := charset.NewReader(cs, strings.NewReader(this.rawHtml))
 				utf8, err := ioutil.ReadAll(r)
 				if err != nil {
-					utf8 = ""
+					// On error, skip
+					utf8 = []byte
 				}
 				this.rawHtml = string(utf8)
 				reader = strings.NewReader(this.rawHtml)
