@@ -91,6 +91,10 @@ func (this Crawler) Crawl() *Article {
 		cleaner := NewCleaner(this.config)
 		article.Doc = cleaner.clean(article)
 
+		article.TopImage = OpenGraphResolver(article)
+		if article.TopImage == "" {
+			article.TopImage = WebPageResolver(article)
+		}
 		article.TopNode = extractor.calculateBestNode(article)
 		if article.TopNode != nil {
 			article.TopNode = extractor.postCleanup(article.TopNode)
@@ -100,11 +104,6 @@ func (this Crawler) Crawl() *Article {
 
 			videoExtractor := NewVideoExtractor()
 			article.Movies = videoExtractor.GetVideos(article)
-
-			article.TopImage = OpenGraphResolver(article)
-			if article.TopImage == "" {
-				article.TopImage = WebPageResolver(article)
-			}
 		}
 
 		stop := TimeInNanoseconds()
