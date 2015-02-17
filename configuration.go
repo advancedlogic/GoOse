@@ -2,6 +2,7 @@ package goose
 
 import (
 	"github.com/advancedlogic/gojs-config"
+	"time"
 )
 
 type configuration struct {
@@ -21,6 +22,8 @@ type configuration struct {
 	stopWordsPath string
 	stopWords     StopWords
 	parser        *parser
+	
+	timeout time.Duration
 }
 
 func GetDefualtConfiguration(args ...string) configuration {
@@ -40,6 +43,7 @@ func GetDefualtConfiguration(args ...string) configuration {
 			stopWordsPath:           "resources/stopwords",
 			stopWords:               NewStopwords(), //TODO with path
 			parser:                  NewParser(),
+			timeout: 		 time.Duration(5 * time.Second),
 		}
 	} else {
 		path := args[0]
@@ -64,6 +68,7 @@ func GetDefualtConfiguration(args ...string) configuration {
 			stopWordsPath:           stopWordsPath,
 			stopWords:               stopWords,
 			parser:                  NewParser(),
+			timeout:		 time.Duration(jsconfiguration.Int("timeout", 5) * time.Second), 
 		}
 	}
 }
