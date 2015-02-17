@@ -130,7 +130,7 @@ func (this *Crawler) assignHtml() {
 		cookieJar, _ := cookiejar.New(nil)
 		client := &http.Client{
 			Jar: cookieJar,
-			Timeout: this.configuration.timeout,
+			Timeout: this.config.timeout,
 		}
 		req, err := http.NewRequest("GET", this.url, nil)
 		if err == nil {
