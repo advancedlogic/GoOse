@@ -80,3 +80,20 @@ func Test_EditionCnnParse(t *testing.T) {
 		t.Error(err)
 	}
 }
+
+func Test_BbcParse(t *testing.T) {
+	article := Article{
+		Domain:          "bbc.com",
+		Title:           "Crunch talks on new Greek bailout",
+		MetaDescription: "German and Greek finance ministers meet IMF and Eurogroup chiefs ahead of a crucial finance ministers' meeting on Greece's bailout request.",
+		CleanedText:     "Mr Tsipras won elections in late January on a platform of rejecting the austerity measures tied to the bailout.",
+		MetaKeywords:    "keywords, added, to, test, case insensitive",
+		CanonicalLink:   "http://www.bbc.com/news/business-31545115",
+		TopImage:        "http://news.bbcimg.co.uk/media/images/81120000/jpg/_81120901_81120501.jpg",
+	}
+
+	err := ValidateArticle(article)
+	if err != nil {
+		t.Error(err)
+	}
+}
