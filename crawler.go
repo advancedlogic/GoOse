@@ -82,8 +82,8 @@ func (this Crawler) Crawl() *Article {
 		article.MetaLang = extractor.getMetaLanguage(article)
 		article.MetaFavicon = extractor.getFavicon(article)
 
-		article.MetaDescription = extractor.getMetaContentWithSelector(article, "meta[name=description]")
-		article.MetaKeywords = extractor.getMetaContentWithSelector(article, "meta[name=keywords]")
+		article.MetaDescription = extractor.getMetaContentWithSelector(article, "meta[name#=(?i)description]")
+		article.MetaKeywords = extractor.getMetaContentWithSelector(article, "meta[name#=(?i)keywords]")
 		article.CanonicalLink = extractor.getCanonicalLink(article)
 		article.Domain = extractor.getDomain(article)
 		article.Tags = extractor.getTags(article)
@@ -91,6 +91,10 @@ func (this Crawler) Crawl() *Article {
 		cleaner := NewCleaner(this.config)
 		article.Doc = cleaner.clean(article)
 
+		article.TopImage = OpenGraphResolver(article)
+		if article.TopImage == "" {
+			article.TopImage = WebPageResolver(article)
+		}
 		article.TopNode = extractor.calculateBestNode(article)
 		if article.TopNode != nil {
 			article.TopNode = extractor.postCleanup(article.TopNode)
@@ -100,11 +104,6 @@ func (this Crawler) Crawl() *Article {
 
 			videoExtractor := NewVideoExtractor()
 			article.Movies = videoExtractor.GetVideos(article)
-
-			article.TopImage = OpenGraphResolver(article)
-			if article.TopImage == "" {
-				article.TopImage = WebPageResolver(article)
-			}
 		}
 
 		stop := TimeInNanoseconds()

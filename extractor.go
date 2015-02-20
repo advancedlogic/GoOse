@@ -43,6 +43,13 @@ func (this *contentExtractor) getTitle(article *Article) string {
 	title := ""
 	doc := article.Doc
 
+	ogTitleElement := doc.Find(`meta[property="og:title"]`)
+	if ogTitleElement != nil && ogTitleElement.Size() > 0 {
+		title, _ = ogTitleElement.Attr("content")
+		if title != "" {
+			return title
+		}
+	}
 	titleElement := doc.Find("title,post-title,headline")
 	if titleElement == nil || titleElement.Size() == 0 {
 		return title

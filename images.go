@@ -5,6 +5,7 @@ import (
 	"regexp"
 	"strconv"
 	"strings"
+	"net/url"
 )
 
 type candidate struct {
@@ -127,7 +128,17 @@ func WebPageResolver(article *Article) string {
 	}
 
 	if topImage != "" && !strings.HasPrefix(topImage, "http") {
-		topImage = "http://" + topImage
+		a, err := url.Parse(topImage)
+		if err != nil {
+			return topImage
+		}
+		if a.Scheme == ""{
+			a.Scheme = "http"
+		}
+		if a.Host == ""{
+			a.Host = article.Domain
+		}
+		topImage = a.String()
 	}
 
 	return topImage
