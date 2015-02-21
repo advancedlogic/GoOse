@@ -2,10 +2,10 @@ package goose
 
 import (
 	"github.com/PuerkitoBio/goquery"
+	"net/url"
 	"regexp"
 	"strconv"
 	"strings"
-	"net/url"
 )
 
 type candidate struct {
@@ -132,10 +132,10 @@ func WebPageResolver(article *Article) string {
 		if err != nil {
 			return topImage
 		}
-		if a.Scheme == ""{
+		if a.Scheme == "" {
 			a.Scheme = "http"
 		}
-		if a.Host == ""{
+		if a.Host == "" {
 			a.Host = article.Domain
 		}
 		topImage = a.String()
@@ -180,25 +180,25 @@ type ogTag struct {
 }
 
 var ogTags = [4]ogTag{
-	ogTag{
+	{
 		tpe:       "facebook",
 		attribute: "property",
 		name:      "og:image",
 		value:     "content",
 	},
-	ogTag{
+	{
 		tpe:       "facebook",
 		attribute: "rel",
 		name:      "image_src",
 		value:     "href",
 	},
-	ogTag{
+	{
 		tpe:       "twitter",
 		attribute: "name",
 		name:      "twitter:image",
 		value:     "value",
 	},
-	ogTag{
+	{
 		tpe:       "twitter",
 		attribute: "name",
 		name:      "twitter:image",
