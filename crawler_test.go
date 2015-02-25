@@ -97,3 +97,21 @@ func Test_BbcParse(t *testing.T) {
 		t.Error(err)
 	}
 }
+
+// multiple og:image, according to http://ogp.me/, the first one should be preferred
+func Test_LindorffParse(t *testing.T) {
+	article := Article{
+		Domain:          "profit.lindorff.fi",
+		Title:           "Lindorff24.fi muuttaa maksujen hoidon mobiiliksi - Lindorff Profit",
+		MetaDescription: "Lindorffin verkkopalvelu kuluttajille tunnetaan nyt nimellä Lindorff24.fi. Uusien ominaisuuksien lisäksi palvelu on käytettävissä tietokoneen lisäksi älypuhelimella ja tabletilla. Verkon itseasioinnin uskotaan kasvavan lähivuosina merkittävästi nykyisestä.",
+		CleanedText:     "",
+		MetaKeywords:    "",
+		CanonicalLink:   "http://profit.lindorff.fi/lindorff24-fi-muuttaa-maksujen-hoidon-mobiiliksi/",
+		TopImage:        "http://profit.lindorff.fi/wp-content/uploads/2015/02/Iso_Lindorff24_2_600x2501.jpg",
+	}
+
+	err := ValidateArticle(article)
+	if err != nil {
+		t.Error(err)
+	}
+}

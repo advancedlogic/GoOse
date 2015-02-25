@@ -234,35 +234,38 @@ func OpenGraphResolver(article *Article) string {
 			}
 		}
 	})
-
+	if len(ogImages) == 0 {
+		return ""
+	}
 	if len(ogImages) == 1 {
 		topImage = ogImages[0].url
-	} else {
-		for _, ogImage := range ogImages {
-			if largebig.MatchString(ogImage.url) {
-				ogImage.score++
-			}
-			if ogImage.tpe == "twitter" {
-				ogImage.score++
-			}
-		}
-		topImage = findBestImageFromScore(ogImages).url
+		goto IMAGE_FINALIZE
 	}
-
-	if topImage != "" && !strings.HasPrefix(topImage, "http") {
+	for _, ogImage := range ogImages {
+		if largebig.MatchString(ogImage.url) {
+			ogImage.score++
+		}
+		if ogImage.tpe == "twitter" {
+			ogImage.score++
+		}
+	}
+	topImage = findBestImageFromScore(ogImages).url
+IMAGE_FINALIZE:
+	if !strings.HasPrefix(topImage, "http") {
 		topImage = "http://" + topImage
 	}
 
 	return topImage
 }
 
+// assume that len(ogImages)>=2
 func findBestImageFromScore(ogImages []ogImage) ogImage {
 	max := 0
 	var bestOGImage ogImage
-	for _, ogImage := range ogImages {
+	bestOGImage = ogImages[0]
+	for _, ogImage := range ogImages[1:] {
 		score := ogImage.score
-		//println("OG", ogImage.url, score)
-		if score >= max {
+		if score > max {
 			max = score
 			bestOGImage = ogImage
 		}
