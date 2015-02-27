@@ -121,7 +121,7 @@ func (this *contentExtractor) getMetaLanguage(article *Article) string {
 	} else {
 		language = attr[0 : idx]
 	}
-	
+
 	_, ok := sw[language]
 
 	if language == "" || !ok {
@@ -130,7 +130,7 @@ func (this *contentExtractor) getMetaLanguage(article *Article) string {
 			language = DEFAULT_LANGUAGE
 		}
 	}
-	
+
 	this.config.targetLanguage = language
 	return language
 }
@@ -166,6 +166,12 @@ func (this *contentExtractor) getMetaContent(article *Article, metaName string) 
 		if exists && attr == metaName {
 			content, _ = s.Attr("content")
 			return false
+		} else {
+			attr, exists := s.Attr("itemprop")
+			if exists && attr == metaName {
+				content, _ = s.Attr("content")
+				return false
+			}
 		}
 		return true
 	})
@@ -199,6 +205,16 @@ func (this *contentExtractor) getMetaDescription(article *Article) string {
 //if the article has meta keywords set in the source, use that
 func (this *contentExtractor) getMetKeywords(article *Article) string {
 	return this.getMetaContent(article, "keywords")
+}
+
+//if the article has meta author set in the source, use that
+func (this *contentExtractor) getMetaAuthor(article *Article) string {
+	return this.getMetaContent(article, "author");
+}
+
+//if the article has meta content location set in the source, use that
+func (this *contentExtractor) getMetaContentLocation(article *Article) string {
+	return this.getMetaContent(article, "contentLocation");
 }
 
 //if the article has meta canonical link set in the url
