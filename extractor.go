@@ -203,7 +203,7 @@ func (this *contentExtractor) getMetaDescription(article *Article) string {
 }
 
 //if the article has meta keywords set in the source, use that
-func (this *contentExtractor) getMetKeywords(article *Article) string {
+func (this *contentExtractor) getMetaKeywords(article *Article) string {
 	return this.getMetaContent(article, "keywords")
 }
 
