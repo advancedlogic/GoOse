@@ -128,7 +128,7 @@ func (this *Crawler) assignHtml() {
 	if this.rawHtml == "" {
 		cookieJar, _ := cookiejar.New(nil)
 		client := &http.Client{
-			Jar: cookieJar,
+			Jar:     cookieJar,
 			Timeout: this.config.timeout,
 		}
 		req, err := http.NewRequest("GET", this.url, nil)

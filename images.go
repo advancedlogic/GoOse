@@ -2,10 +2,10 @@ package goose
 
 import (
 	"github.com/PuerkitoBio/goquery"
+	"net/url"
 	"regexp"
 	"strconv"
 	"strings"
-	"net/url"
 )
 
 type candidate struct {
@@ -132,10 +132,10 @@ func WebPageResolver(article *Article) string {
 		if err != nil {
 			return topImage
 		}
-		if a.Scheme == ""{
+		if a.Scheme == "" {
 			a.Scheme = "http"
 		}
-		if a.Host == ""{
+		if a.Host == "" {
 			a.Host = article.Domain
 		}
 		topImage = a.String()
@@ -180,25 +180,25 @@ type ogTag struct {
 }
 
 var ogTags = [4]ogTag{
-	ogTag{
+	{
 		tpe:       "facebook",
 		attribute: "property",
 		name:      "og:image",
 		value:     "content",
 	},
-	ogTag{
+	{
 		tpe:       "facebook",
 		attribute: "rel",
 		name:      "image_src",
 		value:     "href",
 	},
-	ogTag{
+	{
 		tpe:       "twitter",
 		attribute: "name",
 		name:      "twitter:image",
 		value:     "value",
 	},
-	ogTag{
+	{
 		tpe:       "twitter",
 		attribute: "name",
 		name:      "twitter:image",
@@ -234,35 +234,38 @@ func OpenGraphResolver(article *Article) string {
 			}
 		}
 	})
-
+	if len(ogImages) == 0 {
+		return ""
+	}
 	if len(ogImages) == 1 {
 		topImage = ogImages[0].url
-	} else {
-		for _, ogImage := range ogImages {
-			if largebig.MatchString(ogImage.url) {
-				ogImage.score++
-			}
-			if ogImage.tpe == "twitter" {
-				ogImage.score++
-			}
-		}
-		topImage = findBestImageFromScore(ogImages).url
+		goto IMAGE_FINALIZE
 	}
-
-	if topImage != "" && !strings.HasPrefix(topImage, "http") {
+	for _, ogImage := range ogImages {
+		if largebig.MatchString(ogImage.url) {
+			ogImage.score++
+		}
+		if ogImage.tpe == "twitter" {
+			ogImage.score++
+		}
+	}
+	topImage = findBestImageFromScore(ogImages).url
+IMAGE_FINALIZE:
+	if !strings.HasPrefix(topImage, "http") {
 		topImage = "http://" + topImage
 	}
 
 	return topImage
 }
 
+// assume that len(ogImages)>=2
 func findBestImageFromScore(ogImages []ogImage) ogImage {
 	max := 0
 	var bestOGImage ogImage
-	for _, ogImage := range ogImages {
+	bestOGImage = ogImages[0]
+	for _, ogImage := range ogImages[1:] {
 		score := ogImage.score
-		//println("OG", ogImage.url, score)
-		if score >= max {
+		if score > max {
 			max = score
 			bestOGImage = ogImage
 		}
