@@ -1,7 +1,7 @@
 package goose
 
 import (
-	"github.com/PuerkitoBio/goquery"
+	"github.com/advancedlogic/goquery"
 	"golang.org/x/net/html"
 	"regexp"
 	"strconv"

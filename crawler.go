@@ -8,7 +8,7 @@ import (
 	"strings"
 
 	"code.google.com/p/go-charset/charset"
-	"github.com/PuerkitoBio/goquery"
+	"github.com/advancedlogic/goquery"
 )
 
 type Crawler struct {

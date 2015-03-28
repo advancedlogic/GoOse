@@ -2,7 +2,7 @@ package goose
 
 import (
 	"container/list"
-	"github.com/PuerkitoBio/goquery"
+	"github.com/advancedlogic/goquery"
 	"golang.org/x/net/html"
 	"golang.org/x/net/html/atom"
 	"gopkg.in/fatih/set.v0"
@@ -216,12 +216,12 @@ func (this *contentExtractor) getMetaKeywords(article *Article) string {
 
 //if the article has meta author set in the source, use that
 func (this *contentExtractor) getMetaAuthor(article *Article) string {
-	return this.getMetaContent(article, "author");
+	return this.getMetaContent(article, "author")
 }
 
 //if the article has meta content location set in the source, use that
 func (this *contentExtractor) getMetaContentLocation(article *Article) string {
-	return this.getMetaContent(article, "contentLocation");
+	return this.getMetaContent(article, "contentLocation")
 }
 
 //if the article has meta canonical link set in the url

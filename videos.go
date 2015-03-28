@@ -1,7 +1,7 @@
 package goose
 
 import (
-	"github.com/PuerkitoBio/goquery"
+	"github.com/advancedlogic/goquery"
 	"gopkg.in/fatih/set.v0"
 	"strconv"
 	"strings"
