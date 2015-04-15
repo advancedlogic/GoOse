@@ -61,9 +61,14 @@ func (this Crawler) Crawl() *Article {
 			cs = strings.ToLower(cs)
 
 			if cs != "utf-8" {
-				r, _ := charset.NewReader(cs, strings.NewReader(this.rawHtml))
-				utf8, _ := ioutil.ReadAll(r)
-				this.rawHtml = string(utf8)
+				r, err := charset.NewReader(cs, strings.NewReader(this.rawHtml))
+				if err != nil {
+					// On error, skip the read
+					this.rawHtml = ""
+				} else {
+					utf8, _ := ioutil.ReadAll(r)
+					this.rawHtml = string(utf8)
+				}
 				reader = strings.NewReader(this.rawHtml)
 				document, err = goquery.NewDocumentFromReader(reader)
 			}
