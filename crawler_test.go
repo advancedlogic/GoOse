@@ -115,3 +115,21 @@ func Test_LindorffParse(t *testing.T) {
 		t.Error(err)
 	}
 }
+
+// Facebook photo
+func Test_FacebookParse(t *testing.T) {
+	article := Article{
+		Domain:          "facebook.com",
+		Title:           "Facebook - Facebook's Photos",
+		MetaDescription: "Stay connected with all of your groups with the new Facebook Groups app. Learn more: http://www.facebookgroups.com",
+		CleanedText:     "",
+		MetaKeywords:    "",
+		CanonicalLink:   "https://www.facebook.com/facebook/photos/a.376995711728.190761.20531316728/10153398878696729/",
+		TopImage:        "https://fbcdn-sphotos-g-a.akamaihd.net/hphotos-ak-xpa1/v/t1.0-9/p180x540/10408016_10153398878696729_8237363642999953356_n.png?oh=c6ae71220447f363ec41ea54c38341e1&oe=55B6D827&__gda__=1436749528_5c72e92a5105c1cc6df97163a64e72ce",
+	}
+
+	err := ValidateArticle(article)
+	if err != nil {
+		t.Error(err)
+	}
+}

@@ -58,6 +58,13 @@ func score(tag *goquery.Selection) int {
 			tagScore--
 		}
 	}
+
+	id, exists := tag.Attr("id")
+	if exists {
+		if id == "fbPhotoImage" {
+			tagScore++
+		}
+	}
 	return tagScore
 }
 
