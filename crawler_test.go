@@ -133,3 +133,22 @@ func Test_FacebookParse(t *testing.T) {
 		t.Error(err)
 	}
 }
+
+// Relative image test
+func Test_RelativeImageWithSpecialChars(t *testing.T) {
+	article := Article{
+		Domain:          "emeia.ey-vx.com",
+		Title:           "Nordics - NO - E - IFRS9 - Bergen - Mai 2015",
+		MetaDescription: "",
+		CleanedText:     "",
+		MetaKeywords:    "",
+		CanonicalLink:   "https://emeia.ey-vx.com/707/43100/april-2015/nordics---no---e---ifrs9---bergen---mai-2015.asp?sid=51a92e43-8903-43bd-8cfd-8431639dfb5e",
+		FinalUrl:        "https://emeia.ey-vx.com/707/43100/april-2015/nordics---no---e---ifrs9---bergen---mai-2015.asp?sid=51a92e43-8903-43bd-8cfd-8431639dfb5e",
+		TopImage:        "https://emeia.ey-vx.com/707/43100/_images/bergen%201%283%29.jpg",
+	}
+
+	err := ValidateArticle(article)
+	if err != nil {
+		t.Error(err)
+	}
+}

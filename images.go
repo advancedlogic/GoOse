@@ -134,19 +134,16 @@ func WebPageResolver(article *Article) string {
 		topImage = bestCandidate.url
 	}
 
-	if topImage != "" && !strings.HasPrefix(topImage, "http") {
-		a, err := url.Parse(topImage)
-		if err != nil {
-			return topImage
-		}
-		if a.Scheme == "" {
-			a.Scheme = "http"
-		}
-		if a.Host == "" {
-			a.Host = article.Domain
-		}
-		topImage = a.String()
+	a, err := url.Parse(topImage)
+	if err != nil {
+		return topImage
 	}
+	fUrl, err := url.Parse(article.FinalUrl)
+	if err != nil {
+		return topImage
+	}
+	b := fUrl.ResolveReference(a)
+	topImage = b.String()
 
 	return topImage
 }
