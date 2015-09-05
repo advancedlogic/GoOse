@@ -7,7 +7,7 @@ import (
 	"net/http/cookiejar"
 	"strings"
 
-	"code.google.com/p/go-charset/charset"
+	"github.com/rogpeppe/go-charset/charset"
 	"github.com/advancedlogic/goquery"
 )
 
