@@ -7,26 +7,26 @@ import (
 
 // Article is a collection of properties extracted from the HTML body
 type Article struct {
-	Title           string
-	CleanedText     string
-	MetaDescription string
-	MetaLang        string
-	MetaFavicon     string
-	MetaKeywords    string
-	CanonicalLink   string
-	Domain          string
-	TopNode         *goquery.Selection
-	TopImage        string
-	Tags            *set.Set
-	Movies          *set.Set
-	FinalURL        string
-	LinkHash        string
-	RawHTML         string
-	Doc             *goquery.Document
+	Title           string             `json:"title,omitempty"`
+	CleanedText     string             `json:"content,omitempty"`
+	MetaDescription string             `json:"description,omitempty"`
+	MetaLang        string             `json:"lang,omitempty"`
+	MetaFavicon     string             `json:"favicon,omitempty"`
+	MetaKeywords    string             `json:"keywords,omitempty"`
+	CanonicalLink   string             `json:"canonicalurl,omitempty"`
+	Domain          string             `json:"domain,omitempty"`
+	TopNode         *goquery.Selection `json:"-"`
+	TopImage        string             `json:"image,omitempty"`
+	Tags            *set.Set           `json:"tags,omitempty"`
+	Movies          *set.Set           `json:"movies,omitempty"`
+	FinalURL        string             `json:"url,omitempty"`
+	LinkHash        string             `json:"linkhash,omitempty"`
+	RawHTML         string             `json:"rawhtml,omitempty"`
+	Doc             *goquery.Document  `json:"-"`
 	//raw_doc
-	PublishDate    string
-	AdditionalData map[string]string
-	Delta          int64
+	PublishDate    string            `json:"publishdate,omitempty"`
+	AdditionalData map[string]string `json:"additionaldata,omitempty"`
+	Delta          int64             `json:"delta,omitempty"`
 }
 
 // ToString is a simple method to just show the title
