@@ -14,26 +14,26 @@ type wordStats struct {
 	stopWords *set.Set
 }
 
-func (this *wordStats) getStopWords() *set.Set {
-	return this.stopWords
+func (w *wordStats) getStopWords() *set.Set {
+	return w.stopWords
 }
 
-func (this *wordStats) setStopWords(stopWords *set.Set) {
-	this.stopWords = stopWords
+func (w *wordStats) setStopWords(stopWords *set.Set) {
+	w.stopWords = stopWords
 }
 
-func (this *wordStats) getStopWordCount() int {
-	return this.stopWordCount
+func (w *wordStats) getStopWordCount() int {
+	return w.stopWordCount
 }
 
-func (this *wordStats) setStopWordCount(stopWordCount int) {
-	this.stopWordCount = stopWordCount
+func (w *wordStats) setStopWordCount(stopWordCount int) {
+	w.stopWordCount = stopWordCount
 }
 
-func (this *wordStats) getWordCount() int {
-	return this.wordCount
+func (w *wordStats) getWordCount() int {
+	return w.wordCount
 }
 
-func (this *wordStats) setWordCount(wordCount int) {
-	this.wordCount = wordCount
+func (w *wordStats) setWordCount(wordCount int) {
+	w.wordCount = wordCount
 }

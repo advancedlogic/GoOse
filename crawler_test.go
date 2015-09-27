@@ -7,7 +7,7 @@ import (
 	"testing"
 )
 
-func ReadRawHtml(a Article) string {
+func ReadRawHTML(a Article) string {
 	path := fmt.Sprintf("sites/%s.html", a.Domain)
 	file, err := ioutil.ReadFile(path)
 	if err != nil {
@@ -19,7 +19,7 @@ func ReadRawHtml(a Article) string {
 
 func ValidateArticle(a Article) error {
 	g := New()
-	expected := g.ExtractFromRawHtml(a.FinalUrl, ReadRawHtml(a))
+	expected := g.ExtractFromRawHTML(a.FinalURL, ReadRawHTML(a))
 
 	if expected.Title != a.Title {
 		return fmt.Errorf("article title does not match. Got %q", expected.Title)
@@ -143,7 +143,7 @@ func Test_RelativeImageWithSpecialChars(t *testing.T) {
 		CleanedText:     "",
 		MetaKeywords:    "",
 		CanonicalLink:   "https://emeia.ey-vx.com/707/43100/april-2015/nordics---no---e---ifrs9---bergen---mai-2015.asp?sid=51a92e43-8903-43bd-8cfd-8431639dfb5e",
-		FinalUrl:        "https://emeia.ey-vx.com/707/43100/april-2015/nordics---no---e---ifrs9---bergen---mai-2015.asp?sid=51a92e43-8903-43bd-8cfd-8431639dfb5e",
+		FinalURL:        "https://emeia.ey-vx.com/707/43100/april-2015/nordics---no---e---ifrs9---bergen---mai-2015.asp?sid=51a92e43-8903-43bd-8cfd-8431639dfb5e",
 		TopImage:        "https://emeia.ey-vx.com/707/43100/_images/bergen%201%283%29.jpg",
 	}
 

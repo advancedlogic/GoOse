@@ -5,6 +5,7 @@ import (
 	"gopkg.in/fatih/set.v0"
 )
 
+// Article is a collection of properties extracted from the HTML body
 type Article struct {
 	Title           string
 	CleanedText     string
@@ -18,9 +19,9 @@ type Article struct {
 	TopImage        string
 	Tags            *set.Set
 	Movies          *set.Set
-	FinalUrl        string
+	FinalURL        string
 	LinkHash        string
-	RawHtml         string
+	RawHTML         string
 	Doc             *goquery.Document
 	//raw_doc
 	PublishDate    string
@@ -28,8 +29,8 @@ type Article struct {
 	Delta          int64
 }
 
-//Simple ToString: it shows just the title
-//TODO: add more fields and pretty print
+// ToString is a simple method to just show the title
+// TODO: add more fields and pretty print
 func (article *Article) ToString() string {
 	out := article.Title
 	return out

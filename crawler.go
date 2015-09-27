@@ -7,36 +7,39 @@ import (
 	"net/http/cookiejar"
 	"strings"
 
-	"github.com/rogpeppe/go-charset/charset"
 	"github.com/advancedlogic/goquery"
+	"github.com/rogpeppe/go-charset/charset"
 )
 
+// Crawler can fetch the target HTML page
 type Crawler struct {
 	config  configuration
 	url     string
-	rawHtml string
+	RawHTML string
 	helper  Helper
 }
 
-func NewCrawler(config configuration, url string, rawHtml string) Crawler {
+// NewCrawler returns a crawler object initialised with the URL and the [optional] raw HTML body
+func NewCrawler(config configuration, url string, RawHTML string) Crawler {
 	return Crawler{
 		config:  config,
 		url:     url,
-		rawHtml: rawHtml,
+		RawHTML: RawHTML,
 	}
 }
 
-func (this Crawler) Crawl() *Article {
+// Crawl fetches the HTML body and returns an Article
+func (c Crawler) Crawl() *Article {
 
 	article := new(Article)
-	this.assignParseCandidate()
-	this.assignHtml()
+	c.assignParseCandidate()
+	c.assignHTML()
 
-	if this.rawHtml == "" {
+	if c.RawHTML == "" {
 		return article
 	}
 
-	reader := strings.NewReader(this.rawHtml)
+	reader := strings.NewReader(c.RawHTML)
 	document, err := goquery.NewDocumentFromReader(reader)
 
 	if err != nil {
@@ -61,27 +64,27 @@ func (this Crawler) Crawl() *Article {
 			cs = strings.ToLower(cs)
 
 			if cs != "utf-8" {
-				r, err := charset.NewReader(cs, strings.NewReader(this.rawHtml))
+				r, err := charset.NewReader(cs, strings.NewReader(c.RawHTML))
 				if err != nil {
 					// On error, skip the read
-					this.rawHtml = ""
+					c.RawHTML = ""
 				} else {
 					utf8, _ := ioutil.ReadAll(r)
-					this.rawHtml = string(utf8)
+					c.RawHTML = string(utf8)
 				}
-				reader = strings.NewReader(this.rawHtml)
+				reader = strings.NewReader(c.RawHTML)
 				document, err = goquery.NewDocumentFromReader(reader)
 			}
 		}
 	}
 
 	if err == nil {
-		extractor := NewExtractor(this.config)
+		extractor := NewExtractor(c.config)
 		html, _ := document.Html()
-		start := TimeInNanoseconds()
-		article.RawHtml = html
-		article.FinalUrl = this.helper.url
-		article.LinkHash = this.helper.linkHash
+		startTime := time.Now().UnixNano()
+		article.RawHTML = html
+		article.FinalURL = c.helper.url
+		article.LinkHash = c.helper.linkHash
 		article.Doc = document
 		article.Title = extractor.getTitle(article)
 		article.MetaLang = extractor.getMetaLanguage(article)
@@ -93,7 +96,7 @@ func (this Crawler) Crawl() *Article {
 		article.Domain = extractor.getDomain(article)
 		article.Tags = extractor.getTags(article)
 
-		cleaner := NewCleaner(this.config)
+		cleaner := NewCleaner(c.config)
 		article.Doc = cleaner.clean(article)
 
 		article.TopImage = OpenGraphResolver(article)
@@ -111,9 +114,7 @@ func (this Crawler) Crawl() *Article {
 			article.Movies = videoExtractor.GetVideos(article)
 		}
 
-		stop := TimeInNanoseconds()
-		delta := stop - start
-		article.Delta = delta
+		article.Delta = time.Now().UnixNano() - startTime
 
 	} else {
 		panic(err.Error())
@@ -121,22 +122,22 @@ func (this Crawler) Crawl() *Article {
 	return article
 }
 
-func (this *Crawler) assignParseCandidate() {
-	if this.rawHtml != "" {
-		this.helper = NewRawHelper(this.url, this.rawHtml)
+func (c *Crawler) assignParseCandidate() {
+	if c.RawHTML != "" {
+		c.helper = NewRawHelper(c.url, c.RawHTML)
 	} else {
-		this.helper = NewUrlHelper(this.url)
+		c.helper = NewURLHelper(c.url)
 	}
 }
 
-func (this *Crawler) assignHtml() {
-	if this.rawHtml == "" {
+func (c *Crawler) assignHTML() {
+	if c.RawHTML == "" {
 		cookieJar, _ := cookiejar.New(nil)
 		client := &http.Client{
 			Jar:     cookieJar,
-			Timeout: this.config.timeout,
+			Timeout: c.config.timeout,
 		}
-		req, err := http.NewRequest("GET", this.url, nil)
+		req, err := http.NewRequest("GET", c.url, nil)
 		if err == nil {
 			req.Header.Set("User-Agent", "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_6_7) AppleWebKit/534.30 (KHTML, like Gecko) Chrome/12.0.742.91 Safari/534.30")
 			resp, err := client.Do(req)
@@ -144,7 +145,7 @@ func (this *Crawler) assignHtml() {
 				defer resp.Body.Close()
 				contents, err := ioutil.ReadAll(resp.Body)
 				if err == nil {
-					this.rawHtml = string(contents)
+					c.RawHTML = string(contents)
 				} else {
 					log.Println(err.Error())
 				}

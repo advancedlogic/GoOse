@@ -68,11 +68,12 @@ func score(tag *goquery.Selection) int {
 	return tagScore
 }
 
+// WebPageResolver fetches the main image from the HTML page
 func WebPageResolver(article *Article) string {
 	doc := article.Doc
 	imgs := doc.Find("img")
 	topImage := ""
-	candidates := make([]candidate, 0)
+	var candidates []candidate
 	significantSurface := 320 * 200
 	significantSurfaceCount := 0
 	src := ""
@@ -138,11 +139,11 @@ func WebPageResolver(article *Article) string {
 	if err != nil {
 		return topImage
 	}
-	fUrl, err := url.Parse(article.FinalUrl)
+	finalURL, err := url.Parse(article.FinalURL)
 	if err != nil {
 		return topImage
 	}
-	b := fUrl.ResolveReference(a)
+	b := finalURL.ResolveReference(a)
 	topImage = b.String()
 
 	return topImage
@@ -216,13 +217,14 @@ type ogImage struct {
 	score int
 }
 
+// OpenGraphResolver return OpenGraph properties
 func OpenGraphResolver(article *Article) string {
 	doc := article.Doc
 	meta := doc.Find("meta")
 	links := doc.Find("link")
 	topImage := ""
 	meta = meta.Union(links)
-	ogImages := make([]ogImage, 0)
+	var ogImages []ogImage
 	meta.Each(func(i int, tag *goquery.Selection) {
 		for _, ogTag := range ogTags {
 			attr, exist := tag.Attr(ogTag.attribute)
