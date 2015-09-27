@@ -5,6 +5,8 @@ import (
 	"time"
 )
 
+const defaultUserAgent = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_7_2) AppleWebKit/534.52.7 (KHTML, like Gecko) Version/5.1.2 Safari/534.52.7"
+
 // Configuration is a wrapper for various config options
 type Configuration struct {
 	localStoragePath        string //not used in this version
@@ -38,7 +40,7 @@ func GetDefaultConfiguration(args ...string) Configuration {
 			targetLanguage:          "en",
 			imageMagickConvertPath:  "/usr/bin/convert",  //not used in this version
 			imageMagickIdentifyPath: "/usr/bin/identify", //not used in this version
-			browserUserAgent:        "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_7_2) AppleWebKit/534.52.7 (KHTML, like Gecko) Version/5.1.2 Safari/534.52.7",
+			browserUserAgent:        defaultUserAgent,
 			debug:                   false,
 			extractPublishDate:      false,
 			additionalDataExtractor: false,
@@ -64,7 +66,7 @@ func GetDefaultConfiguration(args ...string) Configuration {
 		targetLanguage:          jsconfiguration.String("targetLanguage", "en"),
 		imageMagickConvertPath:  jsconfiguration.String("imageMagickConvertPath", "/usr/bin/convert"),   //not used in this version
 		imageMagickIdentifyPath: jsconfiguration.String("imageMagickIdentityPath", "/usr/bin/identify"), //not used in this version
-		browserUserAgent:        jsconfiguration.String("browserUserAgent", "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_7_2) AppleWebKit/534.52.7 (KHTML, like Gecko) Version/5.1.2 Safari/534.52.7"),
+		browserUserAgent:        jsconfiguration.String("browserUserAgent", defaultUserAgent),
 		debug:                   jsconfiguration.Bool("debug", false),
 		extractPublishDate:      jsconfiguration.Bool("extractPublishDate", false),      //TODO
 		additionalDataExtractor: jsconfiguration.Bool("additionalDataExtractor", false), //TODO
