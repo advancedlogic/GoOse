@@ -13,7 +13,7 @@ var normalizeNl = regexp.MustCompile(`[\n]+`)
 
 type outputFormatter struct {
 	topNode  *goquery.Selection
-	config   configuration
+	config   Configuration
 	language string
 }
 
@@ -49,7 +49,7 @@ func (formatter *outputFormatter) convertToText() string {
 	selections.Each(func(i int, s *goquery.Selection) {
 		txt := s.Text()
 		if txt != "" {
-			txt = txt //unescape
+			// txt = txt //unescape
 			txtLis := strings.Trim(txt, "\n")
 			txts = append(txts, txtLis)
 		}

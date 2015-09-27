@@ -12,12 +12,12 @@ import (
 
 // Cleaner removes menus, ads, sidebars, etc. and leaves the main content
 type Cleaner struct {
-	config configuration
+	config Configuration
 }
 
 // NewCleaner returns a new instance of a Cleaner
-func NewCleaner(config configuration) Cleaner {
-	return cleaner{
+func NewCleaner(config Configuration) Cleaner {
+	return Cleaner{
 		config: config,
 	}
 }

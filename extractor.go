@@ -30,19 +30,20 @@ var aRelTagSelector = "a[rel=tag]"
 var aHrefTagSelector = [...]string{"/tag/", "/tags/", "/topic/", "?keyword"}
 var langRegEx = "^[A-Za-z]{2}$"
 
-type contentExtractor struct {
-	config configuration
+// ContentExtractor can parse the HTML and fetch various properties
+type ContentExtractor struct {
+	config Configuration
 }
 
 // NewExtractor returns a configured HTML parser
-func NewExtractor(config configuration) contentExtractor {
-	return contentExtractor{
+func NewExtractor(config Configuration) ContentExtractor {
+	return ContentExtractor{
 		config: config,
 	}
 }
 
 //if the article has a title set in the source, use that
-func (extr *contentExtractor) getTitle(article *Article) string {
+func (extr *ContentExtractor) getTitle(article *Article) string {
 	title := ""
 	doc := article.Doc
 
@@ -90,7 +91,7 @@ func (extr *contentExtractor) getTitle(article *Article) string {
 	return strings.TrimSpace(title)
 }
 
-func (extr *contentExtractor) splitTitle(titles []string) string {
+func (extr *ContentExtractor) splitTitle(titles []string) string {
 	largeTextLength := 0
 	largeTextIndex := 0
 	for i, current := range titles {
@@ -105,7 +106,7 @@ func (extr *contentExtractor) splitTitle(titles []string) string {
 }
 
 //if the article has meta language set in the source, use that
-func (extr *contentExtractor) getMetaLanguage(article *Article) string {
+func (extr *ContentExtractor) getMetaLanguage(article *Article) string {
 	language := ""
 	doc := article.Doc
 	shtml := doc.Find("html")
@@ -146,7 +147,7 @@ func (extr *contentExtractor) getMetaLanguage(article *Article) string {
 }
 
 //if the article has favicon set in the source, use that
-func (extr *contentExtractor) getFavicon(article *Article) string {
+func (extr *ContentExtractor) getFavicon(article *Article) string {
 	favicon := ""
 	doc := article.Doc
 	doc.Find("link").EachWithBreak(func(i int, s *goquery.Selection) bool {
@@ -160,7 +161,7 @@ func (extr *contentExtractor) getFavicon(article *Article) string {
 	return favicon
 }
 
-func (extr *contentExtractor) getMetaContentWithSelector(article *Article, selector string) string {
+func (extr *ContentExtractor) getMetaContentWithSelector(article *Article, selector string) string {
 	content := ""
 	doc := article.Doc
 	selection := doc.Find(selector)
@@ -168,7 +169,7 @@ func (extr *contentExtractor) getMetaContentWithSelector(article *Article, selec
 	return strings.TrimSpace(content)
 }
 
-func (extr *contentExtractor) getMetaContent(article *Article, metaName string) string {
+func (extr *ContentExtractor) getMetaContent(article *Article, metaName string) string {
 	content := ""
 	doc := article.Doc
 	doc.Find("meta").EachWithBreak(func(i int, s *goquery.Selection) bool {
@@ -187,7 +188,7 @@ func (extr *contentExtractor) getMetaContent(article *Article, metaName string) 
 	return content
 }
 
-func (extr *contentExtractor) getMetaContents(article *Article, metaNames *set.Set) map[string]string {
+func (extr *ContentExtractor) getMetaContents(article *Article, metaNames *set.Set) map[string]string {
 	contents := make(map[string]string)
 	doc := article.Doc
 	counter := metaNames.Size()
@@ -207,27 +208,27 @@ func (extr *contentExtractor) getMetaContents(article *Article, metaNames *set.S
 }
 
 //if the article has meta description set in the source, use that
-func (extr *contentExtractor) getMetaDescription(article *Article) string {
+func (extr *ContentExtractor) getMetaDescription(article *Article) string {
 	return extr.getMetaContent(article, "description")
 }
 
 //if the article has meta keywords set in the source, use that
-func (extr *contentExtractor) getMetaKeywords(article *Article) string {
+func (extr *ContentExtractor) getMetaKeywords(article *Article) string {
 	return extr.getMetaContent(article, "keywords")
 }
 
 //if the article has meta author set in the source, use that
-func (extr *contentExtractor) getMetaAuthor(article *Article) string {
+func (extr *ContentExtractor) getMetaAuthor(article *Article) string {
 	return extr.getMetaContent(article, "author")
 }
 
 //if the article has meta content location set in the source, use that
-func (extr *contentExtractor) getMetaContentLocation(article *Article) string {
+func (extr *ContentExtractor) getMetaContentLocation(article *Article) string {
 	return extr.getMetaContent(article, "contentLocation")
 }
 
 //if the article has meta canonical link set in the url
-func (extr *contentExtractor) getCanonicalLink(article *Article) string {
+func (extr *ContentExtractor) getCanonicalLink(article *Article) string {
 	doc := article.Doc
 	metas := doc.Find("link[rel=canonical]")
 	if metas.Length() > 0 {
@@ -243,7 +244,7 @@ func (extr *contentExtractor) getCanonicalLink(article *Article) string {
 }
 
 //extract domain and use that
-func (extr *contentExtractor) getDomain(article *Article) string {
+func (extr *ContentExtractor) getDomain(article *Article) string {
 	canonicalLink := article.CanonicalLink
 	u, err := url.Parse(canonicalLink)
 	if err == nil {
@@ -253,7 +254,7 @@ func (extr *contentExtractor) getDomain(article *Article) string {
 }
 
 //if the article has tags set in the source, use that
-func (extr *contentExtractor) getTags(article *Article) *set.Set {
+func (extr *ContentExtractor) getTags(article *Article) *set.Set {
 	tags := set.New()
 	doc := article.Doc
 	selections := doc.Find(aRelTagSelector)
@@ -278,7 +279,7 @@ func (extr *contentExtractor) getTags(article *Article) *set.Set {
 //we're going to start looking for where the clusters of paragraphs are. We'll score a cluster based on the number of stopwords
 //and the number of consecutive paragraphs together, which should form the cluster of text that this node is around
 //also store on how high up the paragraphs are, comments are usually at the bottom and should get a lower score
-func (extr *contentExtractor) calculateBestNode(article *Article) *goquery.Selection {
+func (extr *ContentExtractor) calculateBestNode(article *Article) *goquery.Selection {
 	doc := article.Doc
 	var topNode *goquery.Selection
 	nodesToCheck := extr.nodesToCheck(doc)
@@ -371,11 +372,11 @@ func (extr *contentExtractor) calculateBestNode(article *Article) *goquery.Selec
 }
 
 //returns the gravityScore as an integer from this node
-func (extr *contentExtractor) getScore(node *goquery.Selection) int {
+func (extr *ContentExtractor) getScore(node *goquery.Selection) int {
 	return extr.getNodeGravityScore(node)
 }
 
-func (extr *contentExtractor) getNodeGravityScore(node *goquery.Selection) int {
+func (extr *ContentExtractor) getNodeGravityScore(node *goquery.Selection) int {
 	grvScoreString, exists := node.Attr("gravityScore")
 	if !exists {
 		return 0
@@ -389,7 +390,7 @@ func (extr *contentExtractor) getNodeGravityScore(node *goquery.Selection) int {
 
 //adds a score to the gravityScore Attribute we put on divs
 //we'll get the current score then add the score we're passing in to the current
-func (extr *contentExtractor) updateScore(node *goquery.Selection, addToScore int) {
+func (extr *ContentExtractor) updateScore(node *goquery.Selection, addToScore int) {
 	currentScore := 0
 	var err error
 	scoreString, _ := node.Attr("gravityScore")
@@ -404,7 +405,7 @@ func (extr *contentExtractor) updateScore(node *goquery.Selection, addToScore in
 }
 
 //stores how many decent nodes are under a parent node
-func (extr *contentExtractor) updateNodeCount(node *goquery.Selection, addToCount int) {
+func (extr *ContentExtractor) updateNodeCount(node *goquery.Selection, addToCount int) {
 	currentScore := 0
 	var err error
 	scoreString, _ := node.Attr("gravityNodes")
@@ -421,7 +422,7 @@ func (extr *contentExtractor) updateNodeCount(node *goquery.Selection, addToCoun
 //a lot of times the first paragraph might be the caption under an image so we'll want to make sure if we're going to
 //boost a parent node that it should be connected to other paragraphs, at least for the first n paragraphs
 //so we'll want to make sure that the next sibling is a paragraph and has at least some substatial weight to it
-func (extr *contentExtractor) isBoostable(node *goquery.Selection) bool {
+func (extr *ContentExtractor) isBoostable(node *goquery.Selection) bool {
 	stepsAway := 0
 	next := node.Next()
 	for next != nil && stepsAway < node.Siblings().Length() {
@@ -452,7 +453,7 @@ func (extr *contentExtractor) isBoostable(node *goquery.Selection) bool {
 }
 
 //returns a list of nodes we want to search on like paragraphs and tables
-func (extr *contentExtractor) nodesToCheck(doc *goquery.Document) []*goquery.Selection {
+func (extr *ContentExtractor) nodesToCheck(doc *goquery.Document) []*goquery.Selection {
 	var output []*goquery.Selection
 	tags := []string{"p", "pre", "td"}
 	for _, tag := range tags {
@@ -468,7 +469,7 @@ func (extr *contentExtractor) nodesToCheck(doc *goquery.Document) []*goquery.Sel
 
 //checks the density of links within a node, is there not much text and most of it contains bad links?
 //if so it's no good
-func (extr *contentExtractor) isHighLinkDensity(node *goquery.Selection) bool {
+func (extr *ContentExtractor) isHighLinkDensity(node *goquery.Selection) bool {
 	links := node.Find("a")
 	if links == nil || links.Size() == 0 {
 		return false
@@ -503,7 +504,7 @@ func (extr *contentExtractor) isHighLinkDensity(node *goquery.Selection) bool {
 	return false
 }
 
-func (extr *contentExtractor) isTableAndNoParaExist(selection *goquery.Selection) bool {
+func (extr *ContentExtractor) isTableAndNoParaExist(selection *goquery.Selection) bool {
 	subParagraph := selection.Find("p")
 	subParagraph.Each(func(i int, s *goquery.Selection) {
 		txt := s.Text()
@@ -521,7 +522,7 @@ func (extr *contentExtractor) isTableAndNoParaExist(selection *goquery.Selection
 	return false
 }
 
-func (extr *contentExtractor) isNodescoreThresholdMet(node *goquery.Selection, e *goquery.Selection) bool {
+func (extr *ContentExtractor) isNodescoreThresholdMet(node *goquery.Selection, e *goquery.Selection) bool {
 	topNodeScore := extr.getNodeGravityScore(node)
 	currentNodeScore := extr.getNodeGravityScore(e)
 	threasholdScore := float64(topNodeScore) * 0.08
@@ -535,7 +536,7 @@ func (extr *contentExtractor) isNodescoreThresholdMet(node *goquery.Selection, e
 //the total text score of those paragraphs it would be unfair. So we need to normalize the score based on the average scoring
 //of the paragraphs within the top node. For example if our total score of 10 paragraphs was 1000 but each had an average value of
 //100 then 100 should be our base.
-func (extr *contentExtractor) getSiblingsScore(topNode *goquery.Selection) int {
+func (extr *ContentExtractor) getSiblingsScore(topNode *goquery.Selection) int {
 	base := 100000
 	paragraphNumber := 0
 	paragraphScore := 0
@@ -555,7 +556,7 @@ func (extr *contentExtractor) getSiblingsScore(topNode *goquery.Selection) int {
 	return base
 }
 
-func (extr *contentExtractor) getSiblingsContent(currentSibling *goquery.Selection, baselinescoreSiblingsPara float64) []*goquery.Selection {
+func (extr *ContentExtractor) getSiblingsContent(currentSibling *goquery.Selection, baselinescoreSiblingsPara float64) []*goquery.Selection {
 	var ps []*goquery.Selection
 	if currentSibling.Get(0).DataAtom.String() == "p" && len(currentSibling.Text()) > 0 {
 		ps = append(ps, currentSibling)
@@ -588,7 +589,7 @@ func (extr *contentExtractor) getSiblingsContent(currentSibling *goquery.Selecti
 	return ps
 }
 
-func (extr *contentExtractor) walkSiblings(node *goquery.Selection) []*goquery.Selection {
+func (extr *ContentExtractor) walkSiblings(node *goquery.Selection) []*goquery.Selection {
 	currentSibling := node.Prev()
 	var b []*goquery.Selection
 	for currentSibling.Length() != 0 {
@@ -600,7 +601,7 @@ func (extr *contentExtractor) walkSiblings(node *goquery.Selection) []*goquery.S
 }
 
 //adds any siblings that may have a decent score to this node
-func (extr *contentExtractor) addSiblings(topNode *goquery.Selection) *goquery.Selection {
+func (extr *ContentExtractor) addSiblings(topNode *goquery.Selection) *goquery.Selection {
 	if extr.config.debug {
 		log.Println("Starting to add siblings")
 	}
@@ -621,7 +622,7 @@ func (extr *contentExtractor) addSiblings(topNode *goquery.Selection) *goquery.S
 }
 
 //remove any divs that looks like non-content, clusters of links, or paras with no gusto
-func (extr *contentExtractor) postCleanup(targetNode *goquery.Selection) *goquery.Selection {
+func (extr *ContentExtractor) postCleanup(targetNode *goquery.Selection) *goquery.Selection {
 	if extr.config.debug {
 		log.Println("Starting cleanup Node")
 	}

@@ -2,7 +2,7 @@ package goose
 
 // Goose is the main entry point of the program
 type Goose struct {
-	config configuration
+	config Configuration
 }
 
 // New returns a new instance of the article extractor

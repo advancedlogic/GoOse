@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"net/http/cookiejar"
 	"strings"
+	"time"
 
 	"github.com/advancedlogic/goquery"
 	"github.com/rogpeppe/go-charset/charset"
@@ -13,14 +14,14 @@ import (
 
 // Crawler can fetch the target HTML page
 type Crawler struct {
-	config  configuration
+	config  Configuration
 	url     string
 	RawHTML string
 	helper  Helper
 }
 
 // NewCrawler returns a crawler object initialised with the URL and the [optional] raw HTML body
-func NewCrawler(config configuration, url string, RawHTML string) Crawler {
+func NewCrawler(config Configuration, url string, RawHTML string) Crawler {
 	return Crawler{
 		config:  config,
 		url:     url,

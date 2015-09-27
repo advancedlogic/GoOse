@@ -10,7 +10,7 @@ import (
 // VideoExtractor can extract the main video from an HTML page
 type VideoExtractor struct {
 	article    *Article
-	config     configuration
+	config     Configuration
 	candidates *set.Set
 	movies     *set.Set
 }

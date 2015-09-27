@@ -5,7 +5,6 @@ import (
 	"io/ioutil"
 	"regexp"
 	"strings"
-	"time"
 )
 
 // ReadLinesOfFile returns the lines from a file as a slice of strings

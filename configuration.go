@@ -5,7 +5,8 @@ import (
 	"time"
 )
 
-type configuration struct {
+// Configuration is a wrapper for various config options
+type Configuration struct {
 	localStoragePath        string //not used in this version
 	imagesMinBytes          int    //not used in this version
 	enableImageFetching     bool
@@ -21,15 +22,15 @@ type configuration struct {
 	//path to the stopwords folder
 	stopWordsPath string
 	stopWords     StopWords
-	parser        *parser
+	parser        *Parser
 
 	timeout time.Duration
 }
 
 // GetDefaultConfiguration returns safe default configuration options
-func GetDefaultConfiguration(args ...string) configuration {
+func GetDefaultConfiguration(args ...string) Configuration {
 	if len(args) == 0 {
-		return configuration{
+		return Configuration{
 			localStoragePath:        "",   //not used in this version
 			imagesMinBytes:          4500, //not used in this version
 			enableImageFetching:     true,
@@ -55,7 +56,7 @@ func GetDefaultConfiguration(args ...string) configuration {
 	}
 	stopWordsPath := jsconfiguration.String("stopWordsPath", "resources/stopwords")
 	stopWords := NewStopwords() //TODO with path
-	return configuration{
+	return Configuration{
 		localStoragePath:        jsconfiguration.String("localStoragePath", ""), //not used in this version
 		imagesMinBytes:          jsconfiguration.Int("imageMinBytes", 4500),     //not used in this version
 		enableImageFetching:     jsconfiguration.Bool("enableImageFetching", true),
