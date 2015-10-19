@@ -47,7 +47,6 @@ func (c Crawler) Crawl() *Article {
 		panic(err.Error())
 	}
 
-	attr := ""
 	selection := document.Find("meta").EachWithBreak(func(i int, s *goquery.Selection) bool {
 		attr, exists := s.Attr("http-equiv")
 		if exists && attr == "Content-Type" {
@@ -57,7 +56,7 @@ func (c Crawler) Crawl() *Article {
 	})
 
 	if selection != nil {
-		attr, _ = selection.Attr("content")
+		attr, _ := selection.Attr("content")
 		attr = strings.Replace(attr, " ", "", -1)
 
 		if strings.HasPrefix(attr, "text/html;charset=") {
@@ -65,8 +64,8 @@ func (c Crawler) Crawl() *Article {
 			cs = strings.ToLower(cs)
 
 			if cs != "utf-8" {
-				r, err := charset.NewReader(cs, strings.NewReader(c.RawHTML))
-				if err != nil {
+				r, err1 := charset.NewReader(cs, strings.NewReader(c.RawHTML))
+				if err1 != nil {
 					// On error, skip the read
 					c.RawHTML = ""
 				} else {
@@ -139,20 +138,20 @@ func (c *Crawler) assignHTML() {
 			Timeout: c.config.timeout,
 		}
 		req, err := http.NewRequest("GET", c.url, nil)
+		if err != nil {
+			log.Println(err.Error())
+			return
+		}
+		req.Header.Set("User-Agent", "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_6_7) AppleWebKit/534.30 (KHTML, like Gecko) Chrome/12.0.742.91 Safari/534.30")
+		resp, err := client.Do(req)
+		if err != nil {
+			log.Println(err.Error())
+			return
+		}
+		defer resp.Body.Close()
+		contents, err := ioutil.ReadAll(resp.Body)
 		if err == nil {
-			req.Header.Set("User-Agent", "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_6_7) AppleWebKit/534.30 (KHTML, like Gecko) Chrome/12.0.742.91 Safari/534.30")
-			resp, err := client.Do(req)
-			if err == nil {
-				defer resp.Body.Close()
-				contents, err := ioutil.ReadAll(resp.Body)
-				if err == nil {
-					c.RawHTML = string(contents)
-				} else {
-					log.Println(err.Error())
-				}
-			} else {
-				log.Println(err.Error())
-			}
+			c.RawHTML = string(contents)
 		} else {
 			log.Println(err.Error())
 		}

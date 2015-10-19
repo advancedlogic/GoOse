@@ -116,7 +116,8 @@ func (extr *ContentExtractor) getMetaLanguage(article *Article) string {
 	}
 	if attr == "" {
 		selection := doc.Find("meta").EachWithBreak(func(i int, s *goquery.Selection) bool {
-			attr, exists := s.Attr("http-equiv")
+			exists := false
+			attr, exists = s.Attr("http-equiv")
 			if exists && attr == "content-language" {
 				return false
 			}
