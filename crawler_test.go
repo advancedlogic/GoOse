@@ -152,3 +152,22 @@ func Test_RelativeImageWithSpecialChars(t *testing.T) {
 		t.Error(err)
 	}
 }
+
+// Relative image test
+func Test_MatchExactDescriptionMetaTag(t *testing.T) {
+	article := Article{
+		Domain:          "vnexpress.net",
+		Title:           "Khánh Ly đến viếng mộ Trịnh Công Sơn - VnExpress Giải Trí",
+		MetaDescription: "Chiều 1/5, danh ca mang theo đóa hoa hồng vàng và chai rượu đến thăm người bạn tri kỷ sau lần gặp gỡ cuối cùng vào năm 2000.  - VnExpress Giải Trí",
+		CleanedText:     "",
+		MetaKeywords:    "Khánh Ly đến viếng mộ Trịnh Công Sơn - VnExpress Giải Trí",
+		CanonicalLink:   "http://giaitri.vnexpress.net/tin-tuc/gioi-sao/trong-nuoc/khanh-ly-den-vieng-mo-trinh-cong-son-2985539.html",
+		FinalURL:        "http://giaitri.vnexpress.net/tin-tuc/gioi-sao/trong-nuoc/khanh-ly-den-vieng-mo-trinh-cong-son-2985539.html",
+		TopImage:        "http://l.f11.img.vnecdn.net/2014/05/02/2-5456-1398995030_490x294.jpg",
+	}
+
+	err := ValidateArticle(article)
+	if err != nil {
+		t.Error(err)
+	}
+}
