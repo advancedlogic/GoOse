@@ -5,7 +5,7 @@
 # ------------------------------------------------------------------------------
 
 # List special make targets that are not associated with files
-.PHONY: help all test format fmtcheck vet lint coverage qa deps install uninstall clean nuke build rpm dist
+.PHONY: help all test format fmtcheck vet lint coverage qa deps nuke
 
 # Ensure everyone is using bash. Note that Ubuntu now uses dash which doesn't support PIPESTATUS.
 SHELL=/bin/bash
@@ -15,9 +15,6 @@ PKGNAME=GoOse
 
 # Go lang path
 GOPATH=$(shell readlink -f $(shell pwd)/../../../../)
-
-# Message to diplay for commands that are not package-compatible
-NOPKGCMD="This command is not supported as this is a Go package and not a stand-alone application."
 
 # --- MAKE TARGETS ---
 
@@ -98,32 +95,6 @@ deps:
 	GOPATH=$(GOPATH) go get github.com/golang/lint/golint
 	GOPATH=$(GOPATH) go get github.com/jstemmer/go-junit-report
 
-# Install this application
-install:
-	@echo $(NOPKGCMD)
-
-# Remove all installed files (excluding configuration files)
-uninstall:
-	@echo $(NOPKGCMD)
-
-# Remove any build artifact
-clean:
-	@echo $(NOPKGCMD)
-
 # Deletes any intermediate file
 nuke:
 	rm -rf ./target
-
-# Compile the application
-build:
-	@echo $(NOPKGCMD)
-
-# --- PACKAGING ---
-
-# Build the RPM package for RedHat-like Linux distributions
-rpm:
-	@echo $(NOPKGCMD)
-
-# Execute all tests and build the RPM package
-dist:
-	@echo $(NOPKGCMD)
