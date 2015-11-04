@@ -35,7 +35,12 @@ var removeNodesRegEx = regexp.MustCompile("" +
 	"^side$|" +
 	"^side_|" +
 	"^widget$|" +
+	"^ab[0-9]$|" +
+	"[_-]ads$|" +
+	"^ads[ _-]|" +
 	"ajoutVideo|" +
+	"^ADX_CLIENTSIDE$|" +
+	"^Anchor$|" +
 	"articleheadings|" +
 	"_articles|" +
 	"author|" +
@@ -59,47 +64,73 @@ var removeNodesRegEx = regexp.MustCompile("" +
 	"contentTools2|" +
 	"controls|" +
 	"cookie|" +
+	"^critical-alerts$|" +
 	"^date$|" +
 	"detail_new_|" +
 	"detail_related_|" +
+	"^DYSRC$|" +
 	"figcaption|" +
 	"footnote|" +
 	"foot|" +
 	"header|" +
 	"img_popup_single|" +
+	"^interstitial-ad-modal$|" +
+	"^Inv[0-9]$|" +
 	"js_replies|" +
 	"[Kk]ona[Ff]ilter|" +
+	"^kxhead$|" +
 	"leading|" +
 	"legend|" +
 	"legende|" +
 	"links|" +
+	"^login-modal$|" +
+	"^marginalia|" +
+	"^marketing[_-]|" +
+	"^masthead$|" +
 	"mediaarticlerelated|" +
+	"^media[_-]viewer$|" +
 	"menu|" +
 	"menucontainer|" +
 	"meta$|" +
+	"^mobile-navigation$|" +
 	"moreNews|" +
+	"^Moses$|" +
 	"navbar|" +
+	"^navigation$|" +
+	"^navigation-edge$|" +
+	"^navigation-modal$|" +
 	"newsUnder|" +
+	"pagetools|" +
+	"^page[_-]header$|" +
+	"^page[_-]footer$|" +
+	"[_-]paid[_-]|" +
 	"panelss2|" +
 	"panesCity|" +
-	"pagetools|" +
 	"popup|" +
-	"post-attributes|" +
-	"post-title|" +
+	"post[_-]attributes|" +
+	"post[_-]title|" +
+	"^prop[0-9]$|" +
+	"^registration-modal$|" +
 	"relacionado|" +
 	"retweet|" +
+	"^ribbon$|" +
+	"^ribbon-page-navigation|" +
 	"rightBlock|" +
 	"rss|" +
 	"runaroundLeft|" +
+	"^search[_-]overlay$|" +
 	"shoutbox|" +
-	"site_box|" +
-	"site_nav|" +
+	"^site[_-]index$|" +
+	"site[_-]box|" +
+	"site[_-]nav|" +
 	"socialNetworking|" +
 	"social_|" +
 	"socialnetworking|" +
 	"socialtools|" +
 	"source|" +
+	"^suggestions$|" +
 	"sponsor|" +
+	"^story-footer|" +
 	"sub_nav|" +
 	"subscribe|" +
 	"tabsCity|" +
@@ -109,8 +140,13 @@ var removeNodesRegEx = regexp.MustCompile("" +
 	"the_answers|" +
 	"timestamp|" +
 	"tools|" +
+	"^Top[0-9]?$|" +
+	"^TopAd[0-9]?$|" +
+	"^username-modal$|" +
+	"^user-settings-modal$|" +
 	"vcard|" +
 	"welcome_form|" +
+	"^whats[_-]next$|" +
 	"wp-caption-text")
 
 var captionsRegEx = regexp.MustCompile("^caption$")
