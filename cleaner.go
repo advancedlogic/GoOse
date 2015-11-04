@@ -40,7 +40,7 @@ var removeNodesRegEx = regexp.MustCompile("" +
 	"_articles|" +
 	"author|" +
 	"author-dropdown|" +
-	"banner|" +
+	"^banner$|" +
 	"^bar$|" +
 	"blog-pager|" +
 	"breadcrumbs|" +
@@ -105,7 +105,7 @@ var removeNodesRegEx = regexp.MustCompile("" +
 	"tabsCity|" +
 	"tag_|" +
 	"tags|" +
-	"teaser|" + 
+	"teaser|" +
 	"the_answers|" +
 	"timestamp|" +
 	"tools|" +
