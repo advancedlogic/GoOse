@@ -37,11 +37,16 @@ var removeNodesRegEx = regexp.MustCompile("" +
 	"^widget$|" +
 	"ajoutVideo|" +
 	"articleheadings|" +
+	"_articles|" +
+	"author|" +
 	"author-dropdown|" +
+	"banner|" +
+	"^bar$|" +
 	"blog-pager|" +
 	"breadcrumbs|" +
 	"byline|" +
 	"cabecalho|" +
+	"carousel|" +
 	"cnnStryHghLght|" +
 	"cnn_html_slideshow|" +
 	"cnn_strycaptiontxt|" +
@@ -53,6 +58,7 @@ var removeNodesRegEx = regexp.MustCompile("" +
 	"contact|" +
 	"contentTools2|" +
 	"controls|" +
+	"cookie|" +
 	"^date$|" +
 	"detail_new_|" +
 	"detail_related_|" +
@@ -64,36 +70,49 @@ var removeNodesRegEx = regexp.MustCompile("" +
 	"js_replies|" +
 	"[Kk]ona[Ff]ilter|" +
 	"leading|" +
+	"legend|" +
 	"legende|" +
 	"links|" +
 	"mediaarticlerelated|" +
+	"menu|" +
 	"menucontainer|" +
 	"meta$|" +
+	"moreNews|" +
 	"navbar|" +
+	"newsUnder|" +
+	"panelss2|" +
+	"panesCity|" +
 	"pagetools|" +
 	"popup|" +
 	"post-attributes|" +
 	"post-title|" +
 	"relacionado|" +
 	"retweet|" +
+	"rightBlock|" +
+	"rss|" +
 	"runaroundLeft|" +
 	"shoutbox|" +
+	"site_box|" +
 	"site_nav|" +
 	"socialNetworking|" +
 	"social_|" +
 	"socialnetworking|" +
 	"socialtools|" +
+	"source|" +
 	"sponsor|" +
 	"sub_nav|" +
 	"subscribe|" +
+	"tabsCity|" +
 	"tag_|" +
 	"tags|" +
+	"teaser|" + 
 	"the_answers|" +
 	"timestamp|" +
 	"tools|" +
 	"vcard|" +
 	"welcome_form|" +
 	"wp-caption-text")
+
 var captionsRegEx = regexp.MustCompile("^caption$")
 var googleRegEx = regexp.MustCompile(" google ")
 var moreRegEx = regexp.MustCompile("^[^entry-]more.*$")
