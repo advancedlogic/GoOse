@@ -301,16 +301,16 @@ func (c *Cleaner) cleanDivs(doc *goquery.Document) *goquery.Document {
 
 func (c *Cleaner) dropCaps(doc *goquery.Document) *goquery.Document {
 	items := doc.Find("span")
-	count := 0 //remove
+	count := 0 // remove
 	items.Each(func(i int, s *goquery.Selection) {
 		attribute, exists := s.Attr("class")
 		if exists && (strings.Contains(attribute, "dropcap") || strings.Contains(attribute, "drop_cap")) {
-			count++
 			c.config.parser.dropTag(s)
+			count++
 		}
 	})
-	if c.config.debug {
-		log.Printf("Cleaning %d dropcap tags\n", count)
+	if c.config.debug && count > 0 {
+		log.Printf("Cleaned %d dropcap tags\n", count)
 	}
 	return doc
 }
@@ -319,11 +319,13 @@ func (c *Cleaner) removeScriptsStyle(doc *goquery.Document) *goquery.Document {
 	if c.config.debug {
 		log.Println("Starting to remove script tags")
 	}
+	count := 0 // remove
 	scripts := doc.Find("script,noscript,style")
 	scripts.Each(func(i int, s *goquery.Selection) {
 		c.config.parser.removeNode(s)
+		count++
 	})
-	if c.config.debug {
+	if c.config.debug && count > 0 {
 		log.Printf("Removed %d script and style tags\n", scripts.Size())
 	}
 
@@ -342,7 +344,7 @@ func (c *Cleaner) cleanBadTags(doc *goquery.Document, pattern *regexp.Regexp, ro
 	children.Each(func(i int, s *goquery.Selection) {
 		for _, selector := range selectors {
 			naughtyList := s.Find("*[" + selector + "]")
-			cont := 0
+			count := 0
 			naughtyList.Each(func(j int, node *goquery.Selection) {
 				attribute, _ := node.Attr(selector)
 				if c.matchNodeRegEx(attribute, pattern) {
@@ -350,11 +352,11 @@ func (c *Cleaner) cleanBadTags(doc *goquery.Document, pattern *regexp.Regexp, ro
 						log.Printf("Cleaning: Removing node with %s: %s\n", selector, c.config.parser.name(selector, node))
 					}
 					c.config.parser.removeNode(node)
-					cont++
+					count++
 				}
 			})
-			if c.config.debug && cont > 0 {
-				log.Printf("%d naughty %s elements found", cont, selector)
+			if c.config.debug && count > 0 {
+				log.Printf("%d naughty %s elements found", count, selector)
 			}
 		}
 	})
