@@ -328,8 +328,6 @@ func (c *Cleaner) removeScriptsStyle(doc *goquery.Document) *goquery.Document {
 	if c.config.debug && count > 0 {
 		log.Printf("Removed %d script and style tags\n", scripts.Size())
 	}
-
-	//remove comments :) How????
 	return doc
 }
 

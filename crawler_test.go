@@ -17,7 +17,7 @@ func ReadRawHTML(a Article) string {
 	return string(file)
 }
 
-func ValidateArticle(expected Article) error {
+func ValidateArticle(expected Article, removed []string) error {
 	g := New()
 	result := g.ExtractFromRawHTML(expected.FinalURL, ReadRawHTML(expected))
 
@@ -33,6 +33,13 @@ func ValidateArticle(expected Article) error {
 
 	if !strings.Contains(result.CleanedText, expected.CleanedText) {
 		return fmt.Errorf("article cleanedText does not contains %q", expected.CleanedText)
+	}
+
+	// check if the specified strings where properly removed
+	for i := 0; i < len(removed); i++ {
+		if strings.Contains(result.CleanedText, removed[i]) {
+			return fmt.Errorf("article cleanedText does contains %q", removed)
+		}
 	}
 
 	if result.MetaKeywords != expected.MetaKeywords {
@@ -54,13 +61,14 @@ func Test_ExampleParse(t *testing.T) {
 		Domain:          "example.com",
 		Title:           "Example HTML Page TITLE",
 		MetaDescription: "Example page for testing",
-		CleanedText:     "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.\n\nexample link content\n\nSed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo. Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit aut fugit, sed quia consequuntur magni dolores eos qui ratione voluptatem sequi nesciunt. Neque porro quisquam est, qui dolorem ipsum quia dolor sit amet, consectetur, adipisci velit, sed quia non numquam eius modi tempora incidunt ut labore et dolore magnam aliquam quaerat voluptatem. Ut enim ad minima veniam, quis nostrum exercitationem ullam corporis suscipit laboriosam, nisi ut aliquid ex ea commodi consequatur? Quis autem vel eum iure reprehenderit qui in ea voluptate velit esse quam nihil molestiae consequatur, vel illum qui dolorem eum fugiat quo voluptas nulla pariatur?",
+		CleanedText:     "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.\n\nexample link content\n\nDuis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.\n\nSed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo.",
 		MetaKeywords:    "example,testing",
 		CanonicalLink:   "http://www.example.com/index.html",
 		TopImage:        "",
 	}
 
-	err := ValidateArticle(article)
+	removed := [...]string{"~HTML Comment~", "~div_id_hidden~", "~div_class_hidden~", "~div_name_hidden~", "~style_display_none~", "~style_visibility_hidden~"}
+	err := ValidateArticle(article, removed[:])
 	if err != nil {
 		t.Error(err)
 	}
@@ -77,7 +85,8 @@ func Test_GloboEsporteParse(t *testing.T) {
 		TopImage:        "http://s.glbimg.com/es/ge/f/original/2014/12/26/10863872_894379987249341_2406060334390226774_o.jpg",
 	}
 
-	err := ValidateArticle(article)
+	removed := [...]string{"~~~REMOVED~~~"}
+	err := ValidateArticle(article, removed[:])
 	if err != nil {
 		t.Error(err)
 	}
@@ -94,7 +103,8 @@ func Test_EditionCnnParse(t *testing.T) {
 		TopImage:        "http://i2.cdn.turner.com/cnn/dam/assets/120706022111-ted-cnn-ideas-massimo-banzi-00003302-story-top.jpg",
 	}
 
-	err := ValidateArticle(article)
+	removed := [...]string{"~~~REMOVED~~~"}
+	err := ValidateArticle(article, removed[:])
 	if err != nil {
 		t.Error(err)
 	}
@@ -111,7 +121,8 @@ func Test_BbcParse(t *testing.T) {
 		TopImage:        "http://news.bbcimg.co.uk/media/images/81120000/jpg/_81120901_81120501.jpg",
 	}
 
-	err := ValidateArticle(article)
+	removed := [...]string{"~~~REMOVED~~~"}
+	err := ValidateArticle(article, removed[:])
 	if err != nil {
 		t.Error(err)
 	}
@@ -129,7 +140,8 @@ func Test_LindorffParse(t *testing.T) {
 		TopImage:        "http://profit.lindorff.fi/wp-content/uploads/2015/02/Iso_Lindorff24_2_600x2501.jpg",
 	}
 
-	err := ValidateArticle(article)
+	removed := [...]string{"~~~REMOVED~~~"}
+	err := ValidateArticle(article, removed[:])
 	if err != nil {
 		t.Error(err)
 	}
@@ -147,7 +159,8 @@ func Test_FacebookParse(t *testing.T) {
 		TopImage:        "https://fbcdn-sphotos-g-a.akamaihd.net/hphotos-ak-xpa1/v/t1.0-9/p180x540/10408016_10153398878696729_8237363642999953356_n.png?oh=c6ae71220447f363ec41ea54c38341e1&oe=55B6D827&__gda__=1436749528_5c72e92a5105c1cc6df97163a64e72ce",
 	}
 
-	err := ValidateArticle(article)
+	removed := [...]string{"~~~REMOVED~~~"}
+	err := ValidateArticle(article, removed[:])
 	if err != nil {
 		t.Error(err)
 	}
@@ -166,7 +179,8 @@ func Test_RelativeImageWithSpecialChars(t *testing.T) {
 		TopImage:        "https://emeia.ey-vx.com/707/43100/_images/bergen%201%283%29.jpg",
 	}
 
-	err := ValidateArticle(article)
+	removed := [...]string{"~~~REMOVED~~~"}
+	err := ValidateArticle(article, removed[:])
 	if err != nil {
 		t.Error(err)
 	}
@@ -185,7 +199,8 @@ func Test_MatchExactDescriptionMetaTag(t *testing.T) {
 		TopImage:        "http://l.f11.img.vnecdn.net/2014/05/02/2-5456-1398995030_490x294.jpg",
 	}
 
-	err := ValidateArticle(article)
+	removed := [...]string{"~~~REMOVED~~~"}
+	err := ValidateArticle(article, removed[:])
 	if err != nil {
 		t.Error(err)
 	}
