@@ -38,8 +38,9 @@ var removeNodesRegEx = regexp.MustCompile("" +
 	"^ab[0-9]$|" +
 	"[_-]ads$|" +
 	"^ad[s]?[ _-]|" +
-	"ajoutVideo|" +
 	"^ADX_CLIENTSIDE$|" +
+	"ajoutVideo|" +
+	"^alerts|" +
 	"^Anchor$|" +
 	"articleheadings|" +
 	"_articles|" +
@@ -66,17 +67,22 @@ var removeNodesRegEx = regexp.MustCompile("" +
 	"contentTools2|" +
 	"controls|" +
 	"cookie|" +
+	"^css-prefetch|" +
 	"^critical-alerts$|" +
 	"^date$|" +
 	"detail_new_|" +
 	"detail_related_|" +
 	"^DYSRC$|" +
+	"^early-body|" +
 	"error|" +
 	"^fb-root$|" +
+	"^feed[_-]|" +
 	"figcaption|" +
 	"footnote|" +
 	"foot|" +
 	"footer|" +
+	"^gstl_|" +
+	"^guide$|" +
 	"header|" +
 	"hidden|" +
 	"img_popup_single|" +
@@ -96,7 +102,7 @@ var removeNodesRegEx = regexp.MustCompile("" +
 	"^[lr][_-]footer|" +
 	"^marginalia|" +
 	"^marketing[_-]|" +
-	"^masthead$|" +
+	"^masthead|" +
 	"mediaarticlerelated|" +
 	"^media[_-]viewer$|" +
 	"menu|" +
@@ -111,6 +117,7 @@ var removeNodesRegEx = regexp.MustCompile("" +
 	"^navigation-edge$|" +
 	"^navigation-modal$|" +
 	"newsUnder|" +
+	"^oauth|" +
 	"^overlay[_-]wrapper" +
 	"pagetools|" +
 	"^page[_-]header$|" +
@@ -118,9 +125,11 @@ var removeNodesRegEx = regexp.MustCompile("" +
 	"[_-]paid[_-]|" +
 	"panelss2|" +
 	"panesCity|" +
+	"player|" +
 	"popup|" +
 	"post[_-]attributes|" +
 	"post[_-]title|" +
+	"preview|" +
 	"^prop[0-9]$|" +
 	"^pulse-loaders|" +
 	"^registration-modal$|" +
@@ -133,6 +142,7 @@ var removeNodesRegEx = regexp.MustCompile("" +
 	"runaroundLeft|" +
 	"^search[_-]overlay$|" +
 	"shoutbox|" +
+	"sidebar|" +
 	"^site[_-]index$|" +
 	"site[_-]box|" +
 	"site[_-]nav|" +
@@ -160,9 +170,12 @@ var removeNodesRegEx = regexp.MustCompile("" +
 	"^Top[0-9]?$|" +
 	"^TopAd[0-9]?$|" +
 	"tracking|" +
+	"-uix-button|" +
 	"^username-modal$|" +
 	"^user-|" +
 	"vcard|" +
+	"^watch-action-panels$|" +
+	"^watch-discussion$|" +
 	"welcome_form|" +
 	"^whats[_-]next$|" +
 	"wp-caption-text")
