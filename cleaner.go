@@ -55,6 +55,7 @@ var removeNodesRegEx = regexp.MustCompile("" +
 	"breadcrumbs|" +
 	"byline|" +
 	"cabecalho|" +
+	"^caption$|" +
 	"carousel|" +
 	"^click|" +
 	"cnnStryHghLght|" +
@@ -77,7 +78,10 @@ var removeNodesRegEx = regexp.MustCompile("" +
 	"detail_related_|" +
 	"^DYSRC$|" +
 	"^early-body|" +
+	"^[^entry-]more.*$|" +
 	"error|" +
+	"[^-]facebook|" +
+	"facebook-broadcasting|" +
 	"^fb-root$|" +
 	"^feed[_-]|" +
 	"figcaption|" +
@@ -85,6 +89,7 @@ var removeNodesRegEx = regexp.MustCompile("" +
 	"foot|" +
 	"footer|" +
 	"^ga-track$|" +
+	" google |" +
 	"^gstl_|" +
 	"^guide$|" +
 	"header|" +
@@ -181,6 +186,7 @@ var removeNodesRegEx = regexp.MustCompile("" +
 	"^Top[0-9]?$|" +
 	"^TopAd[0-9]?$|" +
 	"tracking|" +
+	"[^-]twitter|" +
 	"-uix-button|" +
 	"^username-modal$|" +
 	"^user-|" +
@@ -192,13 +198,6 @@ var removeNodesRegEx = regexp.MustCompile("" +
 	"^whats[_-]next$|" +
 	"wp-caption-text")
 
-var captionsRegEx = regexp.MustCompile("^caption$")
-var googleRegEx = regexp.MustCompile(" google ")
-var moreRegEx = regexp.MustCompile("^[^entry-]more.*$")
-var facebookRegEx = regexp.MustCompile("[^-]facebook")
-var facebookBroadcastingRegEx = regexp.MustCompile("facebook-broadcasting")
-var twitterRegEx = regexp.MustCompile("[^-]twitter")
-
 func (c *Cleaner) clean(article *Article) *goquery.Document {
 	if c.config.debug {
 		log.Println("Starting cleaning phase with Cleaner")
@@ -208,15 +207,9 @@ func (c *Cleaner) clean(article *Article) *goquery.Document {
 	docToClean = c.cleanEMTags(docToClean)
 	docToClean = c.dropCaps(docToClean)
 	docToClean = c.removeScriptsStyle(docToClean)
-	docToClean = c.cleanBadTags(docToClean)
+	docToClean = c.cleanBadTags(docToClean, removeNodesRegEx, "html")
 	docToClean = c.cleanFooter(docToClean)
 	docToClean = c.cleanAside(docToClean)
-	docToClean = c.removeNodesRegEx(docToClean, captionsRegEx)
-	docToClean = c.removeNodesRegEx(docToClean, googleRegEx)
-	docToClean = c.removeNodesRegEx(docToClean, moreRegEx)
-	docToClean = c.removeNodesRegEx(docToClean, facebookRegEx)
-	docToClean = c.removeNodesRegEx(docToClean, facebookBroadcastingRegEx)
-	docToClean = c.removeNodesRegEx(docToClean, twitterRegEx)
 	docToClean = c.cleanParaSpans(docToClean)
 
 	docToClean = c.convertDivsToParagraphs(docToClean, "div")
@@ -342,49 +335,29 @@ func (c *Cleaner) matchNodeRegEx(attribute string, pattern *regexp.Regexp) bool 
 	return pattern.MatchString(attribute)
 }
 
-func (c *Cleaner) removeNodesRegEx(doc *goquery.Document, pattern *regexp.Regexp) *goquery.Document {
-	selectors := [3]string{"id", "class", "name"}
-	for _, selector := range selectors {
-		naughtyList := doc.Find("*[" + selector + "]")
-		cont := 0
-		naughtyList.Each(func(i int, s *goquery.Selection) {
-			attribute, _ := s.Attr(selector)
-			if c.matchNodeRegEx(attribute, pattern) {
-				cont++
-				c.config.parser.removeNode(s)
-			}
-		})
-
-		if c.config.debug {
-			log.Printf("regExRemoveNodes %d %s elements found against pattern %s\n", cont, selector, pattern.String())
-		}
-	}
-	return doc
-}
-
-func (c *Cleaner) cleanBadTags(doc *goquery.Document) *goquery.Document {
-	body := doc.Find("body")
+func (c *Cleaner) cleanBadTags(doc *goquery.Document, pattern *regexp.Regexp, root string) *goquery.Document {
+	body := doc.Find(root)
 	children := body.Children()
-	selectors := []string{"id", "class", "name"}
-	for _, selector := range selectors {
-		children.Each(func(i int, s *goquery.Selection) {
+	selectors := [3]string{"id", "class", "name"}
+	children.Each(func(i int, s *goquery.Selection) {
+		for _, selector := range selectors {
 			naughtyList := s.Find("*[" + selector + "]")
 			cont := 0
-			naughtyList.Each(func(j int, e *goquery.Selection) {
-				attribute, _ := e.Attr(selector)
-				if c.matchNodeRegEx(attribute, removeNodesRegEx) {
+			naughtyList.Each(func(j int, node *goquery.Selection) {
+				attribute, _ := node.Attr(selector)
+				if c.matchNodeRegEx(attribute, pattern) {
 					if c.config.debug {
-						log.Printf("Cleaning: Removing node with %s: %s\n", selector, c.config.parser.name(selector, e))
+						log.Printf("Cleaning: Removing node with %s: %s\n", selector, c.config.parser.name(selector, node))
 					}
-					c.config.parser.removeNode(e)
+					c.config.parser.removeNode(node)
 					cont++
 				}
 			})
 			if c.config.debug && cont > 0 {
 				log.Printf("%d naughty %s elements found", cont, selector)
 			}
-		})
-	}
+		}
+	})
 	return doc
 }
 
