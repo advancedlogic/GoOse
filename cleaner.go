@@ -38,6 +38,7 @@ var removeNodesRegEx = regexp.MustCompile("" +
 	"^ab[0-9]$|" +
 	"[_-]ads$|" +
 	"^ad[s]?[ _-]|" +
+	"[_-]ad[s]?[_-]|" +
 	"^ADX_CLIENTSIDE$|" +
 	"ajoutVideo|" +
 	"^alerts|" +
@@ -45,6 +46,7 @@ var removeNodesRegEx = regexp.MustCompile("" +
 	"articleheadings|" +
 	"_articles|" +
 	"^article[_-]footer|" +
+	"^article-gallery-embedded$|" +
 	"author|" +
 	"author-dropdown|" +
 	"^banner|" +
@@ -63,11 +65,12 @@ var removeNodesRegEx = regexp.MustCompile("" +
 	"combx|" +
 	"comment|" +
 	"communitypromo|" +
+	"^comscore$|" +
 	"contact|" +
 	"contentTools2|" +
 	"controls|" +
 	"cookie|" +
-	"^css-prefetch|" +
+	"^css-|" +
 	"^critical-alerts$|" +
 	"^date$|" +
 	"detail_new_|" +
@@ -81,11 +84,13 @@ var removeNodesRegEx = regexp.MustCompile("" +
 	"footnote|" +
 	"foot|" +
 	"footer|" +
+	"^ga-track$|" +
 	"^gstl_|" +
 	"^guide$|" +
 	"header|" +
 	"hidden|" +
 	"img_popup_single|" +
+	"inread|" +
 	"^interstitial-ad-modal$|" +
 	"^Inv[0-9]$|" +
 	"js_replies|" +
@@ -108,6 +113,7 @@ var removeNodesRegEx = regexp.MustCompile("" +
 	"menu|" +
 	"menucontainer|" +
 	"meta$|" +
+	"^moat$|" +
 	"^mobile-navigation$|" +
 	"moreNews|" +
 	"^Moses$|" +
@@ -130,6 +136,7 @@ var removeNodesRegEx = regexp.MustCompile("" +
 	"post[_-]attributes|" +
 	"post[_-]title|" +
 	"preview|" +
+	"[_-]print[_-]|" +
 	"^prop[0-9]$|" +
 	"^pulse-loaders|" +
 	"^registration-modal$|" +
@@ -140,9 +147,10 @@ var removeNodesRegEx = regexp.MustCompile("" +
 	"rightBlock|" +
 	"rss|" +
 	"runaroundLeft|" +
-	"^search[_-]overlay$|" +
+	"search[_-]|" +
 	"shoutbox|" +
 	"sidebar|" +
+	"^simplereach$|" +
 	"^site[_-]index$|" +
 	"site[_-]box|" +
 	"site[_-]nav|" +
@@ -151,7 +159,10 @@ var removeNodesRegEx = regexp.MustCompile("" +
 	"socialnetworking|" +
 	"socialtools|" +
 	"source|" +
+	"[_-]spinner$|" +
+	"^spr-|" +
 	"^suggestions$|" +
+	"^speed-bump-wrapper$|" +
 	"sponsor|" +
 	"^story-footer|" +
 	"^stream-header|" +
@@ -173,6 +184,7 @@ var removeNodesRegEx = regexp.MustCompile("" +
 	"-uix-button|" +
 	"^username-modal$|" +
 	"^user-|" +
+	"^vestpocket$|" +
 	"vcard|" +
 	"^watch-action-panels$|" +
 	"^watch-discussion$|" +
