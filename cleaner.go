@@ -37,21 +37,23 @@ var removeNodesRegEx = regexp.MustCompile("" +
 	"^widget$|" +
 	"^ab[0-9]$|" +
 	"[_-]ads$|" +
-	"^ads[ _-]|" +
+	"^ad[s]?[ _-]|" +
 	"ajoutVideo|" +
 	"^ADX_CLIENTSIDE$|" +
 	"^Anchor$|" +
 	"articleheadings|" +
 	"_articles|" +
+	"^article[_-]footer|" +
 	"author|" +
 	"author-dropdown|" +
-	"^banner$|" +
+	"^banner|" +
 	"^bar$|" +
 	"blog-pager|" +
 	"breadcrumbs|" +
 	"byline|" +
 	"cabecalho|" +
 	"carousel|" +
+	"^click|" +
 	"cnnStryHghLght|" +
 	"cnn_html_slideshow|" +
 	"cnn_strycaptiontxt|" +
@@ -69,10 +71,14 @@ var removeNodesRegEx = regexp.MustCompile("" +
 	"detail_new_|" +
 	"detail_related_|" +
 	"^DYSRC$|" +
+	"error|" +
+	"^fb-root$|" +
 	"figcaption|" +
 	"footnote|" +
 	"foot|" +
+	"footer|" +
 	"header|" +
+	"hidden|" +
 	"img_popup_single|" +
 	"^interstitial-ad-modal$|" +
 	"^Inv[0-9]$|" +
@@ -80,10 +86,14 @@ var removeNodesRegEx = regexp.MustCompile("" +
 	"[Kk]ona[Ff]ilter|" +
 	"^kxhead$|" +
 	"leading|" +
+	"^lede[_-]container$|" +
 	"legend|" +
 	"legende|" +
+	"^lightningjs-|" +
 	"links|" +
 	"^login-modal$|" +
+	"^lui-mini-profile-body$|" +
+	"^[lr][_-]footer|" +
 	"^marginalia|" +
 	"^marketing[_-]|" +
 	"^masthead$|" +
@@ -95,11 +105,13 @@ var removeNodesRegEx = regexp.MustCompile("" +
 	"^mobile-navigation$|" +
 	"moreNews|" +
 	"^Moses$|" +
+	"^nav[_-]|" +
 	"navbar|" +
 	"^navigation$|" +
 	"^navigation-edge$|" +
 	"^navigation-modal$|" +
 	"newsUnder|" +
+	"^overlay[_-]wrapper" +
 	"pagetools|" +
 	"^page[_-]header$|" +
 	"^page[_-]footer$|" +
@@ -110,6 +122,7 @@ var removeNodesRegEx = regexp.MustCompile("" +
 	"post[_-]attributes|" +
 	"post[_-]title|" +
 	"^prop[0-9]$|" +
+	"^pulse-loaders|" +
 	"^registration-modal$|" +
 	"relacionado|" +
 	"retweet|" +
@@ -131,8 +144,11 @@ var removeNodesRegEx = regexp.MustCompile("" +
 	"^suggestions$|" +
 	"sponsor|" +
 	"^story-footer|" +
+	"^stream-header|" +
+	"^stream-sidebar|" +
 	"sub_nav|" +
 	"subscribe|" +
+	"subscription|" +
 	"tabsCity|" +
 	"tag_|" +
 	"tags|" +
@@ -140,10 +156,12 @@ var removeNodesRegEx = regexp.MustCompile("" +
 	"the_answers|" +
 	"timestamp|" +
 	"tools|" +
+	"tooltip|" +
 	"^Top[0-9]?$|" +
 	"^TopAd[0-9]?$|" +
+	"tracking|" +
 	"^username-modal$|" +
-	"^user-settings-modal$|" +
+	"^user-|" +
 	"vcard|" +
 	"welcome_form|" +
 	"^whats[_-]next$|" +
@@ -331,7 +349,6 @@ func (c *Cleaner) cleanBadTags(doc *goquery.Document) *goquery.Document {
 				attribute, _ := e.Attr(selector)
 				if c.matchNodeRegEx(attribute, removeNodesRegEx) {
 					if c.config.debug {
-
 						log.Printf("Cleaning: Removing node with %s: %s\n", selector, c.config.parser.name(selector, e))
 					}
 					c.config.parser.removeNode(e)
