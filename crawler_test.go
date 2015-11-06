@@ -21,7 +21,7 @@ func ValidateArticle(expected Article, removed []string) error {
 	g := New()
 	result := g.ExtractFromRawHTML(expected.FinalURL, ReadRawHTML(expected))
 
-	// fmt.Println("%v\n", result.CleanedText) // DEBUG
+	//fmt.Println("%v\n", result.CleanedText) // DEBUG
 
 	if result.Title != expected.Title {
 		return fmt.Errorf("article title does not match. Got %q", result.Title)
@@ -67,7 +67,14 @@ func Test_ExampleParse(t *testing.T) {
 		TopImage:        "",
 	}
 
-	removed := [...]string{"~HTML Comment~", "~div_id_hidden~", "~div_class_hidden~", "~div_name_hidden~", "~style_display_none~", "~style_visibility_hidden~"}
+	removed := [...]string{
+		"~HTMLComment~",
+		"~div_id_hidden~",
+		"~div_class_hidden~",
+		"~div_name_hidden~",
+		"~style_display_none~",
+		"~style_visibility_hidden~",
+		"~~~REMOVED~~~"}
 	err := ValidateArticle(article, removed[:])
 	if err != nil {
 		t.Error(err)

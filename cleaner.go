@@ -129,7 +129,7 @@ var removeNodesRegEx = regexp.MustCompile("" +
 	"^navigation-modal$|" +
 	"newsUnder|" +
 	"^oauth|" +
-	"^overlay[_-]wrapper" +
+	"^overlay[_-]wrapper|" +
 	"pagetools|" +
 	"^page[_-]header$|" +
 	"^page[_-]footer$|" +
