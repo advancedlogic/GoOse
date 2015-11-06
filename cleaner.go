@@ -331,10 +331,6 @@ func (c *Cleaner) removeScriptsStyle(doc *goquery.Document) *goquery.Document {
 	return doc
 }
 
-func (c *Cleaner) matchNodeRegEx(attribute string, pattern *regexp.Regexp) bool {
-	return pattern.MatchString(attribute)
-}
-
 func (c *Cleaner) cleanBadTags(doc *goquery.Document, pattern *regexp.Regexp, root string) *goquery.Document {
 	body := doc.Find(root)
 	children := body.Children()
@@ -345,7 +341,7 @@ func (c *Cleaner) cleanBadTags(doc *goquery.Document, pattern *regexp.Regexp, ro
 			count := 0
 			naughtyList.Each(func(j int, node *goquery.Selection) {
 				attribute, _ := node.Attr(selector)
-				if c.matchNodeRegEx(attribute, pattern) {
+				if pattern.MatchString(attribute) {
 					if c.config.debug {
 						log.Printf("Cleaning: Removing node with %s: %s\n", selector, c.config.parser.name(selector, node))
 					}
