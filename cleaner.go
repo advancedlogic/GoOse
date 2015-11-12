@@ -65,6 +65,7 @@ var removeNodesRegEx = regexp.MustCompile("" +
 	"cnn_stryspcvbx|" +
 	"combx|" +
 	"comment|" +
+	"commercial|" +
 	"communitypromo|" +
 	"^comscore$|" +
 	"contact|" +
@@ -76,7 +77,7 @@ var removeNodesRegEx = regexp.MustCompile("" +
 	"^critical-alerts$|" +
 	"^date$|" +
 	"detail_new_|" +
-	"detail_related_|" +
+	"related|" +
 	"^DYSRC$|" +
 	"^early-body|" +
 	"^[^entry-]more.*$|" +
@@ -140,6 +141,7 @@ var removeNodesRegEx = regexp.MustCompile("" +
 	"[_-]print[_-]|" +
 	"^prop[0-9]$|" +
 	"^pulse-loaders|" +
+	"^rail$|" +
 	"^registration-modal$|" +
 	"relacionado|" +
 	"remote|" +
@@ -155,6 +157,7 @@ var removeNodesRegEx = regexp.MustCompile("" +
 	"^site[_-]index$|" +
 	"site[_-]box|" +
 	"site[_-]nav|" +
+	"skyscraper|" +
 	"socialNetworking|" +
 	"social_|" +
 	"socialnetworking|" +
@@ -204,8 +207,7 @@ func (c *Cleaner) clean(article *Article) *goquery.Document {
 	docToClean = c.removeScriptsStyle(docToClean)
 	docToClean = c.cleanBadTags(docToClean, removeNodesRegEx, &[]string{"id", "class", "name"})
 	docToClean = c.cleanBadTags(docToClean, regexp.MustCompile("visibility:[ ]*hidden|display:[ ]*none"), &[]string{"style"})
-	docToClean = c.cleanFooter(docToClean)
-	docToClean = c.cleanAside(docToClean)
+	docToClean = c.removeTags(docToClean, &[]string{"nav", "footer", "aside", "cite"})
 	docToClean = c.cleanParaSpans(docToClean)
 
 	docToClean = c.convertDivsToParagraphs(docToClean, "div")
@@ -241,27 +243,13 @@ func (c *Cleaner) cleanEMTags(doc *goquery.Document) *goquery.Document {
 	return doc
 }
 
-func (c *Cleaner) cleanFooter(doc *goquery.Document) *goquery.Document {
-	footer := doc.Find("footer")
-	footer.Each(func(i int, s *goquery.Selection) {
-		c.config.parser.removeNode(s)
-	})
-	return doc
-}
-
-func (c *Cleaner) cleanAside(doc *goquery.Document) *goquery.Document {
-	aside := doc.Find("aside")
-	aside.Each(func(i int, s *goquery.Selection) {
-		c.config.parser.removeNode(s)
-	})
-	return doc
-}
-
-func (c *Cleaner) cleanCites(doc *goquery.Document) *goquery.Document {
-	cites := doc.Find("cite")
-	cites.Each(func(i int, s *goquery.Selection) {
-		c.config.parser.removeNode(s)
-	})
+func (c *Cleaner) removeTags(doc *goquery.Document, tags *[]string) *goquery.Document {
+	for _, tag := range *tags {
+		node := doc.Find(tag)
+		node.Each(func(i int, s *goquery.Selection) {
+			c.config.parser.removeNode(s)
+		})
+	}
 	return doc
 }
 
