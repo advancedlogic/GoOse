@@ -207,7 +207,8 @@ func (c *Cleaner) clean(article *Article) *goquery.Document {
 	docToClean = c.cleanEMTags(docToClean)
 	docToClean = c.dropCaps(docToClean)
 	docToClean = c.removeScriptsStyle(docToClean)
-	docToClean = c.cleanBadTags(docToClean, removeNodesRegEx, "html")
+	docToClean = c.cleanBadTags(docToClean, removeNodesRegEx, &[]string{"id", "class", "name"})
+	docToClean = c.cleanBadTags(docToClean, regexp.MustCompile("visibility:[ ]*hidden|display:[ ]*none"), &[]string{"style"})
 	docToClean = c.cleanFooter(docToClean)
 	docToClean = c.cleanAside(docToClean)
 	docToClean = c.cleanParaSpans(docToClean)
@@ -331,12 +332,11 @@ func (c *Cleaner) removeScriptsStyle(doc *goquery.Document) *goquery.Document {
 	return doc
 }
 
-func (c *Cleaner) cleanBadTags(doc *goquery.Document, pattern *regexp.Regexp, root string) *goquery.Document {
-	body := doc.Find(root)
+func (c *Cleaner) cleanBadTags(doc *goquery.Document, pattern *regexp.Regexp, selectors *[]string) *goquery.Document {
+	body := doc.Find("html")
 	children := body.Children()
-	selectors := [3]string{"id", "class", "name"}
 	children.Each(func(i int, s *goquery.Selection) {
-		for _, selector := range selectors {
+		for _, selector := range *selectors {
 			naughtyList := s.Find("*[" + selector + "]")
 			count := 0
 			naughtyList.Each(func(j int, node *goquery.Selection) {
