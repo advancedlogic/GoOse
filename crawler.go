@@ -108,7 +108,7 @@ func (c Crawler) Crawl() *Article {
 			article.TopNode = extractor.postCleanup(article.TopNode)
 
 			outputFormatter := new(outputFormatter)
-			article.CleanedText = outputFormatter.getFormattedText(article)
+			article.CleanedText, article.Links = outputFormatter.getFormattedText(article)
 
 			videoExtractor := NewVideoExtractor()
 			article.Movies = videoExtractor.GetVideos(article)

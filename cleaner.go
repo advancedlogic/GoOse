@@ -142,6 +142,7 @@ var removeNodesRegEx = regexp.MustCompile("" +
 	"^prop[0-9]$|" +
 	"^pulse-loaders|" +
 	"^rail$|" +
+	"recommend|" +
 	"^registration-modal$|" +
 	"relacionado|" +
 	"remote|" +
@@ -151,6 +152,7 @@ var removeNodesRegEx = regexp.MustCompile("" +
 	"rss|" +
 	"runaroundLeft|" +
 	"search[_-]|" +
+	"share[_-]|" +
 	"shoutbox|" +
 	"sidebar|" +
 	"^simplereach$|" +
@@ -183,6 +185,7 @@ var removeNodesRegEx = regexp.MustCompile("" +
 	"tooltip|" +
 	"^Top[0-9]?$|" +
 	"^TopAd[0-9]?$|" +
+	"[_-]track[_-]|" +
 	"tracking|" +
 	"[^-]twitter|" +
 	"-uix-button|" +

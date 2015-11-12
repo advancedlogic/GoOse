@@ -3,6 +3,7 @@ package goose
 import (
 	"fmt"
 	"io/ioutil"
+	"reflect"
 	"strings"
 	"testing"
 )
@@ -22,6 +23,7 @@ func ValidateArticle(expected Article, removed *[]string) error {
 	result := g.ExtractFromRawHTML(expected.FinalURL, ReadRawHTML(expected))
 
 	//fmt.Println("%v\n", result.CleanedText) // DEBUG
+	//fmt.Println("%v\n", result.Links) // DEBUG
 
 	if result.Title != expected.Title {
 		return fmt.Errorf("article title does not match. Got %q", result.Title)
@@ -53,6 +55,10 @@ func ValidateArticle(expected Article, removed *[]string) error {
 		return fmt.Errorf("article topImage does not match. Got %q", result.TopImage)
 	}
 
+	if expected.Links != nil && !reflect.DeepEqual(result.Links, expected.Links) {
+		return fmt.Errorf("article Links do not match")
+	}
+
 	return nil
 }
 
@@ -65,6 +71,10 @@ func Test_ExampleParse(t *testing.T) {
 		MetaKeywords:    "example,testing",
 		CanonicalLink:   "http://www.example.com/index.html",
 		TopImage:        "/example_top_image.png",
+	}
+	article.Links = []string{
+		"http://www.example.com/page1.html",
+		"http://www.example.com/page2.html",
 	}
 
 	removed := []string{

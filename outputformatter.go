@@ -30,17 +30,18 @@ func (formatter *outputFormatter) getTopNode() *goquery.Selection {
 	return formatter.topNode
 }
 
-func (formatter *outputFormatter) getFormattedText(article *Article) string {
+func (formatter *outputFormatter) getFormattedText(article *Article) (output string, links []string) {
 	formatter.topNode = article.TopNode
 	formatter.language = formatter.getLanguage(article)
 	if formatter.language == "" {
 		formatter.language = formatter.config.targetLanguage
 	}
 	formatter.removeNegativescoresNodes()
-	formatter.linksToText()
+	links = formatter.linksToText()
 	formatter.replaceTagsWithText()
 	formatter.removeParagraphsWithFewWords()
-	return formatter.getOutputText()
+	output = formatter.getOutputText()
+	return
 }
 
 func (formatter *outputFormatter) convertToText() string {
@@ -57,7 +58,8 @@ func (formatter *outputFormatter) convertToText() string {
 	return strings.Join(txts, "\n\n")
 }
 
-func (formatter *outputFormatter) linksToText() {
+func (formatter *outputFormatter) linksToText() []string {
+	urlList := []string{}
 	links := formatter.topNode.Find("a")
 	links.Each(func(i int, a *goquery.Selection) {
 		imgs := a.Find("img")
@@ -65,8 +67,15 @@ func (formatter *outputFormatter) linksToText() {
 			node := a.Get(0)
 			node.Data = a.Text()
 			node.Type = html.TextNode
+			// save a list of URLs
+			url, _ := a.Attr("href")
+			isValidUrl, _ := regexp.MatchString("^http[s]?://", url)
+			if isValidUrl {
+				urlList = append(urlList, url)
+			}
 		}
 	})
+	return urlList
 }
 
 func (formatter *outputFormatter) getOutputText() string {

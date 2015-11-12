@@ -23,10 +23,10 @@ type Article struct {
 	LinkHash        string             `json:"linkhash,omitempty"`
 	RawHTML         string             `json:"rawhtml,omitempty"`
 	Doc             *goquery.Document  `json:"-"`
-	//raw_doc
-	PublishDate    string            `json:"publishdate,omitempty"`
-	AdditionalData map[string]string `json:"additionaldata,omitempty"`
-	Delta          int64             `json:"delta,omitempty"`
+	Links           []string           `json:"links,omitempty"`
+	PublishDate     string             `json:"publishdate,omitempty"`
+	AdditionalData  map[string]string  `json:"additionaldata,omitempty"`
+	Delta           int64              `json:"delta,omitempty"`
 }
 
 // ToString is a simple method to just show the title
