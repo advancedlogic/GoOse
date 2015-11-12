@@ -45,13 +45,13 @@ var removeNodesRegEx = regexp.MustCompile("" +
 	"^Anchor$|" +
 	"articleheadings|" +
 	"_articles|" +
-	"^article[_-]footer|" +
 	"^article-gallery-embedded$|" +
 	"author|" +
 	"author-dropdown|" +
 	"^banner|" +
 	"^bar$|" +
 	"blog-pager|" +
+	"button|" +
 	"breadcrumbs|" +
 	"byline|" +
 	"cabecalho|" +
@@ -71,6 +71,7 @@ var removeNodesRegEx = regexp.MustCompile("" +
 	"contentTools2|" +
 	"controls|" +
 	"cookie|" +
+	"CoversMainContent|" +
 	"^css-|" +
 	"^critical-alerts$|" +
 	"^date$|" +
@@ -91,6 +92,7 @@ var removeNodesRegEx = regexp.MustCompile("" +
 	"^ga-track$|" +
 	" google |" +
 	"^gstl_|" +
+	"^GS-UH$|" +
 	"^guide$|" +
 	"header|" +
 	"hidden|" +
@@ -109,7 +111,6 @@ var removeNodesRegEx = regexp.MustCompile("" +
 	"links|" +
 	"^login-modal$|" +
 	"^lui-mini-profile-body$|" +
-	"^[lr][_-]footer|" +
 	"^marginalia|" +
 	"^marketing[_-]|" +
 	"^masthead|" +
@@ -119,20 +120,15 @@ var removeNodesRegEx = regexp.MustCompile("" +
 	"menucontainer|" +
 	"meta$|" +
 	"^moat$|" +
-	"^mobile-navigation$|" +
 	"moreNews|" +
 	"^Moses$|" +
 	"^nav[_-]|" +
 	"navbar|" +
-	"^navigation$|" +
-	"^navigation-edge$|" +
-	"^navigation-modal$|" +
+	"[Nn]avigation|" +
 	"newsUnder|" +
 	"^oauth|" +
 	"^overlay[_-]wrapper|" +
 	"pagetools|" +
-	"^page[_-]header$|" +
-	"^page[_-]footer$|" +
 	"[_-]paid[_-]|" +
 	"panelss2|" +
 	"panesCity|" +
@@ -146,9 +142,9 @@ var removeNodesRegEx = regexp.MustCompile("" +
 	"^pulse-loaders|" +
 	"^registration-modal$|" +
 	"relacionado|" +
+	"remote|" +
 	"retweet|" +
 	"^ribbon$|" +
-	"^ribbon-page-navigation|" +
 	"rightBlock|" +
 	"rss|" +
 	"runaroundLeft|" +
@@ -168,9 +164,8 @@ var removeNodesRegEx = regexp.MustCompile("" +
 	"^spr-|" +
 	"^suggestions$|" +
 	"^speed-bump-wrapper$|" +
+	"^Splash$|" +
 	"sponsor|" +
-	"^story-footer|" +
-	"^stream-header|" +
 	"^stream-sidebar|" +
 	"sub_nav|" +
 	"subscribe|" +
