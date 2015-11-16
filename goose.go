@@ -1,22 +1,25 @@
 package goose
 
+// Goose is the main entry point of the program
 type Goose struct {
-	config configuration
+	config Configuration
 }
 
+// New returns a new instance of the article extractor
 func New(args ...string) Goose {
-
 	return Goose{
-		config: GetDefualtConfiguration(args...),
+		config: GetDefaultConfiguration(args...),
 	}
 }
 
-func (this Goose) ExtractFromUrl(url string) *Article {
-	cc := NewCrawler(this.config, url, "")
+// ExtractFromURL follows the URL, fetches the HTML page and returns an article object
+func (g Goose) ExtractFromURL(url string) *Article {
+	cc := NewCrawler(g.config, url, "")
 	return cc.Crawl()
 }
 
-func (this Goose) ExtractFromRawHtml(url string, rawHtml string) *Article {
-	cc := NewCrawler(this.config, url, rawHtml)
+// ExtractFromRawHTML returns an article object from the raw HTML content
+func (g Goose) ExtractFromRawHTML(url string, RawHTML string) *Article {
+	cc := NewCrawler(g.config, url, RawHTML)
 	return cc.Crawl()
 }

@@ -6,23 +6,26 @@ import (
 	"github.com/bjarneh/latinx"
 	"io"
 	"strings"
+	"time"
 	"unicode/utf8"
 )
 
+// Helper is a utility struct to clean up URLs and charsets
 type Helper struct {
 	urlString string
 	url       string
 	linkHash  string
 }
 
-func NewRawHelper(url string, rawHtml string) Helper {
-	if !utf8.ValidString(rawHtml) {
+// NewRawHelper converts the text to UTF8
+func NewRawHelper(url string, RawHTML string) Helper {
+	if !utf8.ValidString(RawHTML) {
 		converter := latinx.Get(latinx.ISO_8859_1)
-		rawHtmlBytes, err := converter.Decode([]byte(rawHtml))
+		RawHTMLBytes, err := converter.Decode([]byte(RawHTML))
 		if err != nil {
 			fmt.Println(err.Error())
 		}
-		rawHtml = string(rawHtmlBytes)
+		RawHTML = string(RawHTMLBytes)
 	}
 
 	h := md5.New()
@@ -31,25 +34,26 @@ func NewRawHelper(url string, rawHtml string) Helper {
 	helper := Helper{
 		urlString: url,
 		url:       url,
-		linkHash:  fmt.Sprintf("%s.%d", string(bytes), TimeInNanoseconds()),
+		linkHash:  fmt.Sprintf("%s.%d", string(bytes), time.Now().UnixNano()),
 	}
 	return helper
 }
 
-func NewUrlHelper(url string) Helper {
-	finalUrl := ""
+// NewURLHelper wraps the URL
+func NewURLHelper(url string) Helper {
+	FinalURL := ""
 	if strings.Contains(url, "#!") {
-		finalUrl = strings.Replace(url, "#!", "?_escaped_fragment_=", -1)
+		FinalURL = strings.Replace(url, "#!", "?_escaped_fragment_=", -1)
 	} else {
-		finalUrl = url
+		FinalURL = url
 	}
 	h := md5.New()
-	io.WriteString(h, finalUrl)
+	io.WriteString(h, FinalURL)
 	bytes := h.Sum(nil)
 	helper := Helper{
-		urlString: finalUrl,
-		url:       finalUrl,
-		linkHash:  fmt.Sprintf("%s.%d", string(bytes), TimeInNanoseconds()),
+		urlString: FinalURL,
+		url:       FinalURL,
+		linkHash:  fmt.Sprintf("%s.%d", string(bytes), time.Now().UnixNano()),
 	}
 	return helper
 }

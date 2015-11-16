@@ -13,43 +13,44 @@ var normalizeNl = regexp.MustCompile(`[\n]+`)
 
 type outputFormatter struct {
 	topNode  *goquery.Selection
-	config   configuration
+	config   Configuration
 	language string
 }
 
-func (this *outputFormatter) getLanguage(article *Article) string {
-	if this.config.useMetaLanguage {
+func (formatter *outputFormatter) getLanguage(article *Article) string {
+	if formatter.config.useMetaLanguage {
 		if article.MetaLang != "" {
 			return article.MetaLang
 		}
 	}
-	return this.config.targetLanguage
+	return formatter.config.targetLanguage
 }
 
-func (this *outputFormatter) getTopNode() *goquery.Selection {
-	return this.topNode
+func (formatter *outputFormatter) getTopNode() *goquery.Selection {
+	return formatter.topNode
 }
 
-func (this *outputFormatter) getFormattedText(article *Article) string {
-	this.topNode = article.TopNode
-	this.language = this.getLanguage(article)
-	if this.language == "" {
-		this.language = this.config.targetLanguage
+func (formatter *outputFormatter) getFormattedText(article *Article) (output string, links []string) {
+	formatter.topNode = article.TopNode
+	formatter.language = formatter.getLanguage(article)
+	if formatter.language == "" {
+		formatter.language = formatter.config.targetLanguage
 	}
-	this.removeNegativescoresNodes()
-	this.linksToText()
-	this.replaceTagsWithText()
-	this.removeParagraphsWithFewWords()
-	return this.getOutputText()
+	formatter.removeNegativescoresNodes()
+	links = formatter.linksToText()
+	formatter.replaceTagsWithText()
+	formatter.removeParagraphsWithFewWords()
+	output = formatter.getOutputText()
+	return
 }
 
-func (this *outputFormatter) convertToText() string {
-	txts := make([]string, 0)
-	selections := this.topNode
+func (formatter *outputFormatter) convertToText() string {
+	var txts []string
+	selections := formatter.topNode
 	selections.Each(func(i int, s *goquery.Selection) {
 		txt := s.Text()
 		if txt != "" {
-			txt = txt //unescape
+			// txt = txt //unescape
 			txtLis := strings.Trim(txt, "\n")
 			txts = append(txts, txtLis)
 		}
@@ -57,21 +58,29 @@ func (this *outputFormatter) convertToText() string {
 	return strings.Join(txts, "\n\n")
 }
 
-func (this *outputFormatter) linksToText() {
-	links := this.topNode.Find("a")
+func (formatter *outputFormatter) linksToText() []string {
+	urlList := []string{}
+	links := formatter.topNode.Find("a")
 	links.Each(func(i int, a *goquery.Selection) {
 		imgs := a.Find("img")
 		if imgs.Length() == 0 {
 			node := a.Get(0)
 			node.Data = a.Text()
 			node.Type = html.TextNode
+			// save a list of URLs
+			url, _ := a.Attr("href")
+			isValidUrl, _ := regexp.MatchString("^http[s]?://", url)
+			if isValidUrl {
+				urlList = append(urlList, url)
+			}
 		}
 	})
+	return urlList
 }
 
-func (this *outputFormatter) getOutputText() string {
+func (formatter *outputFormatter) getOutputText() string {
 
-	out := this.topNode.Text()
+	out := formatter.topNode.Text()
 	out = normalizeWhitespaceRegexp.ReplaceAllString(out, " ")
 
 	strArr := strings.Split(out, "\n")
@@ -93,8 +102,8 @@ func (this *outputFormatter) getOutputText() string {
 	return out
 }
 
-func (this *outputFormatter) removeNegativescoresNodes() {
-	gravityItems := this.topNode.Find("*[gravityScore]")
+func (formatter *outputFormatter) removeNegativescoresNodes() {
+	gravityItems := formatter.topNode.Find("*[gravityScore]")
 	gravityItems.Each(func(i int, s *goquery.Selection) {
 		score := 0
 		sscore, exists := s.Attr("gravityScore")
@@ -109,8 +118,8 @@ func (this *outputFormatter) removeNegativescoresNodes() {
 	})
 }
 
-func (this *outputFormatter) replaceTagsWithText() {
-	strongs := this.topNode.Find("strong")
+func (formatter *outputFormatter) replaceTagsWithText() {
+	strongs := formatter.topNode.Find("strong")
 	strongs.Each(func(i int, strong *goquery.Selection) {
 		text := strong.Text()
 		node := strong.Get(0)
@@ -118,7 +127,7 @@ func (this *outputFormatter) replaceTagsWithText() {
 		node.Data = text
 	})
 
-	bolds := this.topNode.Find("b")
+	bolds := formatter.topNode.Find("b")
 	bolds.Each(func(i int, bold *goquery.Selection) {
 		text := bold.Text()
 		node := bold.Get(0)
@@ -126,7 +135,7 @@ func (this *outputFormatter) replaceTagsWithText() {
 		node.Data = text
 	})
 
-	italics := this.topNode.Find("i")
+	italics := formatter.topNode.Find("i")
 	italics.Each(func(i int, italic *goquery.Selection) {
 		text := italic.Text()
 		node := italic.Get(0)
@@ -135,14 +144,14 @@ func (this *outputFormatter) replaceTagsWithText() {
 	})
 }
 
-func (this *outputFormatter) removeParagraphsWithFewWords() {
-	language := this.language
+func (formatter *outputFormatter) removeParagraphsWithFewWords() {
+	language := formatter.language
 	if language == "" {
 		language = "en"
 	}
-	allNodes := this.topNode.Children()
+	allNodes := formatter.topNode.Children()
 	allNodes.Each(func(i int, s *goquery.Selection) {
-		sw := this.config.stopWords.stopWordsCount(language, s.Text())
+		sw := formatter.config.stopWords.stopWordsCount(language, s.Text())
 		if sw.wordCount < 5 && s.Find("object").Length() == 0 && s.Find("em").Length() == 0 {
 			node := s.Get(0)
 			node.Parent.RemoveChild(node)

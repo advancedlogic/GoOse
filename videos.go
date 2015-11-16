@@ -7,9 +7,10 @@ import (
 	"strings"
 )
 
+// VideoExtractor can extract the main video from an HTML page
 type VideoExtractor struct {
 	article    *Article
-	config     configuration
+	config     Configuration
 	candidates *set.Set
 	movies     *set.Set
 }
@@ -23,6 +24,7 @@ type video struct {
 	src       string
 }
 
+// NewVideoExtractor returns a new instance of a HTML video extractor
 func NewVideoExtractor() VideoExtractor {
 	return VideoExtractor{
 		candidates: set.New(),
@@ -127,6 +129,7 @@ func (ve *VideoExtractor) getObjectTag(node *goquery.Selection) video {
 	return video
 }
 
+// GetVideos returns the video tags embedded in the article
 func (ve *VideoExtractor) GetVideos(article *Article) *set.Set {
 	doc := article.Doc
 	var nodes *goquery.Selection

@@ -1,0 +1,1660 @@
+<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en" xmlns:fb="http://www.facebook.com/2008/fbml" >
+<head>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta http-equiv="content-type" content="text/html;charset=utf-8" /><script type="text/javascript">(window.NREUM||(NREUM={})).loader_config={xpid:"UQ8EUVRACgUEUlVRBg=="};window.NREUM||(NREUM={}),__nr_require=function(t,e,n){function r(n){if(!e[n]){var o=e[n]={exports:{}};t[n][0].call(o.exports,function(e){var o=t[n][1][e];return r(o?o:e)},o,o.exports)}return e[n].exports}if("function"==typeof __nr_require)return __nr_require;for(var o=0;o<n.length;o++)r(n[o]);return r}({QJf3ax:[function(t,e){function n(t){function e(e,n,a){t&&t(e,n,a),a||(a={});for(var c=s(e),f=c.length,u=i(a,o,r),d=0;f>d;d++)c[d].apply(u,n);return u}function a(t,e){f[t]=s(t).concat(e)}function s(t){return f[t]||[]}function c(){return n(e)}var f={};return{on:a,emit:e,create:c,listeners:s,_events:f}}function r(){return{}}var o="nr@context",i=t("gos");e.exports=n()},{gos:"7eSDFh"}],ee:[function(t,e){e.exports=t("QJf3ax")},{}],3:[function(t){function e(t){try{i.console&&console.log(t)}catch(e){}}var n,r=t("ee"),o=t(1),i={};try{n=localStorage.getItem("__nr_flags").split(","),console&&"function"==typeof console.log&&(i.console=!0,-1!==n.indexOf("dev")&&(i.dev=!0),-1!==n.indexOf("nr_dev")&&(i.nrDev=!0))}catch(a){}i.nrDev&&r.on("internal-error",function(t){e(t.stack)}),i.dev&&r.on("fn-err",function(t,n,r){e(r.stack)}),i.dev&&(e("NR AGENT IN DEVELOPMENT MODE"),e("flags: "+o(i,function(t){return t}).join(", ")))},{1:23,ee:"QJf3ax"}],4:[function(t){function e(t,e,n,i,s){try{c?c-=1:r("err",[s||new UncaughtException(t,e,n)])}catch(f){try{r("ierr",[f,(new Date).getTime(),!0])}catch(u){}}return"function"==typeof a?a.apply(this,o(arguments)):!1}function UncaughtException(t,e,n){this.message=t||"Uncaught error with no additional information",this.sourceURL=e,this.line=n}function n(t){r("err",[t,(new Date).getTime()])}var r=t("handle"),o=t(6),i=t("ee"),a=window.onerror,s=!1,c=0;t("loader").features.err=!0,t(5),window.onerror=e;try{throw new Error}catch(f){"stack"in f&&(t(1),t(2),"addEventListener"in window&&t(3),window.XMLHttpRequest&&XMLHttpRequest.prototype&&XMLHttpRequest.prototype.addEventListener&&window.XMLHttpRequest&&XMLHttpRequest.prototype&&XMLHttpRequest.prototype.addEventListener&&!/CriOS/.test(navigator.userAgent)&&t(4),s=!0)}i.on("fn-start",function(){s&&(c+=1)}),i.on("fn-err",function(t,e,r){s&&(this.thrown=!0,n(r))}),i.on("fn-end",function(){s&&!this.thrown&&c>0&&(c-=1)}),i.on("internal-error",function(t){r("ierr",[t,(new Date).getTime(),!0])})},{1:10,2:9,3:7,4:11,5:3,6:24,ee:"QJf3ax",handle:"D5DuLP",loader:"G9z0Bl"}],5:[function(t){t("loader").features.ins=!0},{loader:"G9z0Bl"}],6:[function(t){function e(){}if(window.performance&&window.performance.timing&&window.performance.getEntriesByType){var n=t("ee"),r=t("handle"),o=t(1),i=t(2);t("loader").features.stn=!0,t(3),n.on("fn-start",function(t){var e=t[0];e instanceof Event&&(this.bstStart=Date.now())}),n.on("fn-end",function(t,e){var n=t[0];n instanceof Event&&r("bst",[n,e,this.bstStart,Date.now()])}),o.on("fn-start",function(t,e,n){this.bstStart=Date.now(),this.bstType=n}),o.on("fn-end",function(t,e){r("bstTimer",[e,this.bstStart,Date.now(),this.bstType])}),i.on("fn-start",function(){this.bstStart=Date.now()}),i.on("fn-end",function(t,e){r("bstTimer",[e,this.bstStart,Date.now(),"requestAnimationFrame"])}),n.on("pushState-start",function(){this.time=Date.now(),this.startPath=location.pathname+location.hash}),n.on("pushState-end",function(){r("bstHist",[location.pathname+location.hash,this.startPath,this.time])}),"addEventListener"in window.performance&&(window.performance.addEventListener("webkitresourcetimingbufferfull",function(){r("bstResource",[window.performance.getEntriesByType("resource")]),window.performance.webkitClearResourceTimings()},!1),window.performance.addEventListener("resourcetimingbufferfull",function(){r("bstResource",[window.performance.getEntriesByType("resource")]),window.performance.clearResourceTimings()},!1)),document.addEventListener("scroll",e,!1),document.addEventListener("keypress",e,!1),document.addEventListener("click",e,!1)}},{1:10,2:9,3:8,ee:"QJf3ax",handle:"D5DuLP",loader:"G9z0Bl"}],7:[function(t,e){function n(t){i.inPlace(t,["addEventListener","removeEventListener"],"-",r)}function r(t){return t[1]}var o=(t(1),t("ee").create()),i=t(2)(o),a=t("gos");if(e.exports=o,n(window),"getPrototypeOf"in Object){for(var s=document;s&&!s.hasOwnProperty("addEventListener");)s=Object.getPrototypeOf(s);s&&n(s);for(var c=XMLHttpRequest.prototype;c&&!c.hasOwnProperty("addEventListener");)c=Object.getPrototypeOf(c);c&&n(c)}else XMLHttpRequest.prototype.hasOwnProperty("addEventListener")&&n(XMLHttpRequest.prototype);o.on("addEventListener-start",function(t){if(t[1]){var e=t[1];"function"==typeof e?this.wrapped=t[1]=a(e,"nr@wrapped",function(){return i(e,"fn-",null,e.name||"anonymous")}):"function"==typeof e.handleEvent&&i.inPlace(e,["handleEvent"],"fn-")}}),o.on("removeEventListener-start",function(t){var e=this.wrapped;e&&(t[1]=e)})},{1:24,2:25,ee:"QJf3ax",gos:"7eSDFh"}],8:[function(t,e){var n=(t(2),t("ee").create()),r=t(1)(n);e.exports=n,r.inPlace(window.history,["pushState"],"-")},{1:25,2:24,ee:"QJf3ax"}],9:[function(t,e){var n=(t(2),t("ee").create()),r=t(1)(n);e.exports=n,r.inPlace(window,["requestAnimationFrame","mozRequestAnimationFrame","webkitRequestAnimationFrame","msRequestAnimationFrame"],"raf-"),n.on("raf-start",function(t){t[0]=r(t[0],"fn-")})},{1:25,2:24,ee:"QJf3ax"}],10:[function(t,e){function n(t,e,n){t[0]=o(t[0],"fn-",null,n)}var r=(t(2),t("ee").create()),o=t(1)(r);e.exports=r,o.inPlace(window,["setTimeout","setInterval","setImmediate"],"setTimer-"),r.on("setTimer-start",n)},{1:25,2:24,ee:"QJf3ax"}],11:[function(t,e){function n(){f.inPlace(this,p,"fn-")}function r(t,e){f.inPlace(e,["onreadystatechange"],"fn-")}function o(t,e){return e}function i(t,e){for(var n in t)e[n]=t[n];return e}var a=t("ee").create(),s=t(1),c=t(2),f=c(a),u=c(s),d=window.XMLHttpRequest,p=["onload","onerror","onabort","onloadstart","onloadend","onprogress","ontimeout"];e.exports=a,window.XMLHttpRequest=function(t){var e=new d(t);try{a.emit("new-xhr",[],e),u.inPlace(e,["addEventListener","removeEventListener"],"-",o),e.addEventListener("readystatechange",n,!1)}catch(r){try{a.emit("internal-error",[r])}catch(i){}}return e},i(d,XMLHttpRequest),XMLHttpRequest.prototype=d.prototype,f.inPlace(XMLHttpRequest.prototype,["open","send"],"-xhr-",o),a.on("send-xhr-start",r),a.on("open-xhr-start",r)},{1:7,2:25,ee:"QJf3ax"}],12:[function(t){function e(t){var e=this.params,r=this.metrics;if(!this.ended){this.ended=!0;for(var i=0;c>i;i++)t.removeEventListener(s[i],this.listener,!1);if(!e.aborted){if(r.duration=(new Date).getTime()-this.startTime,4===t.readyState){e.status=t.status;var a=t.responseType,f="arraybuffer"===a||"blob"===a||"json"===a?t.response:t.responseText,u=n(f);if(u&&(r.rxSize=u),this.sameOrigin){var d=t.getResponseHeader("X-NewRelic-App-Data");d&&(e.cat=d.split(", ").pop())}}else e.status=0;r.cbTime=this.cbTime,o("xhr",[e,r,this.startTime])}}}function n(t){if("string"==typeof t&&t.length)return t.length;if("object"!=typeof t)return void 0;if("undefined"!=typeof ArrayBuffer&&t instanceof ArrayBuffer&&t.byteLength)return t.byteLength;if("undefined"!=typeof Blob&&t instanceof Blob&&t.size)return t.size;if("undefined"!=typeof FormData&&t instanceof FormData)return void 0;try{return JSON.stringify(t).length}catch(e){return void 0}}function r(t,e){var n=i(e),r=t.params;r.host=n.hostname+":"+n.port,r.pathname=n.pathname,t.sameOrigin=n.sameOrigin}if(window.XMLHttpRequest&&XMLHttpRequest.prototype&&XMLHttpRequest.prototype.addEventListener&&!/CriOS/.test(navigator.userAgent)){t("loader").features.xhr=!0;var o=t("handle"),i=t(2),a=t("ee"),s=["load","error","abort","timeout"],c=s.length,f=t(1);t(4),t(3),a.on("new-xhr",function(){this.totalCbs=0,this.called=0,this.cbTime=0,this.end=e,this.ended=!1,this.xhrGuids={}}),a.on("open-xhr-start",function(t){this.params={method:t[0]},r(this,t[1]),this.metrics={}}),a.on("open-xhr-end",function(t,e){"loader_config"in NREUM&&"xpid"in NREUM.loader_config&&this.sameOrigin&&e.setRequestHeader("X-NewRelic-ID",NREUM.loader_config.xpid)}),a.on("send-xhr-start",function(t,e){var r=this.metrics,o=t[0],i=this;if(r&&o){var f=n(o);f&&(r.txSize=f)}this.startTime=(new Date).getTime(),this.listener=function(t){try{"abort"===t.type&&(i.params.aborted=!0),("load"!==t.type||i.called===i.totalCbs&&(i.onloadCalled||"function"!=typeof e.onload))&&i.end(e)}catch(n){try{a.emit("internal-error",[n])}catch(r){}}};for(var u=0;c>u;u++)e.addEventListener(s[u],this.listener,!1)}),a.on("xhr-cb-time",function(t,e,n){this.cbTime+=t,e?this.onloadCalled=!0:this.called+=1,this.called!==this.totalCbs||!this.onloadCalled&&"function"==typeof n.onload||this.end(n)}),a.on("xhr-load-added",function(t,e){var n=""+f(t)+!!e;this.xhrGuids&&!this.xhrGuids[n]&&(this.xhrGuids[n]=!0,this.totalCbs+=1)}),a.on("xhr-load-removed",function(t,e){var n=""+f(t)+!!e;this.xhrGuids&&this.xhrGuids[n]&&(delete this.xhrGuids[n],this.totalCbs-=1)}),a.on("addEventListener-end",function(t,e){e instanceof XMLHttpRequest&&"load"===t[0]&&a.emit("xhr-load-added",[t[1],t[2]],e)}),a.on("removeEventListener-end",function(t,e){e instanceof XMLHttpRequest&&"load"===t[0]&&a.emit("xhr-load-removed",[t[1],t[2]],e)}),a.on("fn-start",function(t,e,n){e instanceof XMLHttpRequest&&("onload"===n&&(this.onload=!0),("load"===(t[0]&&t[0].type)||this.onload)&&(this.xhrCbStart=(new Date).getTime()))}),a.on("fn-end",function(t,e){this.xhrCbStart&&a.emit("xhr-cb-time",[(new Date).getTime()-this.xhrCbStart,this.onload,e],e)})}},{1:"XL7HBI",2:13,3:11,4:7,ee:"QJf3ax",handle:"D5DuLP",loader:"G9z0Bl"}],13:[function(t,e){e.exports=function(t){var e=document.createElement("a"),n=window.location,r={};e.href=t,r.port=e.port;var o=e.href.split("://");return!r.port&&o[1]&&(r.port=o[1].split("/")[0].split("@").pop().split(":")[1]),r.port&&"0"!==r.port||(r.port="https"===o[0]?"443":"80"),r.hostname=e.hostname||n.hostname,r.pathname=e.pathname,r.protocol=o[0],"/"!==r.pathname.charAt(0)&&(r.pathname="/"+r.pathname),r.sameOrigin=!e.hostname||e.hostname===document.domain&&e.port===n.port&&e.protocol===n.protocol,r}},{}],14:[function(t,e){function n(t){return function(){r(t,[(new Date).getTime()].concat(i(arguments)))}}var r=t("handle"),o=t(1),i=t(2);"undefined"==typeof window.newrelic&&(newrelic=window.NREUM);var a=["setPageViewName","addPageAction","setCustomAttribute","finished","addToTrace","inlineHit","noticeError"];o(a,function(t,e){window.NREUM[e]=n("api-"+e)}),e.exports=window.NREUM},{1:23,2:24,handle:"D5DuLP"}],"7eSDFh":[function(t,e){function n(t,e,n){if(r.call(t,e))return t[e];var o=n();if(Object.defineProperty&&Object.keys)try{return Object.defineProperty(t,e,{value:o,writable:!0,enumerable:!1}),o}catch(i){}return t[e]=o,o}var r=Object.prototype.hasOwnProperty;e.exports=n},{}],gos:[function(t,e){e.exports=t("7eSDFh")},{}],handle:[function(t,e){e.exports=t("D5DuLP")},{}],D5DuLP:[function(t,e){function n(t,e,n){return r.listeners(t).length?r.emit(t,e,n):(o[t]||(o[t]=[]),void o[t].push(e))}var r=t("ee").create(),o={};e.exports=n,n.ee=r,r.q=o},{ee:"QJf3ax"}],id:[function(t,e){e.exports=t("XL7HBI")},{}],XL7HBI:[function(t,e){function n(t){var e=typeof t;return!t||"object"!==e&&"function"!==e?-1:t===window?0:i(t,o,function(){return r++})}var r=1,o="nr@id",i=t("gos");e.exports=n},{gos:"7eSDFh"}],G9z0Bl:[function(t,e){function n(){var t=p.info=NREUM.info,e=f.getElementsByTagName("script")[0];if(t&&t.licenseKey&&t.applicationID&&e){s(d,function(e,n){e in t||(t[e]=n)});var n="https"===u.split(":")[0]||t.sslForHttp;p.proto=n?"https://":"http://",a("mark",["onload",i()]);var r=f.createElement("script");r.src=p.proto+t.agent,e.parentNode.insertBefore(r,e)}}function r(){"complete"===f.readyState&&o()}function o(){a("mark",["domContent",i()])}function i(){return(new Date).getTime()}var a=t("handle"),s=t(1),c=(t(2),window),f=c.document,u=(""+location).split("?")[0],d={beacon:"bam.nr-data.net",errorBeacon:"bam.nr-data.net",agent:"js-agent.newrelic.com/nr-632.min.js"},p=e.exports={offset:i(),origin:u,features:{}};f.addEventListener?(f.addEventListener("DOMContentLoaded",o,!1),c.addEventListener("load",n,!1)):(f.attachEvent("onreadystatechange",r),c.attachEvent("onload",n)),a("mark",["firstbyte",i()])},{1:23,2:14,handle:"D5DuLP"}],loader:[function(t,e){e.exports=t("G9z0Bl")},{}],23:[function(t,e){function n(t,e){var n=[],o="",i=0;for(o in t)r.call(t,o)&&(n[i]=e(o,t[o]),i+=1);return n}var r=Object.prototype.hasOwnProperty;e.exports=n},{}],24:[function(t,e){function n(t,e,n){e||(e=0),"undefined"==typeof n&&(n=t?t.length:0);for(var r=-1,o=n-e||0,i=Array(0>o?0:o);++r<o;)i[r]=t[e+r];return i}e.exports=n},{}],25:[function(t,e){function n(t){return!(t&&"function"==typeof t&&t.apply&&!t[i])}var r=t("ee"),o=t(1),i="nr@wrapper",a=Object.prototype.hasOwnProperty;e.exports=function(t){function e(t,e,r,a){function nrWrapper(){var n,i,s,f;try{i=this,n=o(arguments),s=r&&r(n,i)||{}}catch(d){u([d,"",[n,i,a],s])}c(e+"start",[n,i,a],s);try{return f=t.apply(i,n)}catch(p){throw c(e+"err",[n,i,p],s),p}finally{c(e+"end",[n,i,f],s)}}return n(t)?t:(e||(e=""),nrWrapper[i]=!0,f(t,nrWrapper),nrWrapper)}function s(t,r,o,i){o||(o="");var a,s,c,f="-"===o.charAt(0);for(c=0;c<r.length;c++)s=r[c],a=t[s],n(a)||(t[s]=e(a,f?s+o:o,i,s))}function c(e,n,r){try{t.emit(e,n,r)}catch(o){u([o,e,n,r])}}function f(t,e){if(Object.defineProperty&&Object.keys)try{var n=Object.keys(t);return n.forEach(function(n){Object.defineProperty(e,n,{get:function(){return t[n]},set:function(e){return t[n]=e,e}})}),e}catch(r){u([r])}for(var o in t)a.call(t,o)&&(e[o]=t[o]);return e}function u(e){try{t.emit("internal-error",e)}catch(n){}}return t||(t=r),e.inPlace=s,e.flag=i,e}},{1:24,ee:"QJf3ax"}]},{},["G9z0Bl",4,12,6,5]);</script>
+    <title>Credit-card chips could slow Black Friday lines - Business Insider</title>
+    <meta name="date" content="2015-11-13" />
+<meta name="sailthru.date" content="2015-11-13" />
+<meta name="news_keywords" content="Wall Street, Economy, Thanksgiving, Black Friday Shopping, Jonathan Marino" />
+<meta name="sailthru.tags" content="Wall Street, Economy, Thanksgiving, Black Friday Shopping, Jonathan Marino" />
+<meta name="description" content="A change to how retailers process payments could make Americans stand in line longer this Black Friday." />
+<meta name="sailthru.description" content="A change to how retailers process payments could make Americans stand in line longer this Black Friday." />
+<meta name="title" content="This little change could make Black Friday even more miserable this year" />
+<meta name="sailthru.verticals" content="clusterstock,moneygame,retail" />
+<meta name="sailthru.title" content="This little change could make Black Friday even more miserable this year" />
+<meta name="tbi-image" content="http://static2.businessinsider.com/image/564109cb9dd7cc1a008c86a1/this-little-change-could-make-black-friday-even-more-miserable-this-year.jpg" />
+<meta name="sailthru.image.full" content="http://static2.businessinsider.com/image/564109cb9dd7cc1a008c86a1/this-little-change-could-make-black-friday-even-more-miserable-this-year.jpg" />
+<meta name="sailthru.image.thumb" content="http://static3.businessinsider.com/image/564109cb9dd7cc1a008c86a1-50-50/this-little-change-could-make-black-friday-even-more-miserable-this-year.jpg" />
+<meta name="sailthru.author" content="Jonathan Marino" />
+<meta property="og:title" content="This little change could make Black Friday even more miserable this year" />
+<meta property="og:description" content="A change to how retailers process payments could make Americans stand in line longer this Black Friday." />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="http://www.businessinsider.com/credit-card-chips-could-slow-black-friday-lines-2015-11" />
+<meta property="og:site_name" content="Business Insider" />
+<meta property="fb:app_id" content="155043519637" />
+<meta property="article:publisher" content="businessinsider" />
+<meta property="author" content="Jonathan Marino" />
+<meta name="twitter:url" content="http://www.businessinsider.com/credit-card-chips-could-slow-black-friday-lines-2015-11" />
+<meta name="twitter:title" content="This little change could make Black Friday even more miserable this year" />
+<meta name="twitter:description" content="A change to how retailers process payments could make Americans stand in line longer this Black Friday." />
+<meta name="twitter:card" content="summary_large_image" />
+<meta property="twitter:image" content="http://static2.businessinsider.com/image/564109cb9dd7cc1a008c86a1/this-little-change-could-make-black-friday-even-more-miserable-this-year.jpg" />
+<meta name="twitter:creator" content="JonMarino" />
+<meta name="twitter:site" content="clusterstock" />
+<meta property="article:author" content="http://www.businessinsider.com/author/jonathan-marino" />
+<meta property="og:image" content="http://static5.businessinsider.com/image/56410a64bd86ef18008c8901/this-little-change-could-make-black-friday-even-more-miserable-this-year.jpg" />    
+<link rel="canonical" href="http://www.businessinsider.com/credit-card-chips-could-slow-black-friday-lines-2015-11">
+<link rel="alternate" href="http://www.businessinsider.com/credit-card-chips-could-slow-black-friday-lines-2015-11" hreflang="x-default">
+    <link href="http://static4.businessinsider.com/assets/css/min-base-us.css?1447277491" media="screen" rel="stylesheet" type="text/css" />
+<link href="http://static3.businessinsider.com/assets/css/min-post-us.css?1447277491" media="screen" rel="stylesheet" type="text/css" />
+<link rel="syndication-source" />    <link type="text/css" rel="stylesheet" media="print" href="http://static6.businessinsider.com/assets/css/print.css?1447277491" />
+
+    <script type="text/javascript">
+        //this should be refactored to the BI.Google_Plus object, however the BI core library will need to be moved to above the headScript call
+        window.gPlusConfigs = {client_id : '551214076990-h27puiaonnlg9a9772gq3qbe9nk6qnno.apps.googleusercontent.com', base_domain: 'businessinsider.com'}; 
+    </script>
+
+    <script type="text/javascript" src="http://code.jquery.com/jquery-1.7.1.min.js"></script>
+<script type="text/javascript" src="http://static6.businessinsider.com/assets/js/min2.js?1447277491"></script>
+<script type="application/ld+json">
+    //<![CDATA[
+    {"@context":"http:\/\/schema.org","@type":"NewsArticle","headline":"This little change could make Black Friday even more miserable this year","url":"http:\/\/www.businessinsider.com\/credit-card-chips-could-slow-black-friday-lines-2015-11","thumbnailUrl":"http:\/\/static2.businessinsider.com\/image\/564109cb9dd7cc1a008c86a1\/this-little-change-could-make-black-friday-even-more-miserable-this-year.jpg","dateCreated":"2015-11-13T13:00:00Z","articleSection":"clusterstock","creator":"Jonathan Marino","keywords":["Wall Street","Economy","Thanksgiving","Black Friday Shopping"]}    //]]>
+</script>
+<script type="text/javascript">
+    //<![CDATA[
+    BI.post.isSlideshow=false;    //]]>
+</script>
+<script type="text/javascript">
+    //<![CDATA[
+    post = {"id":"56410a05bd86ef175c8bd72e","uri":"http:\/\/www.businessinsider.com\/credit-card-chips-could-slow-black-friday-lines-2015-11","thumb":"http:\/\/static1.businessinsider.com\/image\/564109cb9dd7cc1a008c86a1-90-90\/this-little-change-could-make-black-friday-even-more-miserable-this-year.jpg","author":"Jonathan Marino","author_ids":"Jonathan Marino:4r","post_type":"post"};    //]]>
+</script>
+<script type="text/javascript">
+    //<![CDATA[
+    
+        Author = "Jonathan Marino";
+        Category = "Wall Street|Economy|Thanksgiving|Black Friday Shopping";
+        AuthorType = "Staff";
+        Editor = "Jonathan Marino";
+        BIISub = "none"
+            //]]>
+</script>
+<script type="text/javascript">
+    //<![CDATA[
+    
+        BI.nav_select = "Finance";
+        BI.highTrafficMode = 0;
+        BI.post.isDraft = 0;
+        BI.post.url = "http://www.businessinsider.com/credit-card-chips-could-slow-black-friday-lines-2015-11";
+        BI.post.name = "credit-card-chips-could-slow-black-friday-lines-2015-11";
+        BI.comments.currentPage = 0;
+        BI.comments.filterPundits = 1;
+        BI.comments.getAllComments = 1;
+            //]]>
+</script>    <!-- optimizely desktop -->
+        <!-- End optimizely desktop -->
+
+    <!--Tech Insider Pinterest-->
+    
+    
+    
+    <meta name="tbi-vertical" content="clusterstock" />
+    <meta name="viewport" content="width=1024" />
+
+    <!--[if gte IE 9]>
+    <style type="text/css">
+        .gradient {
+            filter: none;
+        }
+    </style>
+    <![endif]-->
+
+    <!--[if lt IE 9]>
+        <link type="text/css" rel="stylesheet" media="all" href="http://static5.businessinsider.com/assets/css/ie8.css" />
+        <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <script type="text/javascript" src="http://static3.businessinsider.com/assets/js/vendor/ie8/placeholders.min.js"></script>
+    <![endif]-->
+
+    <!--[if IE 9]>
+        <link type="text/css" rel="stylesheet" media="all" href="http://static4.businessinsider.com/assets/css/ie9.css" />
+        <script type="text/javascript" src="http://static5.businessinsider.com/assets/js/shims/Element.classList.js"></script>
+    <![endif]-->
+
+    <!--Tech Insider if IE 9 -->
+    
+    <script type="text/javascript">
+        var vertical = 'clusterstock';
+        var PageType = 'post';
+        var post_id = '';
+        var _sf_startpt=(new Date()).getTime();
+    </script>
+
+    <!-- Kissmetrics -->
+    <script type="text/javascript">
+        var _kmq = _kmq || [];
+        var _kmk = _kmk || '999f578acebfab6dd29b540ab4ebbcbaafafa774';
+
+        function _kms(u){
+            setTimeout(function(){
+                var s = document.createElement('script');
+                var f = document.getElementsByTagName('script')[0];
+                s.type = 'text/javascript';
+                s.async = true;
+                s.src = u;
+                f.parentNode.insertBefore(s, f);
+            }, 1);
+        }
+            </script>
+    <!-- Kissmetrics -->
+
+    <link rel="alternate" type="application/rss+xml" title="RSS" href="http://feedproxy.google.com/clusterstock?format=xml" />
+    
+    <link rel="apple-touch-icon" sizes="57x57" href="http://static1.businessinsider.com/assets/images/us/favicons/apple-touch-icon-57x57.png?v=zXXjpe0lwg" />
+<link rel="apple-touch-icon" sizes="60x60" href="http://static3.businessinsider.com/assets/images/us/favicons/apple-touch-icon-60x60.png?v=zXXjpe0lwg" />
+<link rel="apple-touch-icon" sizes="72x72" href="http://static3.businessinsider.com/assets/images/us/favicons/apple-touch-icon-72x72.png?v=zXXjpe0lwg" />
+<link rel="apple-touch-icon" sizes="76x76" href="http://static4.businessinsider.com/assets/images/us/favicons/apple-touch-icon-76x76.png?v=zXXjpe0lwg" />
+<link rel="apple-touch-icon" sizes="114x114" href="http://static2.businessinsider.com/assets/images/us/favicons/apple-touch-icon-114x114.png?v=zXXjpe0lwg" />
+<link rel="apple-touch-icon" sizes="120x120" href="http://static1.businessinsider.com/assets/images/us/favicons/apple-touch-icon-120x120.png?v=zXXjpe0lwg" />
+<link rel="apple-touch-icon" sizes="144x144" href="http://static1.businessinsider.com/assets/images/us/favicons/apple-touch-icon-144x144.png?v=zXXjpe0lwg" />
+<link rel="apple-touch-icon" sizes="152x152" href="http://static1.businessinsider.com/assets/images/us/favicons/apple-touch-icon-152x152.png?v=zXXjpe0lwg" />
+<link rel="apple-touch-icon" sizes="180x180" href="http://static1.businessinsider.com/assets/images/us/favicons/apple-touch-icon-180x180.png?v=zXXjpe0lwg" />
+<link rel="icon" type="image/png" href="http://static3.businessinsider.com/assets/images/us/favicons/favicon-32x32.png?v=zXXjpe0lwg" sizes="32x32" />
+<link rel="icon" type="image/png" href="http://static1.businessinsider.com/assets/images/us/favicons/android-chrome-192x192.png?v=zXXjpe0lwg" sizes="192x192" />
+<link rel="icon" type="image/png" href="http://static1.businessinsider.com/assets/images/us/favicons/favicon-96x96.png?v=zXXjpe0lwg" sizes="96x96" />
+<link rel="icon" type="image/png" href="http://static3.businessinsider.com/assets/images/us/favicons/favicon-16x16.png?v=zXXjpe0lwg" sizes="16x16" />
+<link rel="manifest" href="http://static1.businessinsider.com/assets/images/us/favicons/manifest.json?v=zXXjpe0lwg" />
+<link rel="shortcut icon" href="http://static3.businessinsider.com/assets/images/us/favicons/favicon.ico?v=zXXjpe0lwg" />
+<meta name="apple-mobile-web-app-title" content="Business Insider" />
+<meta name="application-name" content="Business Insider" />
+<meta name="msapplication-TileColor" content="#1d5f7b" />
+<meta name="msapplication-TileImage" content="http://static6.businessinsider.com/assets/images/us/favicons/mstile-144x144.png?v=zXXjpe0lwg" />
+<meta name="theme-color" content="#ffffff" />
+<meta name="linkedin:owner" content="mid:1d5f7b" />
+    <!--[if gte IE 9]>
+        <meta name="application-name" content="Business Insider - clusterstock"/>
+        <meta name="msapplication-tooltip" content="Start the page in Site Mode"/>
+        <meta name="msapplication-starturl" content="http://www.businessinsider.com/clusterstock"/>
+        <meta name="msapplication-window" content="width=800;height=600"/>
+        <meta name="msapplication-navbutton-color" content="#4C7C8D"/>
+
+        <meta name="msapplication-task" content="name=Tech;action-uri=http://www.businessinsider.com/sai;icon-uri=http://www.businessinsider.com/favicon.ico"/>
+        <meta name="msapplication-task" content="name=Media;action-uri=http://www.businessinsider.com/thewire;icon-uri=http://www.businessinsider.com/favicon.ico"/>
+        <meta name="msapplication-task" content="name=Wall Street;action-uri=http://www.businessinsider.com/clusterstock;icon-uri=http://www.businessinsider.com/favicon.ico"/>
+        <meta name="msapplication-task" content="name=Markets;action-uri=http://www.businessinsider.com/moneygame;icon-uri=http://www.businessinsider.com/favicon.ico"/>
+        <meta name="msapplication-task" content="name=Strategy;action-uri=http://www.businessinsider.com/warroom;icon-uri=http://www.businessinsider.com/favicon.ico"/>
+    <![endif]-->
+
+    <script type="text/javascript">BI.siteURI = 'http://www.businessinsider.com';</script>
+    <script type="text/javascript">BI.secureURI = 'https://www.businessinsider.com';</script>
+    <script type="text/javascript">BI.staticURI = 'http://static1.businessinsider.com';</script>
+    <script type="text/javascript">BI.env.setDomain('http://www.businessinsider.com');</script>
+    <script type="text/javascript">BI.sailthruHorizonURI = 'horizon.businessinsider.com';</script>
+        <script type="text/javascript">BI.configs.ads.post_load_ad_buffer= 100;</script>
+    <script type="text/javascript">BI.configs.ads.subnav_sticky_ad_buffer = 100;</script>
+
+    
+    <script type="text/javascript" src="//platform.linkedin.com/in.js">
+       api_key: x4dbohswv62d
+       authorize: true
+       scope: r_basicprofile r_emailaddress r_network rw_nus
+    </script>
+
+<!-- Taboola head -->
+
+            <!-- Standard Taboola Script -->
+        <script type="text/javascript">
+            window._taboola = window._taboola || [];
+            _taboola.push({article:'auto'});
+            !function (e, f, u) {
+                e.async = 1;
+                e.src = u;
+                f.parentNode.insertBefore(e, f);
+            }(
+                document.createElement('script'),
+                document.getElementsByTagName('script')[0],
+                'http://cdn.taboola.com/libtrc/businessinsider/loader.js'
+            );
+        </script>
+    <!-- / Taboola head -->
+</head>
+
+
+<body class="responsive ">
+
+<div data-cookie-notice-container></div>
+<!-- print only -->
+<img class="print" src="http://static1.businessinsider.com/assets/images/us/logos/logo-print.png" />
+
+<!-- FB Connect -->
+<div id="fb-root" data-bi-facebook-root="155043519637"></div>
+<!-- / FB Connect -->
+
+<!--[if lt IE 9]>
+    <div class="container>
+        <div class="row">
+            <div class="alert alert-error alert-block">
+                <h4>Warning!</h4>
+                You are using an outdated version of Internet Explorer.  For security reasons you should <a href="http://windows.microsoft.com/en-us/internet-explorer/download-ie" target="_blank" title="Upgrade IE">upgrade your browser</a>. Please go to Windows Updates and install the latest version.
+            </div>
+        </div>
+    </div>
+<![endif]-->
+
+<!-- masthead -->
+<div class="masthead">
+    <div class="container">
+        <div class="row-fluid">
+            <div class="span3 span3-mh">
+                <div data-hamburger class="menu">
+                    <div class="hamburger">
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                    </div>
+                </div>
+                <a href="/" class="sprites logo"></a>
+            </div>
+            <div class="span6 span6-mh">
+                                                            <h2 class="vert-name ellipsis"><a href="http://www.businessinsider.com/clusterstock">Finance</a></h2>
+                                                </div>
+            <!-- links -->
+            <div class="span3 span3-mh links list-pipes list-right no-pipe">
+                <ul class="search">
+                    <li>
+                        <a data-search-icon-open href="#" title="Search" class="display-none"><span class="svg sprites search-icon"></span></a>
+                        <a data-search-icon-close href="#" class="close-x display-none">
+                            <span></span>
+                            <span></span>
+                        </a>
+                    </li>
+                </ul>
+                <div>
+                    <ul class="links-promo">
+                                                    
+
+    <li class="social">
+        <a href="//www.facebook.com/businessinsider" title="Like us on Facebook" aria-label="Like us on Facebook" target="_blank"><i class="fa fa-facebook ks-header-facebook"></i></a>
+    </li>
+
+    <li class="social">
+        <a href="//twitter.com/businessinsider" title="Follow us on Twitter" aria-label="Follow us on Twitter" target="_blank"><i class="fa fa-twitter ks-header-twitter"></i></a>
+    </li>
+
+    <li class="social">
+        <a href="//www.linkedin.com/company/business-insider" title="Connect with us on LinkedIn" aria-label="Connect with us on LinkedIn" target="_blank"><i class="fa fa-linkedin ks-header-linkedin"></i></a>
+    </li>
+                        
+                                                    <li class=""><a href="http://intelligence.businessinsider.com">BI Intelligence</a></li>
+                        
+                                                    <li class="login"><a href="/events">Events</a></li>
+                                            </ul>
+
+                    <ul class="links-user">
+                        
+                        
+                        
+                                                <span data-bi-ajax-route="/esi/user_menubar?0=json%3A%5B%5D"></span>                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Search Area -->
+    <div data-search-over class="nav-over transition">
+        <div class="container transition search">
+            <form method="get" action="/s" class="search-field">
+                <input data-search-input name="q" type="text" placeholder="Search" autocomplete="off">
+            </form>
+        </div>
+    </div>
+    <!-- Nav area -->
+    <div data-nav-over class="nav-over transition">
+
+        <div class="transition">
+            <div class="list-pipes nav-sections">
+                <ul class="verticals">
+
+                                                                <li><a class="item verticals__anchor" data-dropdown-id="dropdown-Trending" href="/trending">
+                                Trending                            </a>
+                        </li>
+                                                                <li><a class="item verticals__anchor" data-dropdown-id="dropdown-Tech" href="/sai">
+                                Tech                            </a>
+                        </li>
+                                                                <li class="active"><a class="item verticals__anchor" data-dropdown-id="dropdown-Finance" href="/clusterstock">
+                                Finance                            </a>
+                        </li>
+                                                                <li><a class="item verticals__anchor" data-dropdown-id="dropdown-Politics" href="/politics">
+                                Politics                            </a>
+                        </li>
+                                                                <li><a class="item verticals__anchor" data-dropdown-id="dropdown-Strategy" href="/warroom">
+                                Strategy                            </a>
+                        </li>
+                                                                <li><a class="item verticals__anchor" data-dropdown-id="dropdown-Life" href="/thelife">
+                                Life                            </a>
+                        </li>
+                                                                <li><a class="item verticals__anchor" data-dropdown-id="dropdown-Sports" href="/sportspage">
+                                Sports                            </a>
+                        </li>
+                                                                <li><a class="item verticals__anchor" data-dropdown-id="dropdown-Video" href="/video">
+                                Video                            </a>
+                        </li>
+                                                                <li><a class="item verticals__anchor" data-dropdown-id="dropdown-All" href="/">
+                                All                            </a>
+                        </li>
+                                    </ul>
+            </div>
+            <div class="main-nav-dropdown ks-nav-dropdown"></div>
+        </div>
+    </div>
+</div>
+
+<!-- / masthead -->
+
+
+<div data-ad-tout>
+    </div>
+
+
+<div id="main-content">
+                                        <div class="ad-subnav-container">
+                    <div class="subnav-content leaderboard" data-sticky="leaderboard">
+                        
+
+	<div data-bi-ad class="ad dfp rubicon" data-adunit="desktop/finance/clusterstock/post" data-authors="jonathan-marino" data-pagetype="post" data-pos="atf" data-region="Subnav" data-rubicon_zone_id="141230" data-sizes="728x90,970x250,970x90" data-tag="goldman" data-url="/credit-card-chips-could-slow-black-friday-lines-2015-11" data-views="0-5000"></div>
+
+	<script type="text/javascript">
+		(function() {
+			'use strict';
+			// Notify the DFP code that a new ad has just been rendered
+			amplify.publish('adRender');
+		}());
+	</script>
+                    </div>
+                </div>
+                        
+    <div class="container">
+        <!-- flash messages -->
+                <div class="siteskin-dropshadow">
+            <div class="row primary-row">
+                                    <div class="breaking-module-rendered" id="breaking-module-rendered">
+                        <div class="page-top">
+                        <span data-bi-ajax-route="/esi/breaking_module"></span>                        </div>
+                    </div>
+                                <div class="span8">
+                    <div class="breaking-module-siteskin" id="breaking-module-siteskin"></div>
+    
+<a name="post-top"></a>
+
+
+<div id="share-email-tmpl">
+    <div id="shareEmailModal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="shareEmailModalLabel" aria-hidden="true">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+        <h3 id="shareEmailModalLabel"></h3>
+      </div>
+      <div class="modal-body">
+        <div class="share-email-error alert alert-error display-none"></div>
+
+        <div class="share-email-body">
+            <div class="register">
+                <form id="form_form" class="form-horizontal" action="#" method="post">
+                    <div class="control-group">
+                        <label for="mail_from" class="control-label">From</label>
+                        <div class="controls">
+                            <input type="text" name="mail_from" class="mail-from" placeholder="Your Email Address" />
+                        </div>
+                    </div>
+                    <div class="control-group">
+                        <label for="mail_to" class="control-label">To</label>
+                        <div class="controls">
+                            <input type="text" name="mail_to" class="mail-to" placeholder="Friend's Email Address" />
+                        </div>
+                    </div>
+                    <input type="hidden" name="action" value="email" />
+                    <div class="control-group">
+                        <div class="controls">
+                            <input type="submit" class="btn submit email-post" value="Send" />
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <div class="share-email-success" style="display:none">
+            <div class="alert alert-success">
+                You have successfully emailed the post.
+            </div>
+        </div>
+
+      </div>
+    </div>
+</div>
+
+
+
+<div  class="content post">
+    <div class="sl-layout-post">
+        
+<!-- Sponsored Post Tag -->
+    
+<h1>This little change could make Black Friday even more miserable this year</h1>
+
+<div id="content" class="content">
+    <div class="post-top">
+        <!-- Byline -->
+        <div class="flex byline">
+			<div class="flex-auto byline-icon">
+							<a class="author-photo author-photo-square" href="http://www.businessinsider.com/author/jonathan-marino">
+                    <img class="author" src="http://static2.businessinsider.com/image/54d9ff6d6bb3f7e910eef89c-50-50/jonathan-marino.jpg">
+                </a>
+					</div>
+	    
+	
+	<div class="flex-item">
+		<div class="list-pipes no-pipe">
+			<ul>
+																		<li class="single-author"><a href="http://www.businessinsider.com/author/jonathan-marino" rel="author">Jonathan Marino</a></li>
+		                <li>
+    <div class="contact">
+        
+                    <a href="mailto:jmarino@businessinsider.com" data-toggle="tooltip" data-placement="top" title="" data-original-title="jmarino@businessinsider.com"><i class="fa fa-envelope-o"></i></a>
+        
+        
+        
+        
+                    <a href="http://twitter.com/JonMarino" data-toggle="tooltip" data-placement="top" title="" data-original-title="Twitter feed"><i class="fa fa-twitter"></i></a>
+        
+        
+    </div>
+
+    </li>
+					                
+				                    </ul>
+                </div>
+                <div class="list-pipes no-pipe">
+                    <ul>
+                		        			        <li class="river-post__date">
+	<span class="svg sprites date-icon"></span>
+	<span data-bi-format="date" rel="1447419600">Nov. 13, 2015,  8:00 AM</span>
+</li>		        			
+		    				<li class="pageviews">
+					<span class="svg sprites hot views"></span>
+					<span class="hot" title="views">2,045</span>
+				</li>
+		    
+		    		        		    
+			</ul>
+
+		</div>
+	</div>
+</div>        <!-- Sharing -->
+        <div class="share">
+			
+<!-- RRSSB start -->
+<div class="rrssb-baseline share-container ks-share-top clearfix" data-share style="display:block;">
+    <!-- buttons start here -->
+    <ul class="rrssb-buttons rrssb-top clearfix">
+        <li class="facebook ks-byline-fb">
+            <a href="https://www.facebook.com/sharer/sharer.php?u=http://www.businessinsider.com/credit-card-chips-could-slow-black-friday-lines-2015-11" title="facebook" class="popup">
+                <i class="fa fa-facebook-square"></i>
+                <span class="text">facebook</span>
+            </a>
+        </li>
+        <li class="linkedin ks-byline-linkedin">
+            <a href="http://www.linkedin.com/shareArticle?mini=true&amp;url=http://www.businessinsider.com/credit-card-chips-could-slow-black-friday-lines-2015-11&amp;title=This little change could make Black Friday even more miserable this year&amp;summary=A change to how retailers process payments could make Americans stand in line longer this Black Friday." title="linkedin" class="popup">
+                <i class="fa fa-linkedin"></i>
+                <span class="text">linkedin</span>
+            </a>
+        </li>
+        <li class="twitter ks-byline-tweet">
+            <a href="http://twitter.com/share?url=http://read.bi/1MahBgl&amp;via=clusterstock&amp;text=This little change could make Black Friday even more miserable this year" title="twitter" class="popup">
+                <i class="fa fa-twitter"></i>
+                <span class="text">twitter</span>
+            </a>
+        </li>
+        <li class="email button-email ks-byline-email" data-href="http://www.businessinsider.com/credit-card-chips-could-slow-black-friday-lines-2015-11">
+            <a href="#" title="email">
+                <i class="fa fa-envelope"></i>
+                <span class="text">email</span>
+            </a>
+        </li>
+                <li class="printbtn ks-byline-print">
+            <a href="javascript:window.print()" title="print">
+                <i class="fa fa-print"></i>
+                <span class="text">print</span>
+            </a>
+        </li>
+            </ul>
+    <!-- buttons end here -->
+</div>
+<!-- RRSSB end -->        </div>
+    </div>
+
+    <!-- Perfect Market content ad-->
+    
+		 <!-- END Perfect Market content ad-->
+
+    <div class="clear-both">
+		<div class="KonaBody post-content">
+			
+            
+<div class="KonaFilter image-container display-table float_right"><div><div data-post-image class="image"><img src="http://static2.businessinsider.com/image/56410f71bd86ef335d8bd6eb-3112-2334/459663168.jpg" alt="Black Friday crowds" data-mce-source="Kena Betancur/Getty Images"><span class="source"><span>Kena Betancur/Getty Images</span></span><span class='caption'>If you think it was a long wait to get in, just wait till it's time to check out.</span></div>	<div class="related-links-container minimal ks-see-also" data-bi-heatmap="56410a05bd86ef175c8bd72e">
+	    <h3 class="underlined">See Also</h3>
+	    <div class=""> 
+							<div class="media  first-story">
+									<a class="pull-left" href="http://www.businessinsider.com/the-chip-standard-it-will-reduce-payment-card-fraud-in-the-us-but-at-what-cost-2014-3"><img class="media-object" src="http://static4.businessinsider.com/image/5323607ceab8ea455b2e4d61-178-178/the-massive-credit-and-debit-card-security-overhaul-in-the-us--costs-and-benefits.jpg"></a>
+				  					<div class="media-body">
+						<h4><a class ="title-link" href="http://www.businessinsider.com/the-chip-standard-it-will-reduce-payment-card-fraud-in-the-us-but-at-what-cost-2014-3">The Massive Credit And Debit Card Security Overhaul In The US — Costs And Benefits</a></h4>
+					</div>
+				</div>
+							<div class="media ">
+									<a class="pull-left" href="http://www.businessinsider.com/the-biggest-digital-payments-trends-in-2014-2013-12"><img class="media-object" src="http://static6.businessinsider.com/image/52964cc5ecad047f18c88949-178-178/our-10-boldest-predictions-for-the-digital-payments-industry-in-2014.jpg"></a>
+				  					<div class="media-body">
+						<h4><a class ="title-link" href="http://www.businessinsider.com/the-biggest-digital-payments-trends-in-2014-2013-12">Our 10 Boldest Predictions For The Digital Payments Industry In 2014</a></h4>
+					</div>
+				</div>
+							<div class="media  last-story">
+									<a class="pull-left" href="http://www.businessinsider.com/lose-money-buying-gifts-with-credit-card-2012-11"><img class="media-object" src="http://static3.businessinsider.com/image/4fb5722c69bedd4b41000007-178-178/how-to-save-270-on-black-friday-by-using-your-credit-card.jpg"></a>
+				  					<div class="media-body">
+						<h4><a class ="title-link" href="http://www.businessinsider.com/lose-money-buying-gifts-with-credit-card-2012-11">How To Save $270 On Black Friday By Using Your Credit Card</a></h4>
+					</div>
+				</div>
+				    </div>
+	</div>
+<p></div></div><p class="p1"><span class="s1">Just when you thought there couldn't be another way to make Black Friday any more miserable for shoppers and retail employees, the credit-card industry came up with one.</span></p>
+<p class="p1"><span class="s1">Credit-card companies last month began to mandate new technology that uses chips instead of magnetic stripes. It's a change made for a very good reason: <em>card security</em>.</span></p>
+<p class="p1"><span class="s1"><span>The credit-card industry self-imposed October 1 as the deadline for the new card readers, though many consumers had received chip-enabled credit and debit cards — which will still work on the old "swipe" card processors — long before that. </span></span></p>
+<p class="p1"><span class="s1"><span>T</span>he timing of this wider rollout, however, has retail and payments experts warning that this will slow things down at the checkouts on the November 27 shopping day.</span></p>
+<p class="p1"><span class="s1"><span class="s1">"Any time you introduce a major change like this, there's going to be confusion," said Matt Schulz, senior industry analyst with CreditCards.com. "</span><span class="s1">There's no question this is going to cause some slowdown on Black Friday." </span></span></p>
+<p class="p1"><span class="s1"><span class="s1">The change itself is simple: Instead of swiping the card through the magnetic-strip reader, shoppers now have to insert it — chip side up — into a slot on the bottom of the device.</span></span></p>
+<p class="p1"><span class="s1"><span class="s1">But here's where the delays come in. People who are unfamiliar with the process will swipe as they always have, then be told it didn't work because they have a new chip-enabled card. Then they must be shown how to insert it, <em>and leave it in</em>, so the payment can be processed.</span></span></p>
+<p class="p1"><span class="s1"><span class="s1">Now multiply that by thousands, and add in the fact that people have been in line since the crack of dawn, elbowed their way to that bargain bin, and then had to wait again just to get to the register, and you can see why even a small delay will test patience. <span>It's called the EMV chip, and it just might wreak havoc on holiday shopping.</span></span></span></p>
+<h2 class="p1"><strong>A 'rude awakening' for retailers</strong></h2>
+<p class="p1"><span class="s1"><span class="s1"><span class="KonaFilter image-container display-table"><span><span data-post-image class="image"><img src="http://static4.businessinsider.com/image/5644cd4911231437018b48a7-1067-800/credit%20card.jpg" alt="credit card" data-mce-source="Mastercard.com" data-mce-caption="MasterCard's EMV card"><span class="source"><span>Mastercard.com</span></span><span class='caption'>MasterCard's EMV card.</span></span><p></span></span></span></span></p>
+<p class="p1"><span class="s1"><span class="s1"></span></span><span class="s1"><span class="s1">"There is going to be a rude awakening" for retailers, said Jared Drieling, business intelligence manager for The Strawhecker Group, an Omaha, Nebraska-based advisory firm focusing on payments. "The industry is still bickering over how long an EMV transaction takes." </span></span></p>
+<p class="p1"><span class="s1"><span class="s1">As many as 47% of US merchants will have new technology in place by the end of 2015, <a href="http://www.businesswire.com/news/home/20150504005631/en/Issuers-Forecast-U.S.-Shift-Chip-Cards-Complete">according to a survey conducted earlier this year</a> by the Payments Security Task Force, an industry-backed group of financial services firms and leading retailers. </span></span><span class="s1">Already, <a href="http://www.usatoday.com/story/money/business/2015/10/01/chip-credit-debit-card-readers-october-1/73140516/">40% of Americans</a> have been issued new chip-enabled cards.</span></p>
+<p class="p1"><span class="s1">Of course the nightmare scenario that Drieling is warning about is dependent on a lot of factors. Some customers have been using the chip technology for weeks, and some retailers don't have the readers yet. There is a wide disparity in how individual retailers have gotten ready for the switch.<br></span></p>
+<p class="p1"><span class="s1">Best Buy, Macy's, and Walmart stores have been fully outfitted with new card readers, representatives for those companies said. Macy's and Walmart have also reissued store-branded credit cards with new EMV chips embedded in them. Sears, on the other hand, says it is "<span>continuously working to further enhance the security of our systems," according to a spokesman — but declined to provide specifics for Black Friday.</span></span></p>
+<p class="p1"><span class="s1"><span class="KonaFilter image-container display-table float_left"><span><span data-post-image class="image on-image"><img src="http://static1.businessinsider.com/image/56451c0e11231404018b4bb6-2667-2000/gettyimages-459681640%20(1).jpg" alt="black friday" data-mce-source="Rob Stothard/Getty Images"><span class="source"><span>Rob Stothard/Getty Images</span></span></span><p></span></span>J. Craig Shearman, a spokesman for the National Retail Federation, said the new card readers would be at "most major retailers and large national chains." The progress of smaller shops in adapting the chips is not as clear, but those shops are less likely to be open the day after Thanksgiving anyway.</span></p>
+<p class="p1"><span class="s1">Shearman didn't argue with the notion that things could slow down, but he said it was not clear how much longer it would take to process each transaction.</span></p>
+<p class="p1">For retailers, Black Friday and the ensuing weekend is crucial to performance. Americans packed malls and stores last year after Thanksgiving, driving more than $50 billion in revenue to retailers, the National Retail Federation reported in 2014.</p>
+<p class="p1">Of course, there are lots of ways to avoid even having to find out. Stay home. T<span class="s1">urkey and stuffing is better on day two anyway.</span></p>
+                                    
+                                    	
+
+    <div class="margin-top popular-video">
+        <h3>NOW WATCH: <a href="http://www.businessinsider.com/james-altucher-warren-buffett-rant-holding-period-2015-10">JAMES ALTUCHER: 'Warren Buffett is a f-----g liar'</a></h3>
+        <div>
+            <div>
+    <script src='//player.ooyala.com/v3/6e12e8b3387a44daacfb73afba25a76e'></script>
+    <div class="ooyala-video-player" data-video-autoplay='false' data-video-id='p5bDZoeDo8xfvan7c7FGMOGC5vb7URt6' data-player-variable="ooyalapopvideo" id='ooyalaplayer_popvideo' style='width:1280px;height:720px'></div>
+    <script>
+
+    if (typeof RunFunctions === 'undefined') { var RunFunctions = []; } 
+
+    RunFunctions.push(function()
+    { 
+        var ooyalapopvideo = OO.Player.create('ooyalaplayer_popvideo', 'p5bDZoeDo8xfvan7c7FGMOGC5vb7URt6',{ autoplay: 'false' }); 
+    });
+
+    </script>
+    <noscript><div>Please enable Javascript to watch this video</div></noscript>
+</div>
+        </div>
+        <script>
+(function() 
+{ 
+	function createPlayer() 
+	{ 
+		OO.ready(function() 
+		{ 
+			RunFunctions.forEach(function(ooyalaFunction) { ooyalaFunction(); }); 
+			RunFunctions = [];
+		}); 
+	} 
+	createPlayer(); 
+}()); 
+</script>    </div>
+
+
+            
+					</div>
+
+        
+        <!-- Post category tags -->
+		    <div class="category-wrapper" data-category-wrapper>
+
+        <div class="tags-top align-right">
+            More:
+
+                                                        <a href="/category/wall-street">Wall Street</a>
+                                            <a href="/category/economy">Economy</a>
+                                            <a href="/category/thanksgiving">Thanksgiving</a>
+                                            <a href="/category/black-friday-shopping">Black Friday Shopping</a>
+            
+                    </div>
+    </div>
+
+    </div>
+</div>
+
+        <div id="social-reader-notification" class="alert clear-both" style="display:none;"></div>
+
+        <div id="facebook-notification" class="alert" style="display:none;"></div>
+
+            </div>
+
+        
+        <div class="bottom-share-module clearfix clear-both">
+            <!-- RRSSB BOTTOM POST CALL -->
+            
+<!-- RRSSB start -->
+<div class="rrssb-baseline share-container ks-share-bottom margin-top margin-bottom clearfix " style="display:none;">
+    <!-- buttons start here -->
+    <ul class="rrssb-buttons rrssb-bottom clearfix">
+        <li class="facebook ks-sharemodule-fb">
+            <a href="https://www.facebook.com/sharer/sharer.php?u=http://www.businessinsider.com/credit-card-chips-could-slow-black-friday-lines-2015-11" title="facebook" class="popup">
+                <i class="fa fa-facebook-square"></i>
+                <span class="text">facebook</span>
+            </a>
+        </li>
+        <li class="linkedin ks-sharemodule-linkedin">
+            <a href="http://www.linkedin.com/shareArticle?mini=true&amp;url=http://www.businessinsider.com/credit-card-chips-could-slow-black-friday-lines-2015-11&amp;title=This little change could make Black Friday even more miserable this year&amp;summary=A change to how retailers process payments could make Americans stand in line longer this Black Friday." title="linkedin" class="popup">
+                <i class="fa fa-linkedin"></i>
+                <span class="text">linkedin</span>
+            </a>
+        </li>
+        <li class="twitter ks-sharemodule-tweet">
+            <a href="http://twitter.com/share?url=http://read.bi/1MahBgl&amp;via=clusterstock&amp;text=This little change could make Black Friday even more miserable this year" title="twitter" class="popup">
+                <i class="fa fa-twitter"></i>
+                <span class="text">twitter</span>
+            </a>
+        </li>
+        <li class="email button-email ks-sharemodule-email" data-href="http://www.businessinsider.com/credit-card-chips-could-slow-black-friday-lines-2015-11">
+            <a href="#" title="email">
+                <i class="fa fa-envelope"></i>
+                <span class="text">email</span>
+            </a>
+        </li>
+                <li class="printbtn ks-byline-print">
+            <a href="javascript:window.print()" title="print">
+                <i class="fa fa-print"></i>
+                <span class="text">print</span>
+            </a>
+        </li>
+            </ul>
+    <!-- buttons end here -->
+</div>
+<!-- RRSSB end -->
+
+<!-- This Empty div tells sailthru where to fly out the concierge promo. -->
+<div id="bottom-share-links"></div>
+        </div>
+
+                                                    <!-- Standard Taboola Script -->
+                    <div id='taboola-below-main-column' class='ks-taboola'></div>
+                    <script type="text/javascript">
+                        window._taboola = window._taboola || [];
+                                                _taboola.push({mode:'thumbs-1r', container:'taboola-below-main-column', placement:'below-main-column'});
+                                            </script>
+                                        <div class="clearfix"></div>
+        
+                    
+<div class="bottom-recommended clear-fix pull-left ks-recommended">
+    <h3 class="underlined thin">Recommended For You</h3>
+    <!-- Concierge posts -->
+    <ul class="media-list pull-left ">
+        <li class="media concierge-post">
+            <a href=""><div class="seealso-image"><img src="http://static4.businessinsider.com/assets/images/transparent.gif" alt="" /></div></a>
+            <h4 class="related"><a class="title-link" href=""></a></h4>
+        </li>
+        <li class="media concierge-post">
+            <a href=""><div class="seealso-image"><img src="http://static4.businessinsider.com/assets/images/transparent.gif" alt="" /></div></a>
+            <h4 class="related"><a class="title-link" href=""></a></h4>
+        </li>
+        <li class="media concierge-post">
+            <a href=""><div class="seealso-image"><img src="http://static4.businessinsider.com/assets/images/transparent.gif" alt="" /></div></a>
+            <h4 class="related"><a class="title-link" href=""></a></h4>
+        </li>
+        <li class="media concierge-post">
+            <a href=""><div class="seealso-image"><img src="http://static4.businessinsider.com/assets/images/transparent.gif" alt="" /></div></a>
+            <h4 class="related"><a class="title-link" href=""></a></h4>
+        </li>
+                <li class="media concierge-post last-story">
+            <a href=""><div class="seealso-image"><img src="http://static4.businessinsider.com/assets/images/transparent.gif" alt="" /></div></a>
+            <h4 class="related"><a class="title-link" href=""></a></h4>
+        </li>
+    </ul>
+</div>
+            <div class="clearfix"></div>
+        
+                
+        
+        
+        	<div class="footer-ad">
+					<div class="dianomi-ad"></div>
+
+		  <script>
+		      BI.dianomi.init('US', "postBottom");
+		  </script>
+			</div>
+        	<!-- Comments Form -->
+	<a name="comment-form"></a>
+	<span data-bi-ajax-route="/esi/user_commentbox?0=&1=NULL&2=credit-card-chips-could-slow-black-friday-lines-2015-11"></span>	<!-- / Comments Form -->
+
+<!-- Comments -->
+<div id="comments" class="">
+    
+<a name="comments"></a>
+<div class="comments">
+
+    <h3>Comments <a href="http://www.businessinsider.com/credit-card-chips-could-slow-black-friday-lines-2015-11/comments.rss" class="" title="RSS"><i class="fa fa-rss"></i></a></h3>
+
+    
+    <div class="tabs">
+
+	    <div id="pundit-request-success-message"></div>
+
+		<div class="comments-tabs">
+
+			<ul class="comments-tabs nav nav-tabs gradient">
+
+				<li id="comments-1" class="pundit-comments-content-message tab">
+					<a href="#pundits" data-toggle="tab">
+						Insiders
+						<span class="badge badge-info">0</span>
+					</a>
+				</li>
+				<li id="comments-2" class="comments-content-message tab active">
+					<a href="#non-pundits" data-toggle="tab">
+						All Comments
+						<span class="badge badge-info">0</span>
+					</a>
+				</li>
+                <div id="pundit-request-container" class="pundit-request-container pull-right gradient">
+                    <div class="pundit-request" rel="pundit-request-success-message">
+                        <a href="/register?first=index&pundit_request=1">Apply To Be An "Insider" &#187;</a>
+                    </div>
+                </div>
+			</ul>
+
+		</div>
+
+	</div>
+
+    <div id="comments-container">
+        <div id="comments-loading-image">
+            <img src="http://static3.businessinsider.com/assets/images/icons/icon_loading.gif" alt="Loading" /> <span style="color:#dd4725">Loading</span>
+        </div>
+        <div class="comments-content tab-content"></div>
+        <div id="pundit-request-success-message-bottom" class="margin-top"></div>
+
+        <!-- Receive New Comments Alert -->
+        
+    </div>
+</div>
+
+<!-- Bleachers -->
+
+</div>
+<!-- / Comments -->
+
+        <!-- Schema.org/Article metadata -->
+<div style="display:none;" itemscope itemtype="http://schema.org/Article">
+    <h1 itemprop="name">This little change could make Black Friday even more miserable this year</h1>
+    <a href="http://www.businessinsider.com/credit-card-chips-could-slow-black-friday-lines-2015-11" itemprop="url">This little change could make Black Friday even more miserable this year</a>
+    <img src="http://static1.businessinsider.com/image/564109cb9dd7cc1a008c86a1-100-100/this-little-change-could-make-black-friday-even-more-miserable-this-year.jpg"  itemprop="image" />
+    <div itemprop="description"><p>Just when you thought there couldn't be another...</p></div>
+</div>
+<!-- / Schema.org/Article metadata -->
+        
+    
+</div>
+                    </div>
+                                            <div class="span4">
+                            <div class="main-rail">
+                                
+<div id="right-rail" class="right-rail">
+	<div class="sl-layout-post">
+		<!-- PERFECT MARKET RR -->
+		
+			<!-- Only show at uppermost top if skin is active -->
+			
+			<!-- Vertical Host -->
+													<!-- / Vertical Host -->
+
+			<!-- Countdown Clock  -->
+						<!-- / Countdown Clock  -->
+
+			<!-- Top Right Rail Ad -->
+						<!-- / Top Right Rail Ad -->
+
+			<!-- Recommended For You  -->
+                            <!-- editorial sidebar -->
+<div class="clear-fix ks-recommended rail-recommended">
+    <h3 class="underlined thin">Recommended For You</h3>
+    <!-- Concierge posts -->
+    <ul class="media-list">
+        <li class="media concierge-post">
+            <a class="pull-left" href=""><div class="seealso-image"><img src="http://static4.businessinsider.com/assets/images/transparent.gif" width="60" alt="" /></div></a>
+            <div class="media-body"><p><a class="title-link" href=""></a></p></div>
+        </li>
+    </ul>
+</div>            			<!-- / Recommended For You  -->
+
+			<!-- Show here if skin is not active -->
+												<div class="right-ad">
+						<div class="min-height-250">
+							
+
+	<div data-bi-ad class="ad dfp rubicon" data-adunit="desktop/finance/clusterstock/post" data-authors="jonathan-marino" data-pagetype="post" data-region="Upper 300" data-rubicon_zone_id="141230" data-sizes="300x250,300x600,300x400,300x1050" data-tag="goldman" data-url="/credit-card-chips-could-slow-black-friday-lines-2015-11" data-views="0-5000"></div>
+
+	<script type="text/javascript">
+		(function() {
+			'use strict';
+			// Notify the DFP code that a new ad has just been rendered
+			amplify.publish('adRender');
+		}());
+	</script>
+						</div>
+					</div>
+		        		    
+		    <!-- taboola videos -->
+				<!-- Standard Taboola Script -->
+	<div id="taboola-right-rail-thumbnails" class="ks-rr-taboola-video"></div>
+	<script type="text/javascript">
+	  window._taboola = window._taboola || [];
+	  _taboola.push({
+	    mode: 'organic-thumbnails-e',
+	    container: 'taboola-right-rail-thumbnails',
+	    placement: 'Right Rail Thumbnails',
+	    target_type: 'video'
+	  });
+	</script>
+
+			<!-- Your Money -->
+			
+			<!-- Middle 300 -->
+							<div class="right-ad">
+					<div>
+						
+
+	<div data-bi-ad class="ad dfp position-load rubicon" data-adunit="desktop/finance/clusterstock/post" data-authors="jonathan-marino" data-pagetype="post" data-region="Middle 300" data-rubicon_zone_id="141232" data-sizes="300x250" data-tag="goldman" data-url="/credit-card-chips-could-slow-black-friday-lines-2015-11" data-views="0-5000"></div>
+
+	<script type="text/javascript">
+		(function() {
+			'use strict';
+			// Notify the DFP code that a new ad has just been rendered
+			amplify.publish('');
+		}());
+	</script>
+					</div>
+				</div>
+			
+            <!-- Dianomi Ad -->
+            
+<div class="right-ad">
+    <div class="dianomi-ad"></div>
+
+    <script>
+        BI.dianomi.setConfigKey(true);
+        BI.dianomi.init('US');
+    </script>
+</div>
+			<!-- Featured -->
+		 	                <div class="right-ad">
+                    <div>
+                        
+<div class="sponsored-content-widget ks-rr-sponsored-content-widget">
+    <h3 class="underlined thin">Featured</h3>
+    <ul class="media-list">
+                <li id="id-563782e79dd7cc15008c68cb" class="media">
+                        <a class="pull-left" href="http://www.businessinsider.com/costs-of-buying-a-home-2015-11">
+                                    <img src="http://static2.businessinsider.com/image/5637aaccbd86ef135c8bb718-60/how-to-figure-out-if-you-can-afford-to-buy-a-home.jpg" alt="How to figure out if you can afford to buy a home" />
+                            </a>
+            <div class="media-body">
+                <p><a class="title" href="http://www.businessinsider.com/costs-of-buying-a-home-2015-11">How to figure out if you can afford to buy a home</a></p>
+            </div>
+            <p class="align-right">
+                <a href="http://www.businessinsider.com/life-plan">More &quot;Life Plan&quot; »</a>            </p>
+        </li>
+                <li id="id-5638eb3bdd0895610a8b46b1" class="media">
+                        <a class="pull-left" href="http://www.businessinsider.com/7-cool-financial-technologies-we-wish-were-big-in-the-us-2015-11">
+                                    <img src="http://static1.businessinsider.com/image/5640b24add08958d628b468e-60/7-cool-financial-technologies-we-wish-were-big-in-the-us.jpg" alt="7 cool financial technologies we wish were big in the US" />
+                            </a>
+            <div class="media-body">
+                <p><a class="title" href="http://www.businessinsider.com/7-cool-financial-technologies-we-wish-were-big-in-the-us-2015-11">7 cool financial technologies we wish were big in the US</a></p>
+            </div>
+            <p class="align-right">
+                <a href="http://www.businessinsider.com/category/sai-100">More &quot;Digital Business Decoded&quot; »</a>            </p>
+        </li>
+                <li class="featured-300-ad">
+            
+
+	<div data-bi-ad class="ad dfp" data-adunit="desktop/finance/clusterstock/post" data-authors="jonathan-marino" data-pagetype="post" data-region="Featured 300" data-rubicon_zone_id="141232" data-sizes="300x120" data-tag="goldman" data-url="/credit-card-chips-could-slow-black-friday-lines-2015-11" data-views="0-5000"></div>
+
+	<script type="text/javascript">
+		(function() {
+			'use strict';
+			// Notify the DFP code that a new ad has just been rendered
+			amplify.publish('adRender');
+		}());
+	</script>
+        </li>
+    </ul>
+</div>                    </div>
+                </div>
+            
+			<!-- Newsletters -->
+			
+<div class="right-subscribe">
+	<div class="right-news">
+		<h3 class="underlined thin">Get <span class="news-vert">Finance</span> Emails &amp; Alerts</h3>
+		<div class="alert" id="news-alert"></div>
+		<form class="form" action="/newsletter?source=sidebar" method="post">
+			<div class="input-append">
+				<input id="news-email" name="email" type="text" placeholder="Email Address" data-email="">
+				<button class="btn submit" id="news-signup" type="submit">Sign-Up</button>
+			</div>
+			<a href="/newsletter">Learn More &#187;</a>
+
+			<div id="newsletter-expand" class="newsletter-preview-links margin-top" style="display:none">
+				<ul>
+											<li>
+							<label class="checkbox">
+								<input type="checkbox" name="newsletters[]" value="Finance Select" checked="checked">
+									Finance Select							</label>
+						</li>
+											<li>
+							<label class="checkbox">
+								<input type="checkbox" name="newsletters[]" value="Business Insider Select" checked="checked">
+									Business Insider Select							</label>
+						</li>
+									</ul>
+				<h5 class="border-bottom-dotted">More</h5>
+				<div class="accordion" id="news-categories">
+																											<div class="accordion-group">
+							<div class="accordion-heading">
+								<a class="accordion-toggle collapsed" data-toggle="collapse" href="#news-category-id1">
+									<i class="fa fa-caret-right"></i><span>Featured</span>
+								</a>
+							</div>
+							<div id="news-category-id1" class="accordion-body collapse">
+								<div class="accordion-inner">
+									<ul>
+																																																						<li>
+												<label class="checkbox">
+													<input type="checkbox" name="newsletters[]" value="Business Insider Select"
+														checked="checked"													/>
+													Business Insider Select												</label>
+											</li>
+																																																						<li>
+												<label class="checkbox">
+													<input type="checkbox" name="newsletters[]" value="Tech Select"
+																											/>
+													Tech Select												</label>
+											</li>
+																																																						<li>
+												<label class="checkbox">
+													<input type="checkbox" name="newsletters[]" value="Tech Chart Of The Day"
+																											/>
+													Tech Chart Of The Day												</label>
+											</li>
+																																																						<li>
+												<label class="checkbox">
+													<input type="checkbox" name="newsletters[]" value="Markets Chart Of The Day"
+																											/>
+													Markets Chart Of The Day												</label>
+											</li>
+																																																						<li>
+												<label class="checkbox">
+													<input type="checkbox" name="newsletters[]" value="10 Things Before the Opening Bell"
+																											/>
+													10 Things Before the Opening Bell												</label>
+											</li>
+																																																						<li>
+												<label class="checkbox">
+													<input type="checkbox" name="newsletters[]" value="Instant MBA"
+																											/>
+													Instant MBA												</label>
+											</li>
+																																																						<li>
+												<label class="checkbox">
+													<input type="checkbox" name="newsletters[]" value="Breaking News"
+																											/>
+													Breaking News												</label>
+											</li>
+																																																						<li>
+												<label class="checkbox">
+													<input type="checkbox" name="newsletters[]" value="Master Events List"
+																											/>
+													Business Insider Events												</label>
+											</li>
+																			</ul>
+								</div>
+							</div>
+						</div>
+																	<div class="accordion-group">
+							<div class="accordion-heading">
+								<a class="accordion-toggle collapsed" data-toggle="collapse" href="#news-category-id2">
+									<i class="fa fa-caret-right"></i><span>Finance</span>
+								</a>
+							</div>
+							<div id="news-category-id2" class="accordion-body collapse">
+								<div class="accordion-inner">
+									<ul>
+																																																						<li>
+												<label class="checkbox">
+													<input type="checkbox" name="newsletters[]" value="Finance Select"
+														checked="checked"													/>
+													Finance Select												</label>
+											</li>
+																																																						<li>
+												<label class="checkbox">
+													<input type="checkbox" name="newsletters[]" value="Markets Select"
+																											/>
+													Markets Select												</label>
+											</li>
+																																																						<li>
+												<label class="checkbox">
+													<input type="checkbox" name="newsletters[]" value="Monday Scouting Report"
+																											/>
+													Monday Scouting Report												</label>
+											</li>
+																																																						<li>
+												<label class="checkbox">
+													<input type="checkbox" name="newsletters[]" value="Your Money Select"
+																											/>
+													Your Money Select												</label>
+											</li>
+																																																						<li>
+												<label class="checkbox">
+													<input type="checkbox" name="newsletters[]" value="Financial Advisor Insights"
+																											/>
+													Financial Advisor Insights												</label>
+											</li>
+																																																						<li>
+												<label class="checkbox">
+													<input type="checkbox" name="newsletters[]" value="Smart Investor"
+																											/>
+													Smart Investor												</label>
+											</li>
+																																																						<li>
+												<label class="checkbox">
+													<input type="checkbox" name="newsletters[]" value="CFO Insider"
+																											/>
+													CFO Insider												</label>
+											</li>
+																			</ul>
+								</div>
+							</div>
+						</div>
+																	<div class="accordion-group">
+							<div class="accordion-heading">
+								<a class="accordion-toggle collapsed" data-toggle="collapse" href="#news-category-id3">
+									<i class="fa fa-caret-right"></i><span>Strategy</span>
+								</a>
+							</div>
+							<div id="news-category-id3" class="accordion-body collapse">
+								<div class="accordion-inner">
+									<ul>
+																																																						<li>
+												<label class="checkbox">
+													<input type="checkbox" name="newsletters[]" value="Strategy Select"
+																											/>
+													Strategy Select												</label>
+											</li>
+																																																						<li>
+												<label class="checkbox">
+													<input type="checkbox" name="newsletters[]" value="Advertising Select"
+																											/>
+													Advertising Select												</label>
+											</li>
+																																																						<li>
+												<label class="checkbox">
+													<input type="checkbox" name="newsletters[]" value="Retail Select"
+																											/>
+													Retail Select												</label>
+											</li>
+																																																						<li>
+												<label class="checkbox">
+													<input type="checkbox" name="newsletters[]" value="Careers Select"
+																											/>
+													Careers Select												</label>
+											</li>
+																																																						<li>
+												<label class="checkbox">
+													<input type="checkbox" name="newsletters[]" value="10 Things You Need To Know In Advertising"
+																											/>
+													null												</label>
+											</li>
+																			</ul>
+								</div>
+							</div>
+						</div>
+																	<div class="accordion-group">
+							<div class="accordion-heading">
+								<a class="accordion-toggle collapsed" data-toggle="collapse" href="#news-category-id4">
+									<i class="fa fa-caret-right"></i><span>Politics</span>
+								</a>
+							</div>
+							<div id="news-category-id4" class="accordion-body collapse">
+								<div class="accordion-inner">
+									<ul>
+																																																						<li>
+												<label class="checkbox">
+													<input type="checkbox" name="newsletters[]" value="Politics Select"
+																											/>
+													Politics Select												</label>
+											</li>
+																																																						<li>
+												<label class="checkbox">
+													<input type="checkbox" name="newsletters[]" value="Military Select"
+																											/>
+													Military Select												</label>
+											</li>
+																			</ul>
+								</div>
+							</div>
+						</div>
+																	<div class="accordion-group">
+							<div class="accordion-heading">
+								<a class="accordion-toggle collapsed" data-toggle="collapse" href="#news-category-id5">
+									<i class="fa fa-caret-right"></i><span>Life</span>
+								</a>
+							</div>
+							<div id="news-category-id5" class="accordion-body collapse">
+								<div class="accordion-inner">
+									<ul>
+																																																						<li>
+												<label class="checkbox">
+													<input type="checkbox" name="newsletters[]" value="Life Select"
+																											/>
+													Life Select												</label>
+											</li>
+																																																						<li>
+												<label class="checkbox">
+													<input type="checkbox" name="newsletters[]" value="Transportation Select"
+																											/>
+													Transportation Select												</label>
+											</li>
+																																																						<li>
+												<label class="checkbox">
+													<input type="checkbox" name="newsletters[]" value="Education Select"
+																											/>
+													Education Select												</label>
+											</li>
+																																																						<li>
+												<label class="checkbox">
+													<input type="checkbox" name="newsletters[]" value="Entertainment Select"
+																											/>
+													Entertainment Select												</label>
+											</li>
+																			</ul>
+								</div>
+							</div>
+						</div>
+																	<div class="accordion-group">
+							<div class="accordion-heading">
+								<a class="accordion-toggle collapsed" data-toggle="collapse" href="#news-category-id6">
+									<i class="fa fa-caret-right"></i><span>Tech</span>
+								</a>
+							</div>
+							<div id="news-category-id6" class="accordion-body collapse">
+								<div class="accordion-inner">
+									<ul>
+																																																						<li>
+												<label class="checkbox">
+													<input type="checkbox" name="newsletters[]" value="Enterprise Select"
+																											/>
+													Enterprise Select												</label>
+											</li>
+																																																						<li>
+												<label class="checkbox">
+													<input type="checkbox" name="newsletters[]" value="Science Select"
+																											/>
+													Science Select												</label>
+											</li>
+																																																						<li>
+												<label class="checkbox">
+													<input type="checkbox" name="newsletters[]" value="Mobile Chart Of The Day"
+																											/>
+													Mobile Chart Of The Day												</label>
+											</li>
+																																																						<li>
+												<label class="checkbox">
+													<input type="checkbox" name="newsletters[]" value="E-Commerce Chart Of The Day"
+																											/>
+													E-Commerce Chart Of The Day												</label>
+											</li>
+																																																						<li>
+												<label class="checkbox">
+													<input type="checkbox" name="newsletters[]" value="Payments Chart Of The Day"
+																											/>
+													Payments Chart Of The Day												</label>
+											</li>
+																																																						<li>
+												<label class="checkbox">
+													<input type="checkbox" name="newsletters[]" value="Digital Media Chart Of The Day"
+																											/>
+													Digital Media Chart Of The Day												</label>
+											</li>
+																																																						<li>
+												<label class="checkbox">
+													<input type="checkbox" name="newsletters[]" value="IoT Chart of the Day"
+																											/>
+													IoT Chart of the Day												</label>
+											</li>
+																			</ul>
+								</div>
+							</div>
+						</div>
+																	<div class="accordion-group">
+							<div class="accordion-heading">
+								<a class="accordion-toggle collapsed" data-toggle="collapse" href="#news-category-id7">
+									<i class="fa fa-caret-right"></i><span>Charts of the Day</span>
+								</a>
+							</div>
+							<div id="news-category-id7" class="accordion-body collapse">
+								<div class="accordion-inner">
+									<ul>
+																																																						<li>
+												<label class="checkbox">
+													<input type="checkbox" name="newsletters[]" value="Sports Chart Of The Day"
+																											/>
+													Sports Chart Of The Day												</label>
+											</li>
+																			</ul>
+								</div>
+							</div>
+						</div>
+																	<div class="accordion-group">
+							<div class="accordion-heading">
+								<a class="accordion-toggle collapsed" data-toggle="collapse" href="#news-category-id8">
+									<i class="fa fa-caret-right"></i><span>Top 10 Things</span>
+								</a>
+							</div>
+							<div id="news-category-id8" class="accordion-body collapse">
+								<div class="accordion-inner">
+									<ul>
+																																																						<li>
+												<label class="checkbox">
+													<input type="checkbox" name="newsletters[]" value="10 Things In Tech You Need To Know"
+																											/>
+													10 Things In Tech You Need To Know												</label>
+											</li>
+																																																						<li>
+												<label class="checkbox">
+													<input type="checkbox" name="newsletters[]" value="Closing Bell"
+																											/>
+													Closing Bell												</label>
+											</li>
+																			</ul>
+								</div>
+							</div>
+						</div>
+																	<div class="accordion-group">
+							<div class="accordion-heading">
+								<a class="accordion-toggle collapsed" data-toggle="collapse" href="#news-category-id9">
+									<i class="fa fa-caret-right"></i><span>Sports</span>
+								</a>
+							</div>
+							<div id="news-category-id9" class="accordion-body collapse">
+								<div class="accordion-inner">
+									<ul>
+																																																						<li>
+												<label class="checkbox">
+													<input type="checkbox" name="newsletters[]" value="Sports Select"
+																											/>
+													Sports												</label>
+											</li>
+																			</ul>
+								</div>
+							</div>
+						</div>
+									</div>
+			</div>
+		</form>
+	</div>
+</div>
+
+			<!-- taboola 'from the web' - needs correct condition -->
+			<!-- Standard Taboola Script -->
+<div id="taboola-right-rail-thumbnails-2" class="ks-rr-taboola-from-the-web"></div>
+<script type="text/javascript">
+  window._taboola = window._taboola || [];
+  _taboola.push({
+    mode: 'ab_thumbnails-a_2x1',
+    container: 'taboola-right-rail-thumbnails-2',
+    placement: 'Right Rail Thumbnails 2nd',
+    target_type: 'video'
+  });
+</script>
+
+			<!-- Editorial Sidebar -->
+							<span data-bi-ajax-route="/esi/ed_sidebar"></span>			
+			<!-- Editorial Sidebar 2 -->
+							<!-- editorial sidebar 2 -->
+<div id="editorial2" class="ks-rr-editorial-2" data-bi-heatmap="editorial">
+	<h3 class="underlined thin">Latest Deals</h3>
+	<div>
+		<div style="width: 47.995%; display: block; position: relative; float: left; margin: 0 10px 2% 0;"><a href="http://www.amazon.com/b/ref=as_li_ss_tl?_encoding=UTF8&amp;adid=0KADBBMAY2FXXYKHFED8&amp;camp=1789&amp;creative=390957&amp;linkCode=ur2&amp;node=7762829011&amp;tag=bi_rightrail_promo_thanksgiving_store-20&amp;linkId=4L4I3IMGNBYS6OZ2"><img src="http://static2.businessinsider.com/image/564116e8ecad045c22c374a9-150-112/thanksgiving-turkey.png" border="0" style="width: 100%; margin-bottom: 5px;" /></a>
+<div style="height: 80px !important;"><a href="http://www.amazon.com/b/ref=as_li_ss_tl?_encoding=UTF8&amp;adid=0KADBBMAY2FXXYKHFED8&amp;camp=1789&amp;creative=390957&amp;linkCode=ur2&amp;node=7762829011&amp;tag=bi_rightrail_promo_thanksgiving_store-20&amp;linkId=4L4I3IMGNBYS6OZ2"><span style="color: #000000;">The Thanksgiving Store</span></a></div>
+</div>
+<div style="width: 47.995%; display: block; position: relative; float: left; margin: 0 0 2% 0;"><a href="http://www.amazon.com/Black-Friday/b/ref=as_li_ss_tl?_encoding=UTF8&amp;camp=1789&amp;creative=390957&amp;linkCode=ur2&amp;node=384082011&amp;tag=bi_rightrail_promo_countdown_to_black_friday-20&amp;linkId=JWBPWCJVHG2FALYN"><img src="http://static4.businessinsider.com/image/564117beeab8ea1e7fa5f2db-150-113/black-friday-female-thumb.png" border="0" style="width: 100%; margin-bottom: 5px;" /></a>
+<div style="height: 80px !important;"><a href="http://www.amazon.com/Black-Friday/b/ref=as_li_ss_tl?_encoding=UTF8&amp;camp=1789&amp;creative=390957&amp;linkCode=ur2&amp;node=384082011&amp;tag=bi_rightrail_promo_countdown_to_black_friday-20&amp;linkId=JWBPWCJVHG2FALYN"><span style="color: #000000;">Countdown to Black Friday - Deals of the Week</span></a></div>
+</div>
+<div style="width: 47.995%; display: block; position: relative; float: left; margin: 0 10px 2% 0;"><a href="http://www.amazon.com/b/ref=as_li_ss_tl?_encoding=UTF8&amp;camp=1789&amp;creative=390957&amp;linkCode=ur2&amp;linkId=ALE2HQMFFTHY7RQQ&amp;node=10161501011&amp;tag=bi_rightrail_promo_trendsetter_gift_guide-20&amp;linkId=O2DSMRD62IEXW36C"><img src="http://static5.businessinsider.com/image/564118326da8110b44efa57d-150-113/trendsetter-man-in-kitchen.png" border="0" style="width: 100%; margin-bottom: 5px;" /></a>
+<div style="height: 80px !important;"><a href="http://www.amazon.com/b/ref=as_li_ss_tl?_encoding=UTF8&amp;camp=1789&amp;creative=390957&amp;linkCode=ur2&amp;linkId=ALE2HQMFFTHY7RQQ&amp;node=10161501011&amp;tag=bi_rightrail_promo_trendsetter_gift_guide-20&amp;linkId=O2DSMRD62IEXW36C"><span style="color: #000000;">The Trendsetter Gift Guide</span></a></div>
+</div>
+<div style="width: 47.995%; display: block; position: relative; float: left; margin: 0 0 20px 0;"><a href="http://www.amazon.com/b/ref=as_li_ss_tl?_encoding=UTF8&amp;camp=1789&amp;creative=390957&amp;linkCode=ur2&amp;node=12745394011&amp;pf_rd_i=10044414011&amp;pf_rd_m=ATVPDKIKX0DER&amp;pf_rd_p=2259643402&amp;pf_rd_r=092K3C4J2XEG5K6B9GPA&amp;pf_rd_s=merchandised-search-top-1&amp;pf_rd_t=101&amp;tag=bi_rightrail_promo_holiday_central-20&amp;linkId=F4ME27F5X6VUWHCF"><img src="http://static4.businessinsider.com/image/5641188d6da811ba38efa568-150-109/gift-in-womans-hands.png" border="0" style="width: 100%; margin-bottom: 5px;" /></a>
+<div style="height: 80px !important;"><a href="http://www.amazon.com/b/ref=as_li_ss_tl?_encoding=UTF8&amp;camp=1789&amp;creative=390957&amp;linkCode=ur2&amp;node=12745394011&amp;pf_rd_i=10044414011&amp;pf_rd_m=ATVPDKIKX0DER&amp;pf_rd_p=2259643402&amp;pf_rd_r=092K3C4J2XEG5K6B9GPA&amp;pf_rd_s=merchandised-search-top-1&amp;pf_rd_t=101&amp;tag=bi_rightrail_promo_holiday_central-20&amp;linkId=F4ME27F5X6VUWHCF"><span style="color: #000000;">Holiday Central</span></a></div>
+</div>
+<div style="clear: both;">
+<div style="margin: 10px 0 0px;">
+<h3 class="underlined thin">Latest Research</h3>
+</div>
+<div style="width: 47.995%; display: block; position: relative; float: left; margin: 0 10px 2% 0;"><a href="http://www.businessinsider.com/intelligence/mobile-payments-free-report?IR=T&amp;utm_source=businessinsider&amp;utm_medium=banner&amp;utm_term=RR&amp;utm_content=Mobile_Free_Report&amp;utm_campaign=Mobile_Free_Report_RR"><img src="http://static2.businessinsider.com/image/55e878a26bb3f7a435ef5403-150/mobilepaymentsfreerr.png" border="0" style="width: 100%; margin-bottom: 5px;" /></a>
+<div style="height: 80px !important;"><a href="http://www.businessinsider.com/intelligence/mobile-payments-free-report?IR=T&amp;utm_source=businessinsider&amp;utm_medium=banner&amp;utm_term=RR&amp;utm_content=Mobile_Free_Report&amp;utm_campaign=Mobile_Free_Report_RR"><span style="color: #000000;">FREE: Mobile Payments - Everything You Need to Know</span></a></div>
+</div>
+<div style="width: 47.995%; display: block; position: relative; float: left; margin: 0 0 2% 0;"><a href="http://www.businessinsider.com/intelligence/research-store?IR=T&amp;utm_source=House&amp;utm_term=RR-AffiliateMark&amp;utm_campaign=RR#!/THE-AFFILIATE-MARKETING-REPORT/p/56467038/category=11987293"><img src="http://static-bii.businessinsider.com/image/5638cbcc771aeaaf427cbae9-150/bii-affiliate-marketing.png" border="0" style="width: 100%; margin-bottom: 5px;" /></a>
+<div style="height: 80px !important;"><a href="http://www.businessinsider.com/intelligence/research-store?IR=T&amp;utm_source=House&amp;utm_term=RR-AffiliateMark&amp;utm_campaign=RR#!/THE-AFFILIATE-MARKETING-REPORT/p/56467038/category=11987293"><span style="color: #000000;">The Affiliate Marketing Report</span></a></div>
+</div>
+<div style="width: 47.995%; display: block; position: relative; float: left; margin: 0 10px 2% 0;"><a href="http://www.businessinsider.com/intelligence/research-store?IR=T&amp;utm_source=House&amp;utm_term=RR-IoT2015&amp;utm_campaign=RR#!/The-Internet-of-Things-Report/p/46301489/category=11987294"><img src="http://static-bii.businessinsider.com/image/5638cbd2771aeab0427cbae7-150/iot2015_cover.png" border="0" style="width: 100%; margin-bottom: 5px;" /></a>
+<div style="height: 80px !important;"><a href="http://www.businessinsider.com/intelligence/research-store?IR=T&amp;utm_source=House&amp;utm_term=RR-IoT2015&amp;utm_campaign=RR#!/The-Internet-of-Things-Report/p/46301489/category=11987294"><span style="color: #000000;">The Internet of Things 2015 Report</span></a></div>
+</div>
+<div style="width: 47.995%; display: block; position: relative; float: left; margin: 0 0 20px 0;"><a href="http://www.businessinsider.com/intelligence/research-store?IR=T&amp;utm_source=House&amp;utm_term=RR-AheadoftheCurve&amp;utm_campaign=RR#!/Ahead-of-the-Curve-The-Digital-Disruption-of-Retail-Banking/p/55853103/category=11987295"><img src="http://static-bii.businessinsider.com/image/5638cd2d76c7d1345cd5c96d-150/bankingdisruption.png" border="0" style="width: 100%; margin-bottom: 5px;" /></a>
+<div style="height: 80px !important;"><a href="http://www.businessinsider.com/intelligence/research-store?IR=T&amp;utm_source=House&amp;utm_term=RR-AheadoftheCurve&amp;utm_campaign=RR#!/Ahead-of-the-Curve-The-Digital-Disruption-of-Retail-Banking/p/55853103/category=11987295"><span style="color: #000000;">The Digital Disruption of Retail Banking</span></a></div>
+</div>
+<div style="clear: both;">
+<div style="margin: 10px 0 0px;">
+<h3 class="underlined thin">Read Business Insider On The Go</h3>
+</div>
+<div style="text-align: center !important; width: 100%; display: block;"><a href="https://itunes.apple.com/app/apple-store/id554260576?pt=385758&amp;ct=right-rail&amp;mt=8"><img src="http://static2.businessinsider.com/image/51e9584f69beddbb1d000003-208/appstorebadgeen.png" border="0" style="margin: 0px 0px 10px 0px;" /></a> <br /><a href="http://www.businessinsider.com/about/mobile">Available for iPhone, iPad, and Android</a> <br /> <a href="http://www.businessinsider.com/about/mobile"><img src="http://static1.businessinsider.com/image/51e95c6aeab8ea3845000009/appleicon.png" border="0" style="margin: 10px 5px;" /></a> <a href="http://www.businessinsider.com/about/mobile"><img src="http://static4.businessinsider.com/image/51e95c6aeab8eab74700000b/androidicon.png" border="0" style="margin: 10px 5px;" /></a></div>
+</div>
+</div>	</div>
+</div>
+<script>amplify.publish('editorial-sidebar-loaded', 'editorial2');</script>
+<!-- / editorial sidebar 2 -->
+			
+			<!-- Jobs Widget -->
+						
+<!-- Jobs Module -->
+<div class="jobs ks-rr-jobs hide-uk">
+	<h5 class="text-ad pull-right"><a href="http://www.careerbuilder.com/Jobseeker/Jobs/JobResults.aspx?IPath=QH&qb=1&s_rawwords=&s_freeloc=&s_jobtypes=ALL&lr=cbpar_busiin&siteid=cbpar_busiin026&utm_source=businessinsider&utm_medium=partner&utm_campaign=businessinsider-all-jobs-applys" title="Visit Career Builder"><img src="http://static3.businessinsider.com/assets/images/careerbuilder.png" alt="Career Builder"></a></h5>
+	<h3>Find A Job</h3>
+
+	<!-- <div class="row-fluid"> -->
+	<table>
+		<tr>
+			<td>
+				<a rel="nofollow" href="http://www.careerbuilder.com/Jobseeker/Jobs/JobResults.aspx?IPath=QH&qb=1&s_rawwords=technology&s_freeloc=&s_jobtypes=ALL&lr=cbpar_busiin&siteid=cbpar_busiin020&utm_source=businessinsider&utm_medium=partner&utm_campaign=businessinsider-tech-applys">Tech Jobs</a>
+			</td>
+			<td>
+				<a rel="nofollow" href="http://www.careerbuilder.com/Jobseeker/Jobs/JobResults.aspx?IPath=QH&qb=1&s_rawwords=c-level&s_freeloc=&s_jobtypes=ALL&lr=cbpar_busiin&siteid=cbpar_busiin023&utm_source=businessinsider&utm_medium=partner&utm_campaign=businessinsider-c-level-applys">C-Level Jobs</a>
+			</td>
+		</tr>
+		<tr>
+			<td>
+				<a rel="nofollow" href="http://www.careerbuilder.com/Jobseeker/Jobs/JobResults.aspx?IPath=QH&qb=1&s_rawwords=media&s_freeloc=&s_jobtypes=ALL&lr=cbpar_busiin&siteid=cbpar_busiin021&utm_source=businessinsider&utm_medium=partner&utm_campaign=businessinsider-media-applys">Media Jobs</a>
+			</td>
+			<td>
+				<a rel="nofollow" href="http://www.careerbuilder.com/Jobseeker/Jobs/JobResults.aspx?IPath=QH&qb=1&s_rawwords=design&s_freeloc=&s_jobtypes=ALL&lr=cbpar_busiin&siteid=cbpar_busiin024&utm_source=businessinsider&utm_medium=partner&utm_campaign=businessinsider-design-applys">Design Jobs</a>
+			</td>
+		</tr>
+		<tr>
+			<td>
+				<a rel="nofollow" href="http://www.careerbuilder.com/Jobseeker/Jobs/JobResults.aspx?IPath=QH&qb=1&s_rawwords=finance&s_freeloc=&s_jobtypes=ALL&lr=cbpar_busiin&siteid=cbpar_busiin022&utm_source=businessinsider&utm_medium=partner&utm_campaign=businessinsider-finance-applys">Finance Jobs</a>
+			</td>
+			<td>
+				<a rel="nofollow" href="http://www.careerbuilder.com/Jobseeker/Jobs/JobResults.aspx?IPath=QH&qb=1&s_rawwords=sales&s_freeloc=&s_jobtypes=ALL&lr=cbpar_busiin&siteid=cbpar_busiin025&utm_source=businessinsider&utm_medium=partner&utm_campaign=businessinsider-sales-applys">Sales Jobs</a>
+			</td>
+		</tr>
+	</table>
+
+	<div class="clearfix">
+		<a href="http://www.careerbuilder.com/Jobseeker/Jobs/JobResults.aspx?IPath=QH&qb=1&s_rawwords=&s_freeloc=&s_jobtypes=ALL&lr=cbpar_busiin&siteid=cbpar_busiin026&utm_source=businessinsider&utm_medium=partner&utm_campaign=businessinsider-all-jobs-applys">See All Jobs &#187;</a>
+	</div>
+
+</div>
+
+
+
+			
+			<!-- Partners -->
+						<div class="right-ad">
+				<div class="partner-thanks clearfix">
+					<h3 class="underlined thin">Thanks to our partners</h3>
+					<ul>
+						<li>
+							<a class="sprites catchpoint" href="http://www.catchpoint.com/" title="Visit Catchpoint" target="_blank"></a>
+						</li>
+						<li>
+							<a class="sprites sailthru" href="http://www.sailthru.com" title="Visit Sailthru" target="_blank"></a>
+						</li>
+						<li>
+							<a class="sprites ooyala" href="http://www.ooyala.com/?utm_source=BusinessInsider&utm_medium=Sponsor&utm_campaign=Rebranding" title="Visit Ooyala" target="_blank"></a>
+						</li>
+					</ul>
+				</div>
+			</div>
+			
+
+			<!-- Author Sold -->
+							<div class="right-ad lower300" data-sticky="lower300">
+					<div>
+						
+
+	<div data-bi-ad class="ad dfp position-load rubicon" data-adunit="desktop/finance/clusterstock/post" data-authors="jonathan-marino" data-pagetype="post" data-region="Lower 300" data-rubicon_zone_id="141232" data-sizes="300x250,300x600" data-tag="goldman" data-url="/credit-card-chips-could-slow-black-friday-lines-2015-11" data-views="0-5000"></div>
+
+	<script type="text/javascript">
+		(function() {
+			'use strict';
+			// Notify the DFP code that a new ad has just been rendered
+			amplify.publish('');
+		}());
+	</script>
+					</div>
+				</div>
+			
+			</div>
+</div>
+                            </div>
+                        </div>
+                    
+                </div>
+            </div>
+
+            
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<div class="footer" data-bi-footer>
+
+    <div class="container">
+
+        <section class="top">
+            <a href="/" class="sprites logo"></a>
+            <section class="social-icons">
+                <ul class="links-user">
+                                            
+                        
+
+    <li class="social">
+        <a href="//www.facebook.com/businessinsider" title="Like us on Facebook" aria-label="Like us on Facebook" target="_blank"><i class="fa fa-facebook ks-header-facebook"></i></a>
+    </li>
+
+    <li class="social">
+        <a href="//twitter.com/businessinsider" title="Follow us on Twitter" aria-label="Follow us on Twitter" target="_blank"><i class="fa fa-twitter ks-header-twitter"></i></a>
+    </li>
+
+    <li class="social">
+        <a href="//www.linkedin.com/company/business-insider" title="Connect with us on LinkedIn" aria-label="Connect with us on LinkedIn" target="_blank"><i class="fa fa-linkedin ks-header-linkedin"></i></a>
+    </li>
+                    
+                    
+                                </section>
+            <a href="//www.techinsider.io" class="partner-logo"></a>
+        </section>
+
+        <div class="list-pipes">
+            <ul>
+            <li>* Copyright &copy; 2015 Business Insider Inc. All rights reserved. <span class="nowrap">Registration on or use of this site constitutes acceptance of our
+                                        <a href="/terms">Terms of Service</a>                    and
+                                                            <a href="/privacy-policy">Privacy Policy</a>.</span>
+                </li>
+                <li><a href="/disclaimer">Disclaimer</a></li>
+                                    <li><a href="/commerce-on-business-insider">Commerce Policy</a></li>
+                            </ul>
+        </div>
+        <div class="list-pipes">
+            <ul>
+                <li>Powered by <a href="http://www.mongodb.org">MongoDB</a></li>
+                <li>Stock quotes by <a href="http://ycharts.com">YCharts</a></li>
+                                    <li><a href="http://nytm.org/made">Made in NYC</a></li>
+                            </ul>
+        </div>
+        <div class="international-links list-pipes">
+            <ul><li>International Editions:</li>
+                <li><a href="http://uk.businessinsider.com?IR=C">UK</a></li><li><a href="http://www.businessinsider.com.au/">AUS</a></li><li><a href="http://www.businessinsider.co.id/">ID</a></li><li><a href="http://www.businessinsider.in/">IN</a></li><li><a href="http://www.businessinsider.my/">MY</a></li><li><a href="http://www.businessinsider.sg/">SG</a></li>            </ul>
+        </div>
+                   </div>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript" src="http://static4.businessinsider.com/assets/js/min-foot.js?1447277491"></script>
+
+<!--[if gte IE 9]>
+<script type="text/javascript">amplify.publish("ie9-pinned-site", {"hid":null,"vertical":"clusterstock"});</script><![endif]-->
+
+<!-- Google Tag Manager -->
+<noscript><iframe src=""//www.googletagmanager.com/ns.html?id=GTM-NS64GV""
+height=""0"" width=""0"" style=""display:none;visibility:hidden""></iframe></noscript>
+<script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+'//www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+})(window,document,'script','dataLayer','GTM-NS64GV');</script>
+<!-- End Google Tag Manager -->
+
+<!-- Twitter widget.js -->
+<script type="text/javascript">
+    !function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0];if(!d.getElementById(id)){
+        js=d.createElement(s);
+        js.id=id;
+        js.src="https://platform.twitter.com/widgets.js";
+        js.async=true;
+        fjs.parentNode.insertBefore(js,fjs);
+    }}(document,"script","twitter-wjs");
+</script>
+<!-- /Twitter widget.js -->
+
+    
+    <!-- START Nielsen Online SiteCensus V6.0 -->
+    <!-- COPYRIGHT 2010 Nielsen Online -->
+    <script type="text/javascript">
+    (function () {
+        var d = new Image(1, 1);
+        d.onerror = d.onload = function () { d.onerror = d.onload = null; };
+        d.src = ["//secure-us.imrworldwide.com/cgi-bin/m?ci=us-103525h&cg=0&cc=1&si=", escape(window.location.href), "&rp=", escape(document.referrer), "&ts=compact&rnd=", (new Date()).getTime()].join('');
+    })();
+    </script>
+    <noscript>
+        <div><img src="//secure-us.imrworldwide.com/cgi-bin/m?ci=us-103525h&amp;cg=0&amp;cc=1&amp;ts=noscript" width="1" height="1" alt="" /></div>
+    </noscript>
+    <!-- END Nielsen Online SiteCensus V6.0 -->
+
+    <!-- Begin comScore Tag -->
+    <script type="text/javascript">
+        var _comscore = _comscore || [];
+        _comscore.push({ c1: "2", c2: "9900186" });
+        (function() {
+            var s = document.createElement("script"), el = document.getElementsByTagName("script")[0]; s.async = true;
+            s.src = (document.location.protocol == "https:" ? "https://sb" : "http://b") + ".scorecardresearch.com/beacon.js";
+            el.parentNode.insertBefore(s, el);
+        })();
+    </script>
+    <noscript>
+        <img src="http://b.scorecardresearch.com/p?c1=2&c2=9900186&cv=2.0&cj=1" />
+    </noscript>
+    <!-- End comScore Tag -->
+
+        <!-- Chartbeat -->
+    <script type="text/javascript">
+        // chartbeat wants the vars in global
+        window._sf_async_config={uid:14447,domain:"businessinsider.com"};
+        window._sf_async_config.useCanonical = true;
+
+        //only set the following if on a sponsored post
+        
+        (function(){
+          function loadChartbeat() {
+            window._sf_endpt=(new Date()).getTime();
+            var e = document.createElement('script');
+            e.setAttribute('language', 'javascript');
+            e.setAttribute('type', 'text/javascript');
+            e.setAttribute('src',
+               (("https:" == document.location.protocol) ? "https://s3.amazonaws.com/" : "http://") +
+               "static.chartbeat.com/js/chartbeat_pub.js");
+            document.body.appendChild(e);
+          }
+          var oldonload = window.onload;
+          window.onload = (typeof window.onload != 'function') ?
+             loadChartbeat : function() { oldonload(); loadChartbeat(); };
+        })();
+    </script>
+    <!-- / Chartbeat -->
+    
+    <!-- BEGIN Krux Control Tag -->
+<script class="kxct" data-id="I2I9M2yx" data-timing="async" data-version="1.9" type="text/javascript">
+  window.Krux||((Krux=function(){Krux.q.push(arguments)}).q=[]);
+  (function(){
+    var k=document.createElement('script');k.type='text/javascript';k.async=true;
+    var m,src=(m=location.href.match(/\bkxsrc=([^&]+)/))&&decodeURIComponent(m[1]);
+    k.src = /^https?:\/\/([^\/]+\.)?krxd\.net(:\d{1,5})?\//i.test(src) ? src : src === "disable" ? "" :
+      (location.protocol==="https:"?"https:":"http:")+"//cdn.krxd.net/controltag?confid=I2I9M2yx"
+  ;
+    var s=document.getElementsByTagName('script')[0];s.parentNode.insertBefore(k,s);
+  }());
+</script>
+<!-- END Krux Controltag -->
+            <!-- Sailthru Concierge -->
+        <script type="text/javascript" src="http://ak.sail-horizon.com/horizon/v1.js"></script>
+        <script type="text/javascript" src="http://ak.sail-horizon.com/scout/v1.js"></script>
+        <script type="text/javascript">
+        $(function() {
+            // Sailthru Concierge
+            if (window.Sailthru) {
+                var sailthruOpts = {
+                    domain: 'horizon.businessinsider.com'
+                                            , concierge: { from: 'top', threshold: $('#bottom-share-links') }
+                                    };
+                if (window.outerWidth < 800) { //on small screens we dont want the flyout to appear
+                    delete sailthruOpts.concierge;
+                }
+                Sailthru.setup(sailthruOpts);
+            }
+        });
+        </script>
+        <!-- / Sailthru Concierge -->
+            
+<!-- Perfect market JS -->
+    <!-- End Perfect market JS-->
+
+<!-- taboola foot -->
+    <script type="text/javascript">
+        window._taboola = window._taboola || [];
+        _taboola.push({flush: true});
+    </script>
+
+
+<!-- START Parse.ly Include: Standard -->
+<div id="parsely-root" style="display: none">
+  <div id="parsely-cfg" data-parsely-site="businessinsider.com"></div>
+</div>
+<script>
+(function(s, p, d) {
+  var h=d.location.protocol, i=p+"-"+s,
+      e=d.getElementById(i), r=d.getElementById(p+"-root"),
+      u=h==="https:"?"d1z2jf7jlzjs58.cloudfront.net"
+      :"static."+p+".com";
+  if (e) return;
+  e = d.createElement(s); e.id = i; e.async = true;
+  e.src = h+"//"+u+"/p.js"; r.appendChild(e);
+})("script", "parsely", document);
+</script>
+<!-- END Parse.ly Include -->
+<script type="text/javascript">window.NREUM||(NREUM={});NREUM.info={"beacon":"bam.nr-data.net","licenseKey":"4b4136998e","applicationID":"2646431,2646478","transactionName":"ZVZVZRBVXEJVVkJRDVwcdEQRQF1cG0VZSxY=","queueTime":0,"applicationTime":189,"atts":"SRFWE1hPT0w=","errorBeacon":"bam.nr-data.net","agent":"js-agent.newrelic.com\/nr-632.min.js"}</script></body>
+</html>

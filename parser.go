@@ -5,13 +5,15 @@ import (
 	"golang.org/x/net/html"
 )
 
-type parser struct{}
+// Parser is an HTML parser specialised in extraction of main content and other properties
+type Parser struct{}
 
-func NewParser() *parser {
-	return &parser{}
+// NewParser returns an HTML parser
+func NewParser() *Parser {
+	return &Parser{}
 }
 
-func (this *parser) dropTag(selection *goquery.Selection) {
+func (p Parser) dropTag(selection *goquery.Selection) {
 	selection.Each(func(i int, s *goquery.Selection) {
 		node := s.Get(0)
 		node.Data = s.Text()
@@ -19,7 +21,7 @@ func (this *parser) dropTag(selection *goquery.Selection) {
 	})
 }
 
-func (this *parser) indexOfAttribute(selection *goquery.Selection, attr string) int {
+func (p Parser) indexOfAttribute(selection *goquery.Selection, attr string) int {
 	node := selection.Get(0)
 	for i, a := range node.Attr {
 		if a.Key == attr {
@@ -29,15 +31,15 @@ func (this *parser) indexOfAttribute(selection *goquery.Selection, attr string) 
 	return -1
 }
 
-func (this *parser) delAttr(selection *goquery.Selection, attr string) {
-	idx := this.indexOfAttribute(selection, attr)
+func (p Parser) delAttr(selection *goquery.Selection, attr string) {
+	idx := p.indexOfAttribute(selection, attr)
 	if idx > -1 {
 		node := selection.Get(0)
 		node.Attr = append(node.Attr[:idx], node.Attr[idx+1:]...)
 	}
 }
 
-func (this *parser) getElementsByTags(div *goquery.Selection, tags []string) *goquery.Selection {
+func (p Parser) getElementsByTags(div *goquery.Selection, tags []string) *goquery.Selection {
 	selection := new(goquery.Selection)
 	for _, tag := range tags {
 		selections := div.Find(tag)
@@ -48,11 +50,11 @@ func (this *parser) getElementsByTags(div *goquery.Selection, tags []string) *go
 	return selection
 }
 
-func (this *parser) clear(selection *goquery.Selection) {
+func (p Parser) clear(selection *goquery.Selection) {
 	selection.Nodes = make([]*html.Node, 0)
 }
 
-func (this *parser) removeNode(selection *goquery.Selection) {
+func (p Parser) removeNode(selection *goquery.Selection) {
 	if selection != nil {
 		node := selection.Get(0)
 		if node != nil && node.Parent != nil {
@@ -61,7 +63,7 @@ func (this *parser) removeNode(selection *goquery.Selection) {
 	}
 }
 
-func (this *parser) name(selector string, selection *goquery.Selection) string {
+func (p Parser) name(selector string, selection *goquery.Selection) string {
 	value, exists := selection.Attr(selector)
 	if exists {
 		return value
@@ -69,10 +71,10 @@ func (this *parser) name(selector string, selection *goquery.Selection) string {
 	return ""
 }
 
-func (this *parser) setAttr(selection *goquery.Selection, attr string, value string) {
+func (p Parser) setAttr(selection *goquery.Selection, attr string, value string) {
 	if selection.Size() > 0 {
 		node := selection.Get(0)
-		attrs := make([]html.Attribute, 0)
+		var attrs []html.Attribute
 		for _, a := range node.Attr {
 			if a.Key != attr {
 				newAttr := new(html.Attribute)
