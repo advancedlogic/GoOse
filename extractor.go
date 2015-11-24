@@ -50,39 +50,38 @@ func (extr *ContentExtractor) getTitle(article *Article) string {
 	ogTitleElement := doc.Find(`meta[property="og:title"]`)
 	if ogTitleElement != nil && ogTitleElement.Size() > 0 {
 		title, _ = ogTitleElement.Attr("content")
-		if title != "" {
+	}
+	if title == "" {
+		titleElement := doc.Find("title,post-title,headline")
+		if titleElement == nil || titleElement.Size() == 0 {
 			return title
 		}
-	}
-	titleElement := doc.Find("title,post-title,headline")
-	if titleElement == nil || titleElement.Size() == 0 {
-		return title
+		title = titleElement.Text()
 	}
 
-	titleText := titleElement.Text()
 	usedDelimiter := false
 
-	if strings.Contains(titleText, "|") {
-		titleText = extr.splitTitle(RegSplit(titleText, pipeSplitter))
+	if strings.Contains(title, "|") {
+		title = extr.splitTitle(RegSplit(title, pipeSplitter))
 		usedDelimiter = true
 	}
 
-	if !usedDelimiter && strings.Contains(titleText, "-") {
-		titleText = extr.splitTitle(RegSplit(titleText, dashSplitter))
+	if !usedDelimiter && strings.Contains(title, "-") {
+		title = extr.splitTitle(RegSplit(title, dashSplitter))
 		usedDelimiter = true
 	}
 
-	if !usedDelimiter && strings.Contains(titleText, "»") {
-		titleText = extr.splitTitle(RegSplit(titleText, arrowsSplitter))
+	if !usedDelimiter && strings.Contains(title, "»") {
+		title = extr.splitTitle(RegSplit(title, arrowsSplitter))
 		usedDelimiter = true
 	}
 
-	if !usedDelimiter && strings.Contains(titleText, ":") {
-		titleText = extr.splitTitle(RegSplit(titleText, colonSplitter))
+	if !usedDelimiter && strings.Contains(title, ":") {
+		title = extr.splitTitle(RegSplit(title, colonSplitter))
 		usedDelimiter = true
 	}
 
-	title = strings.Replace(titleText, motleyReplacement, "", -1)
+	title = strings.Replace(title, motleyReplacement, "", -1)
 
 	if extr.config.debug {
 		log.Printf("Page title is %s\n", title)

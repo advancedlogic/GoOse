@@ -35,13 +35,29 @@ var removeNodesRegEx = regexp.MustCompile("" +
 	"^side$|" +
 	"^side_|" +
 	"^widget$|" +
+	"^ab[0-9]$|" +
+	"[_-]ads$|" +
+	"^ad[s]?[ _-]|" +
+	"[_-]ad[s]?[_-]|" +
+	"^ADX_CLIENTSIDE$|" +
 	"ajoutVideo|" +
+	"^alerts|" +
+	"^Anchor$|" +
 	"articleheadings|" +
+	"_articles|" +
+	"^article-gallery-embedded$|" +
+	"author|" +
 	"author-dropdown|" +
+	"^banner|" +
+	"^bar$|" +
 	"blog-pager|" +
+	"button|" +
 	"breadcrumbs|" +
 	"byline|" +
 	"cabecalho|" +
+	"^caption$|" +
+	"carousel|" +
+	"^click|" +
 	"cnnStryHghLght|" +
 	"cnn_html_slideshow|" +
 	"cnn_strycaptiontxt|" +
@@ -49,57 +65,139 @@ var removeNodesRegEx = regexp.MustCompile("" +
 	"cnn_stryspcvbx|" +
 	"combx|" +
 	"comment|" +
+	"commercial|" +
 	"communitypromo|" +
+	"^comscore$|" +
 	"contact|" +
 	"contentTools2|" +
 	"controls|" +
+	"cookie|" +
+	"CoversMainContent|" +
+	"^css-|" +
+	"^critical-alerts$|" +
 	"^date$|" +
 	"detail_new_|" +
-	"detail_related_|" +
+	"related|" +
+	"^DYSRC$|" +
+	"^early-body|" +
+	"^[^entry-]more.*$|" +
+	"error|" +
+	"[^-]facebook|" +
+	"facebook-broadcasting|" +
+	"^fb-root$|" +
+	"^feed[_-]|" +
 	"figcaption|" +
 	"footnote|" +
 	"foot|" +
+	"footer|" +
+	"^ga-track$|" +
+	" google |" +
+	"^gstl_|" +
+	"^GS-UH$|" +
+	"^guide$|" +
 	"header|" +
+	"hidden|" +
 	"img_popup_single|" +
+	"inread|" +
+	"^interstitial-ad-modal$|" +
+	"^Inv[0-9]$|" +
 	"js_replies|" +
 	"[Kk]ona[Ff]ilter|" +
+	"^kxhead$|" +
 	"leading|" +
+	"^lede[_-]container$|" +
+	"legend|" +
 	"legende|" +
+	"^lightningjs-|" +
 	"links|" +
+	"^login-modal$|" +
+	"^lui-mini-profile-body$|" +
+	"^marginalia|" +
+	"^marketing[_-]|" +
+	"^masthead|" +
 	"mediaarticlerelated|" +
+	"^media[_-]viewer$|" +
+	"menu|" +
 	"menucontainer|" +
 	"meta$|" +
+	"^moat$|" +
+	"moreNews|" +
+	"^Moses$|" +
+	"^nav[_-]|" +
 	"navbar|" +
+	"[Nn]avigation|" +
+	"newsUnder|" +
+	"^oauth|" +
+	"^overlay[_-]wrapper|" +
 	"pagetools|" +
+	"[_-]paid[_-]|" +
+	"panelss2|" +
+	"panesCity|" +
+	"player|" +
 	"popup|" +
-	"post-attributes|" +
-	"post-title|" +
+	"post[_-]attributes|" +
+	"post[_-]title|" +
+	"preview|" +
+	"[_-]print[_-]|" +
+	"^prop[0-9]$|" +
+	"^pulse-loaders|" +
+	"^rail$|" +
+	"recommend|" +
+	"^registration-modal$|" +
 	"relacionado|" +
+	"remote|" +
 	"retweet|" +
+	"^ribbon$|" +
+	"rightBlock|" +
+	"rss|" +
 	"runaroundLeft|" +
+	"search[_-]|" +
+	"share[_-]|" +
 	"shoutbox|" +
-	"site_nav|" +
+	"sidebar|" +
+	"^simplereach$|" +
+	"^site[_-]index$|" +
+	"site[_-]box|" +
+	"site[_-]nav|" +
+	"skyscraper|" +
 	"socialNetworking|" +
 	"social_|" +
 	"socialnetworking|" +
 	"socialtools|" +
+	"source|" +
+	"[_-]spinner$|" +
+	"^spr-|" +
+	"^suggestions$|" +
+	"^speed-bump-wrapper$|" +
+	"^Splash$|" +
 	"sponsor|" +
+	"^stream-sidebar|" +
 	"sub_nav|" +
 	"subscribe|" +
+	"subscription|" +
+	"tabsCity|" +
 	"tag_|" +
 	"tags|" +
+	"teaser|" +
 	"the_answers|" +
 	"timestamp|" +
 	"tools|" +
+	"tooltip|" +
+	"^Top[0-9]?$|" +
+	"^TopAd[0-9]?$|" +
+	"[_-]track[_-]|" +
+	"tracking|" +
+	"[^-]twitter|" +
+	"-uix-button|" +
+	"^username-modal$|" +
+	"^user-|" +
+	"^vestpocket$|" +
 	"vcard|" +
+	"^watch-action-panels$|" +
+	"^watch-discussion$|" +
 	"welcome_form|" +
+	"^whats[_-]next$|" +
 	"wp-caption-text")
-var captionsRegEx = regexp.MustCompile("^caption$")
-var googleRegEx = regexp.MustCompile(" google ")
-var moreRegEx = regexp.MustCompile("^[^entry-]more.*$")
-var facebookRegEx = regexp.MustCompile("[^-]facebook")
-var facebookBroadcastingRegEx = regexp.MustCompile("facebook-broadcasting")
-var twitterRegEx = regexp.MustCompile("[^-]twitter")
 
 func (c *Cleaner) clean(article *Article) *goquery.Document {
 	if c.config.debug {
@@ -110,15 +208,9 @@ func (c *Cleaner) clean(article *Article) *goquery.Document {
 	docToClean = c.cleanEMTags(docToClean)
 	docToClean = c.dropCaps(docToClean)
 	docToClean = c.removeScriptsStyle(docToClean)
-	docToClean = c.cleanBadTags(docToClean)
-	docToClean = c.cleanFooter(docToClean)
-	docToClean = c.cleanAside(docToClean)
-	docToClean = c.removeNodesRegEx(docToClean, captionsRegEx)
-	docToClean = c.removeNodesRegEx(docToClean, googleRegEx)
-	docToClean = c.removeNodesRegEx(docToClean, moreRegEx)
-	docToClean = c.removeNodesRegEx(docToClean, facebookRegEx)
-	docToClean = c.removeNodesRegEx(docToClean, facebookBroadcastingRegEx)
-	docToClean = c.removeNodesRegEx(docToClean, twitterRegEx)
+	docToClean = c.cleanBadTags(docToClean, removeNodesRegEx, &[]string{"id", "class", "name"})
+	docToClean = c.cleanBadTags(docToClean, regexp.MustCompile("visibility:[ ]*hidden|display:[ ]*none"), &[]string{"style"})
+	docToClean = c.removeTags(docToClean, &[]string{"nav", "footer", "aside", "cite"})
 	docToClean = c.cleanParaSpans(docToClean)
 
 	docToClean = c.convertDivsToParagraphs(docToClean, "div")
@@ -154,27 +246,13 @@ func (c *Cleaner) cleanEMTags(doc *goquery.Document) *goquery.Document {
 	return doc
 }
 
-func (c *Cleaner) cleanFooter(doc *goquery.Document) *goquery.Document {
-	footer := doc.Find("footer")
-	footer.Each(func(i int, s *goquery.Selection) {
-		c.config.parser.removeNode(s)
-	})
-	return doc
-}
-
-func (c *Cleaner) cleanAside(doc *goquery.Document) *goquery.Document {
-	aside := doc.Find("aside")
-	aside.Each(func(i int, s *goquery.Selection) {
-		c.config.parser.removeNode(s)
-	})
-	return doc
-}
-
-func (c *Cleaner) cleanCites(doc *goquery.Document) *goquery.Document {
-	cites := doc.Find("cite")
-	cites.Each(func(i int, s *goquery.Selection) {
-		c.config.parser.removeNode(s)
-	})
+func (c *Cleaner) removeTags(doc *goquery.Document, tags *[]string) *goquery.Document {
+	for _, tag := range *tags {
+		node := doc.Find(tag)
+		node.Each(func(i int, s *goquery.Selection) {
+			c.config.parser.removeNode(s)
+		})
+	}
 	return doc
 }
 
@@ -210,16 +288,16 @@ func (c *Cleaner) cleanDivs(doc *goquery.Document) *goquery.Document {
 
 func (c *Cleaner) dropCaps(doc *goquery.Document) *goquery.Document {
 	items := doc.Find("span")
-	count := 0 //remove
+	count := 0 // remove
 	items.Each(func(i int, s *goquery.Selection) {
 		attribute, exists := s.Attr("class")
 		if exists && (strings.Contains(attribute, "dropcap") || strings.Contains(attribute, "drop_cap")) {
-			count++
 			c.config.parser.dropTag(s)
+			count++
 		}
 	})
-	if c.config.debug {
-		log.Printf("Cleaning %d dropcap tags\n", count)
+	if c.config.debug && count > 0 {
+		log.Printf("Cleaned %d dropcap tags\n", count)
 	}
 	return doc
 }
@@ -228,66 +306,40 @@ func (c *Cleaner) removeScriptsStyle(doc *goquery.Document) *goquery.Document {
 	if c.config.debug {
 		log.Println("Starting to remove script tags")
 	}
+	count := 0 // remove
 	scripts := doc.Find("script,noscript,style")
 	scripts.Each(func(i int, s *goquery.Selection) {
 		c.config.parser.removeNode(s)
+		count++
 	})
-	if c.config.debug {
+	if c.config.debug && count > 0 {
 		log.Printf("Removed %d script and style tags\n", scripts.Size())
 	}
-
-	//remove comments :) How????
 	return doc
 }
 
-func (c *Cleaner) matchNodeRegEx(attribute string, pattern *regexp.Regexp) bool {
-	return pattern.MatchString(attribute)
-}
-
-func (c *Cleaner) removeNodesRegEx(doc *goquery.Document, pattern *regexp.Regexp) *goquery.Document {
-	selectors := [3]string{"id", "class", "name"}
-	for _, selector := range selectors {
-		naughtyList := doc.Find("*[" + selector + "]")
-		cont := 0
-		naughtyList.Each(func(i int, s *goquery.Selection) {
-			attribute, _ := s.Attr(selector)
-			if c.matchNodeRegEx(attribute, pattern) {
-				cont++
-				c.config.parser.removeNode(s)
-			}
-		})
-
-		if c.config.debug {
-			log.Printf("regExRemoveNodes %d %s elements found against pattern %s\n", cont, selector, pattern.String())
-		}
-	}
-	return doc
-}
-
-func (c *Cleaner) cleanBadTags(doc *goquery.Document) *goquery.Document {
-	body := doc.Find("body")
+func (c *Cleaner) cleanBadTags(doc *goquery.Document, pattern *regexp.Regexp, selectors *[]string) *goquery.Document {
+	body := doc.Find("html")
 	children := body.Children()
-	selectors := []string{"id", "class", "name"}
-	for _, selector := range selectors {
-		children.Each(func(i int, s *goquery.Selection) {
+	children.Each(func(i int, s *goquery.Selection) {
+		for _, selector := range *selectors {
 			naughtyList := s.Find("*[" + selector + "]")
-			cont := 0
-			naughtyList.Each(func(j int, e *goquery.Selection) {
-				attribute, _ := e.Attr(selector)
-				if c.matchNodeRegEx(attribute, removeNodesRegEx) {
+			count := 0
+			naughtyList.Each(func(j int, node *goquery.Selection) {
+				attribute, _ := node.Attr(selector)
+				if pattern.MatchString(attribute) {
 					if c.config.debug {
-
-						log.Printf("Cleaning: Removing node with %s: %s\n", selector, c.config.parser.name(selector, e))
+						log.Printf("Cleaning: Removing node with %s: %s\n", selector, c.config.parser.name(selector, node))
 					}
-					c.config.parser.removeNode(e)
-					cont++
+					c.config.parser.removeNode(node)
+					count++
 				}
 			})
-			if c.config.debug && cont > 0 {
-				log.Printf("%d naughty %s elements found", cont, selector)
+			if c.config.debug && count > 0 {
+				log.Printf("%d naughty %s elements found", count, selector)
 			}
-		})
-	}
+		}
+	})
 	return doc
 }
 

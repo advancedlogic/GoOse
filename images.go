@@ -31,8 +31,27 @@ var rules = map[*regexp.Regexp]int{
 	regexp.MustCompile("1x1"):                  -1,
 	regexp.MustCompile("pixel"):                -1,
 	regexp.MustCompile("thumbnail[s]*"):        -1,
-	regexp.MustCompile(".html|.gif|.ico|button|twitter.jpg|facebook.jpg|ap_buy_photo|digg.jpg|digg.png|delicious.png|facebook.png|reddit.jpg|doubleclick|diggthis|diggThis|adserver|/ads/|ec.atdmt.com|mediaplex.com|adsatt|view.atdmt"): -1,
-}
+	regexp.MustCompile(".html|" +
+		".gif|" +
+		".ico|" +
+		"button|" +
+		"twitter.jpg|" +
+		"facebook.jpg|" +
+		"ap_buy_photo|" +
+		"digg.jpg|" +
+		"digg.png|" +
+		"delicious.png|" +
+		"facebook.png|" +
+		"reddit.jpg|" +
+		"doubleclick|" +
+		"diggthis|" +
+		"diggThis|" +
+		"adserver|" +
+		"/ads/|" +
+		"ec.atdmt.com|" +
+		"mediaplex.com|" +
+		"adsatt|" +
+		"view.atdmt"): -1}
 
 func score(tag *goquery.Selection) int {
 	src, _ := tag.Attr("src")
