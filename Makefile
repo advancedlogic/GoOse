@@ -47,7 +47,8 @@ all: help
 # Run the unit tests
 test:
 	@mkdir -p target/test
-	GOPATH=$(GOPATH) go test -race -v ./... | tee >(PATH=$(GOPATH)/bin:$(PATH) go-junit-report > target/test/report.xml); test $${PIPESTATUS[0]} -eq 0
+	@mkdir -p target/report
+	GOPATH=$(GOPATH) go test -covermode=count -coverprofile=target/report/coverage.out -bench=. -race -v ./... | tee >(PATH=$(GOPATH)/bin:$(PATH) go-junit-report > target/test/report.xml); test $${PIPESTATUS[0]} -eq 0
 
 # Run the unit tests with the short option
 test.short:
@@ -74,8 +75,7 @@ lint:
 
 # Generate the coverage report
 coverage:
-	@mkdir -p target/report
-	GOPATH=$(GOPATH) ./coverage.sh
+	GOPATH=$(GOPATH) go tool cover -html=target/report/coverage.out -o target/report/coverage.html
 
 # Generate source docs
 docs:
@@ -94,6 +94,7 @@ deps:
 	GOPATH=$(GOPATH) go get ./...
 	GOPATH=$(GOPATH) go get github.com/golang/lint/golint
 	GOPATH=$(GOPATH) go get github.com/jstemmer/go-junit-report
+	GOPATH=$(GOPATH) go get github.com/axw/gocov/gocov
 
 # Deletes any intermediate file
 nuke:
