@@ -3,7 +3,6 @@ package goose
 import (
 	"fmt"
 	"io/ioutil"
-	"os"
 	"reflect"
 	"strings"
 	"testing"
@@ -38,9 +37,6 @@ func ValidateArticle(expected Article, removed *[]string) error {
 	}
 
 	if !strings.Contains(result.CleanedText, expected.CleanedText) {
-		fmt.Println("EXPECTED:   ", expected.CleanedText, "\nACTUAL:     ", result.CleanedText, "\n")
-		os.Exit(1)
-
 		return fmt.Errorf("article cleanedText does not contain %q", expected.CleanedText)
 	}
 
