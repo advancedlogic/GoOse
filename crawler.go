@@ -126,8 +126,10 @@ func (c Crawler) Crawl() *Article {
 
 // In many cases, like at the end of each <li> element or between </span><span> tags,
 // we need to add spaces or the text on either side will get joined together into one word.
+// Also, add newlines after each </p> tag to preserve paragraphs.
 func (c Crawler) addSpacesBetweenTags(text string) string {
-	return strings.Replace(text, "><", "> <", -1)
+	text = strings.Replace(text, "><", "> <", -1)
+	return strings.Replace(text, "</p>", "</p>\n", -1)
 }
 
 func (c *Crawler) assignParseCandidate() {
