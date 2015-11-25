@@ -3,7 +3,6 @@ package goose
 import (
 	"fmt"
 	"io/ioutil"
-	"os"
 	"reflect"
 	"strings"
 	"testing"
@@ -34,16 +33,10 @@ func ValidateArticle(expected Article, removed *[]string) error {
 	}
 
 	if result.MetaDescription != expected.MetaDescription {
-		fmt.Println("EXPECTED:   ", expected.MetaDescription, "\n\nACTUAL:   ", result.MetaDescription)
-		os.Exit(1)
-
 		return fmt.Errorf("article metaDescription does not match. Got %q", result.MetaDescription)
 	}
 
 	if !strings.Contains(result.CleanedText, expected.CleanedText) {
-		fmt.Println("EXPECTED:   ", expected.CleanedText, "\n\nACTUAL:   ", result.CleanedText)
-		os.Exit(1)
-
 		return fmt.Errorf("article cleanedText does not contain %q", expected.CleanedText)
 	}
 
@@ -66,11 +59,6 @@ func ValidateArticle(expected Article, removed *[]string) error {
 	}
 
 	if expected.Links != nil && !reflect.DeepEqual(result.Links, expected.Links) {
-		for i, _ := range result.Links {
-			fmt.Println("EXPECTED:   ", expected.Links[i], "\nACTUAL:     ", result.Links[i], "\n")
-		}
-		os.Exit(1)
-
 		return fmt.Errorf("article Links do not match")
 	}
 
