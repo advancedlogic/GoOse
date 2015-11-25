@@ -8,7 +8,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/advancedlogic/goquery"
+	"github.com/PuerkitoBio/goquery"
 	"github.com/rogpeppe/go-charset/charset"
 )
 
@@ -39,6 +39,8 @@ func (c Crawler) Crawl() *Article {
 	if c.RawHTML == "" {
 		return article
 	}
+
+	c.RawHTML = c.addSpacesBetweenTags(c.RawHTML)
 
 	reader := strings.NewReader(c.RawHTML)
 	document, err := goquery.NewDocumentFromReader(reader)
@@ -120,6 +122,12 @@ func (c Crawler) Crawl() *Article {
 		panic(err.Error())
 	}
 	return article
+}
+
+// In many cases, like at the end of each <li> element or between </span><span> tags,
+// we need to add spaces or the text on either side will get joined together into one word.
+func (c Crawler) addSpacesBetweenTags(text string) string {
+	return strings.Replace(text, "><", "> <", -1)
 }
 
 func (c *Crawler) assignParseCandidate() {
