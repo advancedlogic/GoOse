@@ -7,9 +7,11 @@ import (
 	"net/http/cookiejar"
 	"strings"
 	"time"
+	"unicode/utf8"
 
 	"github.com/PuerkitoBio/goquery"
-	"github.com/rogpeppe/go-charset/charset"
+	"golang.org/x/net/html/charset"
+	"golang.org/x/text/transform"
 )
 
 // Crawler can fetch the target HTML page
@@ -27,6 +29,41 @@ func NewCrawler(config Configuration, url string, RawHTML string) Crawler {
 		url:     url,
 		RawHTML: RawHTML,
 	}
+}
+
+// convert to UTF-8, skipping invalid byte sequences
+// @see http://stackoverflow.com/questions/32512500/ignore-illegal-bytes-when-decoding-text-with-go
+func utf8encode(raw string, sourceCharset string) string {
+	enc, _ := charset.Lookup(sourceCharset)
+	dst := make([]byte, len(raw))
+	d := enc.NewDecoder()
+
+	var (
+		in  int
+		out int
+	)
+	for in < len(raw) {
+		// Do the transformation
+		ndst, nsrc, err := d.Transform(dst[out:], []byte(raw[in:]), true)
+		in += nsrc
+		out += ndst
+		if err == nil {
+			// Completed transformation
+			break
+		}
+		if err == transform.ErrShortDst {
+			// Our output buffer is too small, so we need to grow it
+			t := make([]byte, (cap(dst)+1)*2)
+			copy(t, dst)
+			dst = t
+			continue
+		}
+		// We're here because of at least one illegal character. Skip over the current rune
+		// and try again.
+		_, width := utf8.DecodeRuneInString(raw[in:])
+		in += width
+	}
+	return string(dst)
 }
 
 // Crawl fetches the HTML body and returns an Article
@@ -62,18 +99,9 @@ func (c Crawler) Crawl() *Article {
 		attr = strings.Replace(attr, " ", "", -1)
 
 		if strings.HasPrefix(attr, "text/html;charset=") {
-			cs := strings.TrimPrefix(attr, "text/html;charset=")
-			cs = strings.ToLower(cs)
-
+			cs := strings.ToLower(strings.TrimPrefix(attr, "text/html;charset="))
 			if cs != "utf-8" {
-				r, err1 := charset.NewReader(cs, strings.NewReader(c.RawHTML))
-				if err1 != nil {
-					// On error, skip the read
-					c.RawHTML = ""
-				} else {
-					utf8, _ := ioutil.ReadAll(r)
-					c.RawHTML = string(utf8)
-				}
+				c.RawHTML = utf8encode(c.RawHTML, cs)
 				reader = strings.NewReader(c.RawHTML)
 				document, err = goquery.NewDocumentFromReader(reader)
 			}
@@ -83,6 +111,7 @@ func (c Crawler) Crawl() *Article {
 	if err == nil {
 		extractor := NewExtractor(c.config)
 		html, _ := document.Html()
+
 		startTime := time.Now().UnixNano()
 		article.RawHTML = html
 		article.FinalURL = c.helper.url

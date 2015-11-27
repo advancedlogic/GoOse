@@ -22,6 +22,7 @@ func ReadRawHTML(a Article) string {
 // ValidateArticle validates (test) the specified article
 func ValidateArticle(expected Article, removed *[]string) error {
 	g := New()
+	//g.config.debug = true
 	result := g.ExtractFromRawHTML(expected.FinalURL, ReadRawHTML(expected))
 
 	// DEBUG
@@ -59,7 +60,7 @@ func ValidateArticle(expected Article, removed *[]string) error {
 	}
 
 	if expected.Links != nil && !reflect.DeepEqual(result.Links, expected.Links) {
-		return fmt.Errorf("article Links do not match")
+		return fmt.Errorf("article Links do not match. Got %q", result.Links)
 	}
 
 	return nil
@@ -1023,6 +1024,32 @@ func Test_Dev4510c(t *testing.T) {
 		"https://twitter.com/hashtag/bbcdp?src=hash",
 		"https://twitter.com/sueowen3/status/666970329638690817",
 	}
+
+	removed := []string{"~~~REMOVED~~~"}
+	err := ValidateArticle(article, &removed)
+	if err != nil {
+		t.Error(err)
+	}
+}
+
+//
+func Test_NytEncodingIssues(t *testing.T) {
+	// The following page has some encoding issues: when converting to UTF-8,
+	// there are some invalid byte sequences that cause the page to be truncated
+	// and the resulting main content is empty.
+	// Test that the encoding decoder can skip those invalid byte sequences.
+	//
+	// http://www.nytimes.com/1977/05/26/movies/moviesspecial/26STAR.html?_r=0
+	article := Article{
+		Domain:          "nytnocontent",
+		Title:           "'Star Wars': A Trip to a Far Galaxy That's Fun and Funny. . .",
+		MetaDescription: "font size=\"-1\" (May 26, 1977) \"Star Wars\" is the most elaborate, most expensive, most beautiful movie serial ever made.",
+		CleanedText:     "Reviews of every \"Star Wars\" movie, trailers, an interactive graphic charting the history of the 'Star Wars' universe, a reader forum and more.\n\nâ€¢ Go to Special Section\n\ntar Wars,\" George Lucas's first film since his terrifically successful \"American Graffiti,\" is the\n\nmovie that the teen-agers in \"American Graffiti\" would have broken their necks to see. It's also\n\nthe movie that's going to entertain a lot of contemporary folk who have a soft spot for the\n\nvirtually ritualized manners of comic-book adventure.\n\n\"Star Wars,\" which opened yesterday at the Astor Plaza, Orpheum and other theaters, is the most\n\nelaborate, most expensive, most beautiful movie serial ever made. It's both an apotheosis of\n\n\"Flash Gordon\" serials and a witty critique that makes associations with a variety of literature\n\nthat is nothing if not eclectic: \"Quo Vadis?\", \"Buck Rogers,\" \"Ivanhoe,\" \"Superman,\" \"The\n\nWizard of Oz,\" \"The Gospel According to St. Matthew,\" the legend of King Arthur and the\n\nknights of the Round Table.\n\nAll of these works, of course, had earlier left their marks on the kind of science-fiction comic\n\nstrips that Mr. Lucas, the writer as well as director of \"Star Wars,\" here remembers with affection\n\nof such cheerfulness that he avoids facetiousness. The way definitely not to approach \"Star\n\nWars,\" though, is to expect a film of cosmic implications or to footnote it with so many\n\nreferences that one anticipates it as if it were a literary duty. It's fun and funny.\n\nThe time, according to the opening credit card, is \"a long time ago\" and the setting \"a galaxy far\n\nfar away,\" which gives Mr. Lucas and his associates total freedom to come up with their own\n\nlandscapes, housing, vehicles, weapons, religion, politics--all of which are variations on the\n\nfamiliar.\n\nWhen the film opens, dark times have fallen upon the galactal empire once ruled, we are given to\n\nbelieve, from a kind of space-age Camelot. Against these evil tyrants there is, in progress, a\n\nrebellion led by a certain Princess Leia Organa, a pretty round-faced young woman of old-\n\nfashioned pluck who, before you can catch your breath, has been captured by the guardians of\n\nthe empire. Their object is to retrieve some secret plans that can be the empire's undoing.\n\nThat's about all the plot that anyone of voting age should be required to keep track of. The story\n\nof \"Star Wars\" could be written on the head of a pin and still leave room for the Bible. It is,\n\nrather, a breathless succession of escapes, pursuits, dangerous missions, unexpected encounters,\n\nwith each one ending in some kind of defeat until the final one.\n\nThese adventures involve, among others, an ever-optimistic young man named Luke Skywalker\n\n(Mark Hamill), who is innocent without being naive; Han Solo (Harrison Ford), a free-booting\n\nfreelance, space-ship captain who goes where he can make the most money, and an old mystic\n\nnamed Ben Kenobi (Alec Guinness), one of the last of the Old Guard, a fellow in possession of\n\nwhat's called \"the force,\" a mixture of what appears to be ESP and early Christian faith.\n\nAccompanying these three as they set out to liberate the princess and restore justice to the empire\n\nare a pair of Laurel-and-Hardyish robots. The thin one, who looks like a sort of brass woodman,\n\ntalks in the polished phrases of a valet (\"I'm adroit but I'm not very knowledgeable\"), while the\n\nsquat one, shaped like a portable washing machine, who is the one with the knowledge, simply\n\nsqueaks and blinks his lights. They are the year's best new comedy team.\n\nIn opposition to these good guys are the imperial forces led by someone called the Grand Moff\n\nTarkin (Peter Cushing) and his executive assistant, Lord Darth Vader (David Prowse), a former\n\nstudent of Ben Kenobi who elected to leave heaven sometime before to join the evil ones.\n\nThe true stars of \"Star Wars\" are John Barry, who was responsible for the production design, and\n\nthe people who were responsible for the incredible special effects--space ships, explosions of\n\nstars, space battles, hand-to-hand combat with what appear to be lethal neon swords. I have a\n\nparticular fondness for the look of the interior of a gigantic satellite called the Death Star, a place\n\nfull of the kind of waste space one finds today only in old Fifth Avenue mansions and public\n\nlibraries.\n\nThere's also a very funny sequence in a low-life bar on a remote planet, a frontierlike\n\nestablishment where they serve customers who look like turtles, apes, pythons and various\n\namalgams of same, but draw the line at robots. Says the bartender piously: \"We don't serve\n\ntheir kind here.\"\n\nIt's difficult to judge the performances in a film like this. I suspect that much of the time the\n\nactors had to perform with special effects that were later added in the laboratory. Yet everyone\n\ntreats his material with the proper combination of solemnity and good humor that avoids\n\ncondescension. One of Mr. Lucas's particular achievements is the manner in which he is able to\n\nrecall the tackiness of the old comic strips and serials he loves without making a movie that is,\n\nitself, tacky. \"Star Wars\" is good enough to convince the most skeptical 8-year-old sci-fi buff,\n\nwho is the toughest critic.\n\n\"Star Wars,\" which has been rated PG (\"Parental Guidance Suggested\"), contains a lot of\n\nexplosive action and not a bit of truly disturbing violence.",
+		MetaKeywords:    "",
+		CanonicalLink:   "",
+		TopImage:        "http://graphics8.nytimes.com/images/2002/05/10/movies/10STAR.1.jpg",
+	}
+	article.Links = []string{}
 
 	removed := []string{"~~~REMOVED~~~"}
 	err := ValidateArticle(article, &removed)
