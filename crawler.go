@@ -187,12 +187,12 @@ func (c *Crawler) assignHTML() {
 			log.Println(err.Error())
 			return
 		}
-		defer resp.Body.Close()
 		contents, err := ioutil.ReadAll(resp.Body)
 		if err == nil {
 			c.RawHTML = string(contents)
 		} else {
 			log.Println(err.Error())
 		}
+		resp.Body.Close()
 	}
 }

@@ -19,9 +19,17 @@ var motleyReplacement = "&#65533;" // U+FFFD (decimal 65533) is the "replacement
 //var escapedFragmentReplacement = regexp.MustCompile("#!")
 //var titleReplacements = regexp.MustCompile("&raquo;")
 
+var titleDelimiters = []string{
+	"|",
+	" - ",
+	"»",
+	":",
+}
+
 var aRelTagSelector = "a[rel=tag]"
 var aHrefTagSelector = [...]string{"/tag/", "/tags/", "/topic/", "?keyword"}
-var langRegEx = "^[A-Za-z]{2}$"
+
+//var langRegEx = "^[A-Za-z]{2}$"
 
 // ContentExtractor can parse the HTML and fetch various properties
 type ContentExtractor struct {
@@ -51,26 +59,11 @@ func (extr *ContentExtractor) GetTitle(document *goquery.Document) string {
 		title = titleElement.Text()
 	}
 
-	usedDelimiter := false
-
-	if strings.Contains(title, "|") {
-		title = extr.splitTitle(strings.Split(title, "|"))
-		usedDelimiter = true
-	}
-
-	if !usedDelimiter && strings.Contains(title, " - ") {
-		title = extr.splitTitle(strings.Split(title, " - "))
-		usedDelimiter = true
-	}
-
-	if !usedDelimiter && strings.Contains(title, "»") {
-		title = extr.splitTitle(strings.Split(title, "»"))
-		usedDelimiter = true
-	}
-
-	if !usedDelimiter && strings.Contains(title, ":") {
-		title = extr.splitTitle(strings.Split(title, ":"))
-		usedDelimiter = true
+	for _, delimiter := range titleDelimiters {
+		if strings.Contains(title, delimiter) {
+			title = extr.splitTitle(strings.Split(title, delimiter))
+			break
+		}
 	}
 
 	title = strings.Replace(title, motleyReplacement, "", -1)
