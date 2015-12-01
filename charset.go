@@ -8,10 +8,10 @@ import (
 	"golang.org/x/text/transform"
 )
 
-// Override/fix charset to something we can parse.
-// Fix common mispellings and use canonical name for equivalent encodings.
+// NormaliseCharset Overrides/fixes charset names to something we can parse.
+// Fixes common mispellings and uses a canonical name for equivalent encodings.
 // @see https://encoding.spec.whatwg.org#names-and-labels
-func normaliseCharset(characterSet string) string {
+func NormaliseCharset(characterSet string) string {
 	characterSet = strings.ToUpper(characterSet)
 	switch characterSet {
 	case "UTF8", "UT-8", "UTR-8", "UFT-8", "UTF8-WITHOUT-BOM", "UTF8_GENERAL_CI":
@@ -50,9 +50,9 @@ func normaliseCharset(characterSet string) string {
 	return characterSet
 }
 
-// convert to UTF-8, skipping invalid byte sequences
+// UTF8encode converts a string from the source character set to UTF-8, skipping invalid byte sequences
 // @see http://stackoverflow.com/questions/32512500/ignore-illegal-bytes-when-decoding-text-with-go
-func utf8encode(raw string, sourceCharset string) string {
+func UTF8encode(raw string, sourceCharset string) string {
 	enc, _ := charset.Lookup(sourceCharset)
 	dst := make([]byte, len(raw))
 	d := enc.NewDecoder()

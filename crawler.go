@@ -16,6 +16,7 @@ type Crawler struct {
 	config  Configuration
 	url     string
 	RawHTML string
+	Charset string
 	helper  Helper
 }
 
@@ -25,7 +26,51 @@ func NewCrawler(config Configuration, url string, RawHTML string) Crawler {
 		config:  config,
 		url:     url,
 		RawHTML: RawHTML,
+		Charset: "",
 	}
+}
+
+func (c *Crawler) SetCharset(cs string) {
+	c.Charset = NormaliseCharset(cs)
+}
+
+func (c Crawler) GetCharset(document *goquery.Document) string {
+	// manually-provided charset (from HTTP headers?) takes priority
+	if "" != c.Charset {
+		return c.Charset
+	}
+
+	// <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	selection := document.Find("meta").EachWithBreak(func(i int, s *goquery.Selection) bool {
+		attr, exists := s.Attr("http-equiv")
+		if exists && attr == "Content-Type" {
+			return false
+		}
+		return true
+	})
+
+	if selection != nil {
+		attr, _ := selection.Attr("content")
+		attr = strings.Replace(attr, " ", "", -1)
+
+		if strings.HasPrefix(attr, "text/html;charset=") {
+			cs := strings.TrimPrefix(attr, "text/html;charset=")
+			return NormaliseCharset(cs)
+		}
+	}
+
+	// <meta charset="utf-8">
+	selection = document.Find("meta").EachWithBreak(func(i int, s *goquery.Selection) bool {
+		_, exists := s.Attr("charset")
+		return !exists
+	})
+
+	if selection != nil {
+		cs, _ := selection.Attr("charset")
+		return NormaliseCharset(cs)
+	}
+
+	return ""
 }
 
 // Crawl fetches the HTML body and returns an Article
@@ -48,29 +93,14 @@ func (c Crawler) Crawl() *Article {
 		panic(err.Error())
 	}
 
-	selection := document.Find("meta").EachWithBreak(func(i int, s *goquery.Selection) bool {
-		attr, exists := s.Attr("http-equiv")
-		if exists && attr == "Content-Type" {
-			return false
-		}
-		return true
-	})
+	cs := c.GetCharset(document)
+	if "" != cs && "UTF-8" != cs {
+		c.RawHTML = UTF8encode(c.RawHTML, cs)
+		reader = strings.NewReader(c.RawHTML)
+		document, err = goquery.NewDocumentFromReader(reader)
 
-	if selection != nil {
-		attr, _ := selection.Attr("content")
-		attr = strings.Replace(attr, " ", "", -1)
-
-		if strings.HasPrefix(attr, "text/html;charset=") {
-			cs := strings.TrimPrefix(attr, "text/html;charset=")
-			cs = normaliseCharset(cs)
-			if cs != "UTF-8" {
-				c.RawHTML = utf8encode(c.RawHTML, cs)
-				reader = strings.NewReader(c.RawHTML)
-				document, err = goquery.NewDocumentFromReader(reader)
-				if nil != err {
-					panic(err.Error())
-				}
-			}
+		if nil != err {
+			panic(err.Error())
 		}
 	}
 
