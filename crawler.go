@@ -7,11 +7,8 @@ import (
 	"net/http/cookiejar"
 	"strings"
 	"time"
-	"unicode/utf8"
 
 	"github.com/PuerkitoBio/goquery"
-	"golang.org/x/net/html/charset"
-	"golang.org/x/text/transform"
 )
 
 // Crawler can fetch the target HTML page
@@ -29,41 +26,6 @@ func NewCrawler(config Configuration, url string, RawHTML string) Crawler {
 		url:     url,
 		RawHTML: RawHTML,
 	}
-}
-
-// convert to UTF-8, skipping invalid byte sequences
-// @see http://stackoverflow.com/questions/32512500/ignore-illegal-bytes-when-decoding-text-with-go
-func utf8encode(raw string, sourceCharset string) string {
-	enc, _ := charset.Lookup(sourceCharset)
-	dst := make([]byte, len(raw))
-	d := enc.NewDecoder()
-
-	var (
-		in  int
-		out int
-	)
-	for in < len(raw) {
-		// Do the transformation
-		ndst, nsrc, err := d.Transform(dst[out:], []byte(raw[in:]), true)
-		in += nsrc
-		out += ndst
-		if err == nil {
-			// Completed transformation
-			break
-		}
-		if err == transform.ErrShortDst {
-			// Our output buffer is too small, so we need to grow it
-			t := make([]byte, (cap(dst)+1)*2)
-			copy(t, dst)
-			dst = t
-			continue
-		}
-		// We're here because of at least one illegal character. Skip over the current rune
-		// and try again.
-		_, width := utf8.DecodeRuneInString(raw[in:])
-		in += width
-	}
-	return string(dst)
 }
 
 // Crawl fetches the HTML body and returns an Article
@@ -99,57 +61,57 @@ func (c Crawler) Crawl() *Article {
 		attr = strings.Replace(attr, " ", "", -1)
 
 		if strings.HasPrefix(attr, "text/html;charset=") {
-			cs := strings.ToLower(strings.TrimPrefix(attr, "text/html;charset="))
-			if cs != "utf-8" {
+			cs := strings.TrimPrefix(attr, "text/html;charset=")
+			cs = normaliseCharset(cs)
+			if cs != "UTF-8" {
 				c.RawHTML = utf8encode(c.RawHTML, cs)
 				reader = strings.NewReader(c.RawHTML)
 				document, err = goquery.NewDocumentFromReader(reader)
+				if nil != err {
+					panic(err.Error())
+				}
 			}
 		}
 	}
 
-	if err == nil {
-		extractor := NewExtractor(c.config)
-		html, _ := document.Html()
+	extractor := NewExtractor(c.config)
+	html, _ := document.Html()
 
-		startTime := time.Now().UnixNano()
-		article.RawHTML = html
-		article.FinalURL = c.helper.url
-		article.LinkHash = c.helper.linkHash
-		article.Doc = document
-		article.Title = extractor.getTitle(article)
-		article.MetaLang = extractor.getMetaLanguage(article)
-		article.MetaFavicon = extractor.getFavicon(article)
+	startTime := time.Now().UnixNano()
+	article.RawHTML = html
+	article.FinalURL = c.helper.url
+	article.LinkHash = c.helper.linkHash
+	article.Doc = document
+	article.Title = extractor.GetTitle(article)
+	article.MetaLang = extractor.GetMetaLanguage(article)
+	article.MetaFavicon = extractor.GetFavicon(article)
 
-		article.MetaDescription = extractor.getMetaContentWithSelector(article, "meta[name#=(?i)^description$]")
-		article.MetaKeywords = extractor.getMetaContentWithSelector(article, "meta[name#=(?i)^keywords$]")
-		article.CanonicalLink = extractor.getCanonicalLink(article)
-		article.Domain = extractor.getDomain(article)
-		article.Tags = extractor.getTags(article)
+	article.MetaDescription = extractor.GetMetaContentWithSelector(article, "meta[name#=(?i)^description$]")
+	article.MetaKeywords = extractor.GetMetaContentWithSelector(article, "meta[name#=(?i)^keywords$]")
+	article.CanonicalLink = extractor.GetCanonicalLink(article)
+	article.Domain = extractor.GetDomain(article)
+	article.Tags = extractor.GetTags(article)
 
-		cleaner := NewCleaner(c.config)
-		article.Doc = cleaner.clean(article)
+	cleaner := NewCleaner(c.config)
+	article.Doc = cleaner.clean(article)
 
-		article.TopImage = OpenGraphResolver(article)
-		if article.TopImage == "" {
-			article.TopImage = WebPageResolver(article)
-		}
-		article.TopNode = extractor.calculateBestNode(article)
-		if article.TopNode != nil {
-			article.TopNode = extractor.postCleanup(article.TopNode)
-
-			outputFormatter := new(outputFormatter)
-			article.CleanedText, article.Links = outputFormatter.getFormattedText(article)
-
-			videoExtractor := NewVideoExtractor()
-			article.Movies = videoExtractor.GetVideos(article)
-		}
-
-		article.Delta = time.Now().UnixNano() - startTime
-
-	} else {
-		panic(err.Error())
+	article.TopImage = OpenGraphResolver(article)
+	if article.TopImage == "" {
+		article.TopImage = WebPageResolver(article)
 	}
+	article.TopNode = extractor.calculateBestNode(article)
+	if article.TopNode != nil {
+		article.TopNode = extractor.postCleanup(article.TopNode)
+
+		outputFormatter := new(outputFormatter)
+		article.CleanedText, article.Links = outputFormatter.getFormattedText(article)
+
+		videoExtractor := NewVideoExtractor()
+		article.Movies = videoExtractor.GetVideos(article)
+	}
+
+	article.Delta = time.Now().UnixNano() - startTime
+
 	return article
 }
 

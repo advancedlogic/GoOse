@@ -3,6 +3,7 @@ package goose
 import (
 	"fmt"
 	"io/ioutil"
+	"os"
 	"reflect"
 	"strings"
 	"testing"
@@ -38,6 +39,8 @@ func ValidateArticle(expected Article, removed *[]string) error {
 	}
 
 	if !strings.Contains(result.CleanedText, expected.CleanedText) {
+		fmt.Println("EXPECTED: ", expected.CleanedText, "\n\nACTUAL:   ", result.CleanedText, "\n\n")
+		os.Exit(1)
 		return fmt.Errorf("article cleanedText does not contain %q", expected.CleanedText)
 	}
 
@@ -60,7 +63,7 @@ func ValidateArticle(expected Article, removed *[]string) error {
 	}
 
 	if expected.Links != nil && !reflect.DeepEqual(result.Links, expected.Links) {
-		return fmt.Errorf("article Links do not match. Got %q", result.Links)
+		return fmt.Errorf("article Links do not match. Got %#v, Expected %#v", result.Links, expected.Links)
 	}
 
 	return nil
@@ -1049,7 +1052,69 @@ func Test_NytEncodingIssues(t *testing.T) {
 		CanonicalLink:   "",
 		TopImage:        "http://graphics8.nytimes.com/images/2002/05/10/movies/10STAR.1.jpg",
 	}
+
+	removed := []string{"~~~REMOVED~~~"}
+	err := ValidateArticle(article, &removed)
+	if err != nil {
+		t.Error(err)
+	}
+}
+
+func TestCharsetEucJp(t *testing.T) {
+	article := Article{
+		Domain:          "charset_euc_jp",
+		Title:           "文字コード宣言は行いましょう(HTML)",
+		MetaDescription: "",
+		CleanedText:     "",
+		MetaKeywords:    "",
+		CanonicalLink:   "",
+		TopImage:        "",
+	}
+
+	removed := []string{"~~~REMOVED~~~"}
+	err := ValidateArticle(article, &removed)
+	if err != nil {
+		t.Error(err)
+	}
+}
+
+/*
+func TestCharsetShiftJIS(t *testing.T) {
+	article := Article{
+		Domain:          "charset_shift_jis",
+		Title:           "文字のエンコードを指定する：HTMLタグ辞典 - HTMLタグボード",
+		MetaDescription: "",
+		CleanedText:     "HTMLの記述形式（文字コード）を正しく設定することによって、ページが読み込まれたときの文字化けを防ぎます。",
+		MetaKeywords:    "",
+		CanonicalLink:   "",
+		TopImage:        "",
+	}
 	article.Links = []string{}
+
+	removed := []string{"~~~REMOVED~~~"}
+	err := ValidateArticle(article, &removed)
+	if err != nil {
+		t.Error(err)
+	}
+}
+*/
+
+func TestCharsetISO_8859_1(t *testing.T) {
+	article := Article{
+		Domain:          "charset_iso_8859_1",
+		Title:           "httpd-2.2.31.tar.gz: .../manual/configuring.html.de",
+		MetaDescription: "",
+		CleanedText:     "Caution: In this restricted \"Fossies\" environment the current HTML page may not be correctly presentated and may have some non-functional links.\n\nAlternatively you can here view or download the uninterpreted raw source code.\n\nA member file download can also be achieved by clicking within a package contents listing on the according byte size field. See also the latest Fossies \"Diffs\" side-by-side code changes report for \"configuring.html.de\": 2.2.29_vs_2.2.31.\n\nApache > HTTP-Server > Dokumentation > Version 2.2 Konfigurationsdateien\n\nVerfügbare Sprachen:  de  |\n\nen  |\n\nfr  |\n\nja  |\n\nko  |\n\ntr\n\nDieses Dokument beschreibt die Dateien, die zur Konfiguration des Apache\n\nHTTP Servers verwendet werden.\n\nHauptkonfigurationsdateien\n\nSyntax der Konfigurationsdateien\n\nModule\n\nDer Gültigkeitsbereich von Direktiven\n\n.htaccess-Dateien\n\nKommentare\n\nHauptkonfigurationsdateien\n\nDer Apache wird konfiguriert, indem Direktiven in einfache Textdateien\n\neingetragen werden. Die Hauptkonfigurationsdatei heißt\n\nüblicherweise httpd.conf. Der Ablageort dieser Datei\n\nwird bei der Kompilierung festgelegt, kann jedoch mit der\n\nBefehlszeilenoption -f überschrieben werden. Durch\n\nVerwendung der Direktive Include\n\nkönnen außerdem weitere Konfigurationsdateien hinzugefügt\n\nwerden. Zum Einfügen von mehreren Konfigurationsdateien können\n\nPlatzhalter verwendet werden. Jede Direktive darf in jeder dieser\n\nKonfigurationsdateien angegeben werden. Änderungen in den\n\nHauptkonfigurationsdateien werden vom Apache nur beim Start oder Neustart\n\nerkannt.\n\nDer Server liest auch eine Datei mit MIME-Dokumenttypen ein. Der\n\nName dieser Datei wird durch die Direktive TypesConfig bestimmt. Die Voreinstellung\n\nist mime.types.\n\nSyntax der Konfigurationsdateien\n\nDie Konfigurationsdateien des Apache enthalten eine Direktive pro Zeile.\n\nDer Backslash \"\\\" läßt sich als letztes Zeichen in einer Zeile\n\ndazu verwenden, die Fortsetzung der Direktive in der nächsten Zeile\n\nanzuzeigen. Es darf kein weiteres Zeichen oder Whitespace zwischen dem\n\nBackslash und dem Zeilenende folgen.\n\nIn den Konfigurationsdateien wird bei den Direktiven nicht zwischen\n\nGroß- und Kleinschreibung unterschieden. Bei den Argumenten der\n\nDirektiven wird dagegen oftmals zwischen Groß- und Kleinschreibung\n\ndifferenziert. Zeilen, die mit dem Doppelkreuz \"#\" beginnen, werden als\n\nKommentare betrachtet und ignoriert. Kommentare dürfen\n\nnicht am Ende einer Zeile nach der Direktive\n\neingefügt werden. Leerzeilen und Whitespaces vor einer Direktive\n\nwerden ignoriert. Dadurch lassen sich Direktiven zur besseren Lesbarbeit\n\neinrücken.\n\nSie können die Syntax Ihrer Konfigurationsdateien auf Fehler\n\nprüfen, ohne den Server zu starten, indem Sie apachectl\n\nconfigtest oder die Befehlszeilenoption -t\n\nverwenden.\n\nModule\n\nDer Apache ist ein modularer Server. Das bedeutet, dass nur die abolute\n\nGrundfunktionalität im Kernserver enthalten ist. Weitergehende\n\nFähigkeiten sind mittels Modulen verfügbar,\n\ndie in den Apache geladen werden können. Standardmäßig\n\nwird bei der Kompilierung ein Satz von Basismodulen (Anm.d.Ü.: die so\n\ngenannten Base-Module) in den Server eingebunden. Wenn der\n\nServer für die Verwendung von dynamisch\n\nladbaren Modulen kompiliert wurde, dann können Module separat\n\nkompiliert und jederzeit mittels der Direktive LoadModule hinzugefügt werden.\n\nAndernfalls muss der Apache neu kompiliert werden, um Module\n\nhinzuzufügen oder zu entfernen. Konfigurationsanweisungen können\n\nabhängig vom Vorhandensein eines bestimmten Moduls eingesetzt werden,\n\nindem sie in einen <IfModule> -Block eingeschlossen werden.\n\nUm zu sehen, welche Module momentan in den Server einkompiliert sind,\n\nkann die Befehlszeilenoption -l verwendet werden.\n\nDer Gültigkeitsbereich von Direktiven\n\nDirektiven in den Hauptkonfigurationsdateien gelten für den\n\ngesamten Server. Wenn Sie die Konfiguration nur für einen Teil des\n\nServers verändern möchten, können Sie den\n\nGültigkeitsbereich der Direktiven beschränken, indem Sie diese\n\nin <Directory> -,\n\n<DirectoryMatch> -,\n\n<Files> -,\n\n<FilesMatch> -,\n\n<Location> - oder\n\n<LocationMatch> -Abschnitte eingefügen.\n\nDiese Abschnitte begrenzen die Anwendung der umschlossenen Direktiven\n\nauf bestimmte Pfade des Dateisystems oder auf\n\nbestimmte URLs. Sie können für eine fein abgestimmte\n\nKonfiguration auch ineinander verschachtelt werden.\n\nDer Apache besitzt die Fähigkeit, mehrere verschiedene Websites\n\ngleichzeitig zu bedienen. Dies wird virtuelles\n\nHosten genannt. Direktiven können auch in ihrem\n\nGültigkeitsgereich eingeschränkt werden, indem sie innerhalb\n\neines <VirtualHost> -Abschnittes angegeben werden.\n\nSie werden dann nur auf Anfragen für eine bestimmte Website\n\nangewendet.\n\nObwohl die meisten Direktiven in jedem dieser Abschnitte platziert\n\nwerden können, ergeben einige Direktiven in manchen Kontexten\n\nkeinen Sinn. Direktiven zur Prozesssteuerung beispielsweise\n\ndürfen nur im Kontext des Hauptservers angegeben werden. Prüfen\n\nSie den Kontext der\n\nDirektive, um herauszufinden, welche Direktiven in welche Abschnitte\n\neingefügt werden können. Weitere Informationen finden Sie unter\n\n\"Wie Directory-, Location- und Files-Abschnitte\n\narbeiten\".\n\n.htaccess-Dateien\n\nDer Apache ermöglicht die dezentrale Verwaltung der\n\nKonfiguration mittes spezieller Dateien innerhalb des\n\nWeb-Verzeichnisbaums. Diese speziellen Dateien heißen\n\ngewöhnlich .htaccess, mit der Direktive AccessFileName kann jedoch auch ein anderer\n\nName festgelegt werden. In .htaccess-Dateien angegebene\n\nDirektiven werden auf das Verzeichnis und dessen Unterverzeichnisse\n\nangewendet, in dem die Datei abgelegt ist. .htaccess-Dateien\n\nfolgen der gleichen Syntax wie die Hauptkonfigurationsdateien. Da\n\n.htaccess-Dateien bei jeder Anfrage eingelesen werden,\n\nwerden Änderungen in diesen Dateien sofort wirksam.\n\nPrüfen Sie den Kontext der Direktive, um\n\nherauszufinden, welche Direktiven in .htaccess-Dateien\n\nangegeben werden können. Darüber hinaus steuert der\n\nServeradministrator mit der Einstellung der Direktive AllowOverride in den\n\nHauptkonfigurationsdateien welche Direktiven in\n\n.htaccess-Dateien verwendet werden dürfen.\n\nWeitere Informationen über .htaccess-Dateien finden\n\nSie in der .htaccess-Einführung.\n\nVerfügbare Sprachen:  de  |\n\nen  |\n\nfr  |\n\nja  |\n\nko  |\n\ntr\n\nNotice: This is not a Q&A section. Comments placed here should be pointed towards suggestions on improving the documentation or server, and may be removed again by our moderators if they are either implemented or considered invalid/off-topic. Questions on how to manage the Apache HTTP Server should be directed at either our IRC channel, #httpd, on Freenode, or sent to our mailing lists.",
+		MetaKeywords:    "",
+		CanonicalLink:   "",
+		TopImage:        "/delta_answer_10.png",
+	}
+	article.Links = []string{
+		"http://www.apache.org/",
+		"http://httpd.apache.org/",
+		"http://httpd.apache.org/docs/",
+		"http://httpd.apache.org/lists.html",
+	}
 
 	removed := []string{"~~~REMOVED~~~"}
 	err := ValidateArticle(article, &removed)

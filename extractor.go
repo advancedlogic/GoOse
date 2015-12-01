@@ -42,8 +42,8 @@ func NewExtractor(config Configuration) ContentExtractor {
 	}
 }
 
-//if the article has a title set in the source, use that
-func (extr *ContentExtractor) getTitle(article *Article) string {
+// GetTitle returns the title set in the source, if the article has one
+func (extr *ContentExtractor) GetTitle(article *Article) string {
 	title := ""
 	doc := article.Doc
 
@@ -104,8 +104,8 @@ func (extr *ContentExtractor) splitTitle(titles []string) string {
 	return title
 }
 
-//if the article has meta language set in the source, use that
-func (extr *ContentExtractor) getMetaLanguage(article *Article) string {
+// GetMetaLanguage returns the meta language set in the source, if the article has one
+func (extr *ContentExtractor) GetMetaLanguage(article *Article) string {
 	language := ""
 	doc := article.Doc
 	shtml := doc.Find("html")
@@ -146,8 +146,8 @@ func (extr *ContentExtractor) getMetaLanguage(article *Article) string {
 	return language
 }
 
-//if the article has favicon set in the source, use that
-func (extr *ContentExtractor) getFavicon(article *Article) string {
+// GetFavicon returns the favicon set in the source, if the article has one
+func (extr *ContentExtractor) GetFavicon(article *Article) string {
 	favicon := ""
 	doc := article.Doc
 	doc.Find("link").EachWithBreak(func(i int, s *goquery.Selection) bool {
@@ -161,7 +161,7 @@ func (extr *ContentExtractor) getFavicon(article *Article) string {
 	return favicon
 }
 
-func (extr *ContentExtractor) getMetaContentWithSelector(article *Article, selector string) string {
+func (extr *ContentExtractor) GetMetaContentWithSelector(article *Article, selector string) string {
 	content := ""
 	doc := article.Doc
 	selection := doc.Find(selector)
@@ -169,7 +169,7 @@ func (extr *ContentExtractor) getMetaContentWithSelector(article *Article, selec
 	return strings.TrimSpace(content)
 }
 
-func (extr *ContentExtractor) getMetaContent(article *Article, metaName string) string {
+func (extr *ContentExtractor) GetMetaContent(article *Article, metaName string) string {
 	content := ""
 	doc := article.Doc
 	doc.Find("meta").EachWithBreak(func(i int, s *goquery.Selection) bool {
@@ -188,7 +188,7 @@ func (extr *ContentExtractor) getMetaContent(article *Article, metaName string) 
 	return content
 }
 
-func (extr *ContentExtractor) getMetaContents(article *Article, metaNames *set.Set) map[string]string {
+func (extr *ContentExtractor) GetMetaContents(article *Article, metaNames *set.Set) map[string]string {
 	contents := make(map[string]string)
 	doc := article.Doc
 	counter := metaNames.Size()
@@ -207,28 +207,28 @@ func (extr *ContentExtractor) getMetaContents(article *Article, metaNames *set.S
 	return contents
 }
 
-//if the article has meta description set in the source, use that
-func (extr *ContentExtractor) getMetaDescription(article *Article) string {
-	return extr.getMetaContent(article, "description")
+// GetMetaDescription returns the meta description set in the source, if the article has one
+func (extr *ContentExtractor) GetMetaDescription(article *Article) string {
+	return extr.GetMetaContent(article, "description")
 }
 
-//if the article has meta keywords set in the source, use that
-func (extr *ContentExtractor) getMetaKeywords(article *Article) string {
-	return extr.getMetaContent(article, "keywords")
+// GetMetaKeywords returns the meta keywords set in the source, if the article has them
+func (extr *ContentExtractor) GetMetaKeywords(article *Article) string {
+	return extr.GetMetaContent(article, "keywords")
 }
 
-//if the article has meta author set in the source, use that
-func (extr *ContentExtractor) getMetaAuthor(article *Article) string {
-	return extr.getMetaContent(article, "author")
+// GetMetaAuthor returns the meta author set in the source, if the article has one
+func (extr *ContentExtractor) GetMetaAuthor(article *Article) string {
+	return extr.GetMetaContent(article, "author")
 }
 
-//if the article has meta content location set in the source, use that
-func (extr *ContentExtractor) getMetaContentLocation(article *Article) string {
-	return extr.getMetaContent(article, "contentLocation")
+// GetMetaContentLocation returns the meta content location set in the source, if the article has one
+func (extr *ContentExtractor) GetMetaContentLocation(article *Article) string {
+	return extr.GetMetaContent(article, "contentLocation")
 }
 
-//if the article has meta canonical link set in the url
-func (extr *ContentExtractor) getCanonicalLink(article *Article) string {
+// GetCanonicalLink returns the meta canonical link set in the source, or the actual URL
+func (extr *ContentExtractor) GetCanonicalLink(article *Article) string {
 	doc := article.Doc
 	metas := doc.Find("link[rel=canonical]")
 	if metas.Length() > 0 {
@@ -243,8 +243,8 @@ func (extr *ContentExtractor) getCanonicalLink(article *Article) string {
 	return article.FinalURL
 }
 
-//extract domain and use that
-func (extr *ContentExtractor) getDomain(article *Article) string {
+// GetDomain extracts the domain from the canonical link
+func (extr *ContentExtractor) GetDomain(article *Article) string {
 	canonicalLink := article.CanonicalLink
 	u, err := url.Parse(canonicalLink)
 	if err == nil {
@@ -253,8 +253,8 @@ func (extr *ContentExtractor) getDomain(article *Article) string {
 	return ""
 }
 
-//if the article has tags set in the source, use that
-func (extr *ContentExtractor) getTags(article *Article) *set.Set {
+// GetTags returns the tags set in the source, if the article has them
+func (extr *ContentExtractor) GetTags(article *Article) *set.Set {
 	tags := set.New()
 	doc := article.Doc
 	selections := doc.Find(aRelTagSelector)
