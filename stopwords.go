@@ -1,6 +1,8 @@
 package goose
 
 import (
+	"fmt"
+	"io/ioutil"
 	"regexp"
 	"strings"
 
@@ -103,6 +105,16 @@ func (stop StopWords) SimpleLanguageDetector(text string) string {
 	}
 
 	return currentLang
+}
+
+// ReadLinesOfFile returns the lines from a file as a slice of strings
+func ReadLinesOfFile(filename string) []string {
+	content, err := ioutil.ReadFile(filename)
+	if err != nil {
+		fmt.Println(err.Error())
+	}
+	lines := strings.Split(string(content), "\n")
+	return lines
 }
 
 var sw = map[string]string{

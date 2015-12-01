@@ -200,11 +200,10 @@ var removeNodesRegEx = regexp.MustCompile("" +
 	"^whats[_-]next$|" +
 	"wp-caption-text")
 
-func (c *Cleaner) clean(article *Article) *goquery.Document {
+func (c *Cleaner) clean(docToClean *goquery.Document) *goquery.Document {
 	if c.config.debug {
 		log.Println("Starting cleaning phase with Cleaner")
 	}
-	docToClean := article.Doc
 	docToClean = c.cleanArticleTags(docToClean)
 	docToClean = c.cleanEMTags(docToClean)
 	docToClean = c.dropCaps(docToClean)

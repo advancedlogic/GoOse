@@ -30,10 +30,13 @@ func NewCrawler(config Configuration, url string, RawHTML string) Crawler {
 	}
 }
 
+// SetCharset can be used to force a charset (e.g. when read from the HTTP headers)
+// rather than relying on the detection from the HTML meta tags
 func (c *Crawler) SetCharset(cs string) {
 	c.Charset = NormaliseCharset(cs)
 }
 
+// GetCharset returns a normalised charset string extracted from the meta tags
 func (c Crawler) GetCharset(document *goquery.Document) string {
 	// manually-provided charset (from HTTP headers?) takes priority
 	if "" != c.Charset {
@@ -105,25 +108,28 @@ func (c Crawler) Crawl() *Article {
 	}
 
 	extractor := NewExtractor(c.config)
-	html, _ := document.Html()
 
 	startTime := time.Now().UnixNano()
-	article.RawHTML = html
+
+	article.RawHTML, _ = document.Html()
 	article.FinalURL = c.helper.url
 	article.LinkHash = c.helper.linkHash
 	article.Doc = document
-	article.Title = extractor.GetTitle(article)
-	article.MetaLang = extractor.GetMetaLanguage(article)
-	article.MetaFavicon = extractor.GetFavicon(article)
+	article.Title = extractor.GetTitle(document)
+	article.MetaLang = extractor.GetMetaLanguage(document)
+	article.MetaFavicon = extractor.GetFavicon(document)
 
-	article.MetaDescription = extractor.GetMetaContentWithSelector(article, "meta[name#=(?i)^description$]")
-	article.MetaKeywords = extractor.GetMetaContentWithSelector(article, "meta[name#=(?i)^keywords$]")
-	article.CanonicalLink = extractor.GetCanonicalLink(article)
-	article.Domain = extractor.GetDomain(article)
-	article.Tags = extractor.GetTags(article)
+	article.MetaDescription = extractor.GetMetaContentWithSelector(document, "meta[name#=(?i)^description$]")
+	article.MetaKeywords = extractor.GetMetaContentWithSelector(document, "meta[name#=(?i)^keywords$]")
+	article.CanonicalLink = extractor.GetCanonicalLink(document)
+	if "" == article.CanonicalLink {
+		article.CanonicalLink = article.FinalURL
+	}
+	article.Domain = extractor.GetDomain(article.CanonicalLink)
+	article.Tags = extractor.GetTags(document)
 
 	cleaner := NewCleaner(c.config)
-	article.Doc = cleaner.clean(article)
+	article.Doc = cleaner.clean(article.Doc)
 
 	article.TopImage = OpenGraphResolver(article)
 	if article.TopImage == "" {
