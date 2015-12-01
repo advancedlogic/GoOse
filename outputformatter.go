@@ -41,7 +41,7 @@ func (formatter *outputFormatter) getFormattedText(article *Article) (output str
 	formatter.replaceTagsWithText()
 	formatter.removeParagraphsWithFewWords()
 	output = formatter.getOutputText()
-	return
+	return output, links
 }
 
 func (formatter *outputFormatter) convertToText() string {
@@ -59,7 +59,7 @@ func (formatter *outputFormatter) convertToText() string {
 }
 
 func (formatter *outputFormatter) linksToText() []string {
-	urlList := []string{}
+	var urlList []string
 	links := formatter.topNode.Find("a")
 	links.Each(func(i int, a *goquery.Selection) {
 		imgs := a.Find("img")
@@ -69,8 +69,8 @@ func (formatter *outputFormatter) linksToText() []string {
 			node.Type = html.TextNode
 			// save a list of URLs
 			url, _ := a.Attr("href")
-			isValidUrl, _ := regexp.MatchString("^http[s]?://", url)
-			if isValidUrl {
+			isValidURL, _ := regexp.MatchString("^http[s]?://", url)
+			if isValidURL {
 				urlList = append(urlList, url)
 			}
 		}
