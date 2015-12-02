@@ -27,32 +27,25 @@ func NewRawHelper(url string, RawHTML string) Helper {
 		}
 		RawHTML = string(RawHTMLBytes)
 	}
-
-	h := md5.New()
-	io.WriteString(h, url)
-	bytes := h.Sum(nil)
-	helper := Helper{
-		urlString: url,
-		url:       url,
-		linkHash:  fmt.Sprintf("%s.%d", string(bytes), time.Now().UnixNano()),
-	}
-	return helper
+	return NewHelper(url)
 }
 
 // NewURLHelper wraps the URL
 func NewURLHelper(url string) Helper {
-	FinalURL := ""
 	if strings.Contains(url, "#!") {
-		FinalURL = strings.Replace(url, "#!", "?_escaped_fragment_=", -1)
-	} else {
-		FinalURL = url
+		return NewHelper(strings.Replace(url, "#!", "?_escaped_fragment_=", -1))
 	}
+	return NewHelper(url)
+}
+
+// NewHelper returns a new Helper
+func NewHelper(finalURL string) Helper {
 	h := md5.New()
-	io.WriteString(h, FinalURL)
+	io.WriteString(h, finalURL)
 	bytes := h.Sum(nil)
 	helper := Helper{
-		urlString: FinalURL,
-		url:       FinalURL,
+		urlString: finalURL,
+		url:       finalURL,
 		linkHash:  fmt.Sprintf("%s.%d", string(bytes), time.Now().UnixNano()),
 	}
 	return helper
