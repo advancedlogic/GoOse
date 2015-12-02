@@ -17,7 +17,6 @@ type Crawler struct {
 	url     string
 	RawHTML string
 	Charset string
-	helper  Helper
 }
 
 // NewCrawler returns a crawler object initialised with the URL and the [optional] raw HTML body
@@ -79,7 +78,6 @@ func (c Crawler) GetCharset(document *goquery.Document) string {
 // Crawl fetches the HTML body and returns an Article
 func (c Crawler) Crawl() *Article {
 	article := new(Article)
-	c.assignParseCandidate()
 	c.assignHTML()
 
 	if c.RawHTML == "" {
@@ -111,8 +109,7 @@ func (c Crawler) Crawl() *Article {
 	startTime := time.Now().UnixNano()
 
 	article.RawHTML, _ = document.Html()
-	article.FinalURL = c.helper.url
-	article.LinkHash = c.helper.linkHash
+	article.FinalURL = c.url
 	article.Doc = document
 	article.Title = extractor.GetTitle(document)
 	article.MetaLang = extractor.GetMetaLanguage(document)
@@ -158,14 +155,6 @@ func (c Crawler) addSpacesBetweenTags(text string) string {
 	text = strings.Replace(text, "</blockquote>", "</blockquote>\n", -1)
 	text = strings.Replace(text, "<img ", "\n<img ", -1)
 	return strings.Replace(text, "</p>", "</p>\n", -1)
-}
-
-func (c *Crawler) assignParseCandidate() {
-	if c.RawHTML != "" {
-		c.helper = NewRawHelper(c.url, c.RawHTML)
-	} else {
-		c.helper = NewURLHelper(c.url)
-	}
 }
 
 func (c *Crawler) assignHTML() {
