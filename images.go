@@ -237,8 +237,7 @@ type ogImage struct {
 }
 
 // OpenGraphResolver return OpenGraph properties
-func OpenGraphResolver(article *Article) string {
-	doc := article.Doc
+func OpenGraphResolver(doc *goquery.Document) string {
 	meta := doc.Find("meta")
 	links := doc.Find("link")
 	topImage := ""

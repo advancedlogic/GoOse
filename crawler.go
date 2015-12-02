@@ -78,7 +78,6 @@ func (c Crawler) GetCharset(document *goquery.Document) string {
 
 // Crawl fetches the HTML body and returns an Article
 func (c Crawler) Crawl() *Article {
-
 	article := new(Article)
 	c.assignParseCandidate()
 	c.assignHTML()
@@ -131,11 +130,11 @@ func (c Crawler) Crawl() *Article {
 	cleaner := NewCleaner(c.config)
 	article.Doc = cleaner.clean(article.Doc)
 
-	article.TopImage = OpenGraphResolver(article)
+	article.TopImage = OpenGraphResolver(document)
 	if article.TopImage == "" {
 		article.TopImage = WebPageResolver(article)
 	}
-	article.TopNode = extractor.calculateBestNode(article)
+	article.TopNode = extractor.calculateBestNode(document)
 	if article.TopNode != nil {
 		article.TopNode = extractor.postCleanup(article.TopNode)
 
@@ -143,7 +142,7 @@ func (c Crawler) Crawl() *Article {
 		article.CleanedText, article.Links = outputFormatter.getFormattedText(article)
 
 		videoExtractor := NewVideoExtractor()
-		article.Movies = videoExtractor.GetVideos(article)
+		article.Movies = videoExtractor.GetVideos(document)
 	}
 
 	article.Delta = time.Now().UnixNano() - startTime

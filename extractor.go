@@ -258,9 +258,9 @@ func (extr *ContentExtractor) GetTags(document *goquery.Document) *set.Set {
 //we're going to start looking for where the clusters of paragraphs are. We'll score a cluster based on the number of stopwords
 //and the number of consecutive paragraphs together, which should form the cluster of text that this node is around
 //also store on how high up the paragraphs are, comments are usually at the bottom and should get a lower score
-func (extr *ContentExtractor) calculateBestNode(article *Article) *goquery.Selection {
+func (extr *ContentExtractor) calculateBestNode(document *goquery.Document) *goquery.Selection {
 	var topNode *goquery.Selection
-	nodesToCheck := extr.nodesToCheck(article.Doc)
+	nodesToCheck := extr.nodesToCheck(document)
 	if extr.config.debug {
 		log.Printf("Nodes to check %d\n", len(nodesToCheck))
 	}
