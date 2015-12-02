@@ -75,13 +75,14 @@ func (c Crawler) GetCharset(document *goquery.Document) string {
 	return ""
 }
 
-// Crawl fetches the HTML body and returns an Article
-func (c Crawler) Crawl() *Article {
-	article := new(Article)
-	c.assignHTML()
-
+// Preprocess fetches the HTML page if needed, converts it to UTF-8 and applies
+// some text normalisation to guarantee better results when extracting the content
+func (c *Crawler) Preprocess() *goquery.Document {
 	if c.RawHTML == "" {
-		return article
+		c.RawHTML = c.fetchHTML(c.url, c.config.timeout)
+	}
+	if c.RawHTML == "" {
+		return nil
 	}
 
 	c.RawHTML = c.addSpacesBetweenTags(c.RawHTML)
@@ -95,6 +96,7 @@ func (c Crawler) Crawl() *Article {
 
 	cs := c.GetCharset(document)
 	if "" != cs && "UTF-8" != cs {
+		// the net/html parser and goquery require UTF-8 data
 		c.RawHTML = UTF8encode(c.RawHTML, cs)
 		reader = strings.NewReader(c.RawHTML)
 		document, err = goquery.NewDocumentFromReader(reader)
@@ -102,6 +104,18 @@ func (c Crawler) Crawl() *Article {
 		if nil != err {
 			panic(err.Error())
 		}
+	}
+
+	return document
+}
+
+// Crawl fetches the HTML body and returns an Article
+func (c Crawler) Crawl() *Article {
+	article := new(Article)
+
+	document := c.Preprocess()
+	if nil == document {
+		return article
 	}
 
 	extractor := NewExtractor(c.config)
@@ -148,8 +162,8 @@ func (c Crawler) Crawl() *Article {
 }
 
 // In many cases, like at the end of each <li> element or between </span><span> tags,
-// we need to add spaces or the text on either side will get joined together into one word.
-// Also, add newlines after each </p> tag to preserve paragraphs.
+// we need to add spaces, otherwise the text on either side will get joined together into one word.
+// This method also adds newlines after each </p> tag to preserve paragraphs.
 func (c Crawler) addSpacesBetweenTags(text string) string {
 	text = strings.Replace(text, "><", "> <", -1)
 	text = strings.Replace(text, "</blockquote>", "</blockquote>\n", -1)
@@ -157,30 +171,31 @@ func (c Crawler) addSpacesBetweenTags(text string) string {
 	return strings.Replace(text, "</p>", "</p>\n", -1)
 }
 
-func (c *Crawler) assignHTML() {
-	if c.RawHTML == "" {
-		cookieJar, _ := cookiejar.New(nil)
-		client := &http.Client{
-			Jar:     cookieJar,
-			Timeout: c.config.timeout,
-		}
-		req, err := http.NewRequest("GET", c.url, nil)
-		if err != nil {
-			log.Println(err.Error())
-			return
-		}
-		req.Header.Set("User-Agent", "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_6_7) AppleWebKit/534.30 (KHTML, like Gecko) Chrome/12.0.742.91 Safari/534.30")
-		resp, err := client.Do(req)
-		if err != nil {
-			log.Println(err.Error())
-			return
-		}
-		contents, err := ioutil.ReadAll(resp.Body)
-		if err == nil {
-			c.RawHTML = string(contents)
-		} else {
-			log.Println(err.Error())
-		}
-		resp.Body.Close()
+func (c *Crawler) fetchHTML(u string, timeout time.Duration) string {
+	cookieJar, _ := cookiejar.New(nil)
+	client := &http.Client{
+		Jar:     cookieJar,
+		Timeout: timeout,
 	}
+	req, err := http.NewRequest("GET", u, nil)
+	if err != nil {
+		log.Println(err.Error())
+		return ""
+	}
+
+	req.Header.Set("User-Agent", "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_6_7) AppleWebKit/534.30 (KHTML, like Gecko) Chrome/12.0.742.91 Safari/534.30")
+	resp, err := client.Do(req)
+	if err != nil {
+		log.Println(err.Error())
+		return ""
+	}
+	contents, err := ioutil.ReadAll(resp.Body)
+	if err == nil {
+		c.RawHTML = string(contents)
+	} else {
+		log.Println(err.Error())
+	}
+	resp.Body.Close()
+
+	return c.RawHTML
 }
