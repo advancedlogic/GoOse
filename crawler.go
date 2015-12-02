@@ -77,7 +77,7 @@ func (c Crawler) GetCharset(document *goquery.Document) string {
 
 // Preprocess fetches the HTML page if needed, converts it to UTF-8 and applies
 // some text normalisation to guarantee better results when extracting the content
-func (c *Crawler) Preprocess() *goquery.Document {
+func (c *Crawler) Preprocess() (*goquery.Document, error) {
 	if c.RawHTML == "" {
 		c.RawHTML = c.fetchHTML(c.url, c.config.timeout)
 	}
@@ -91,7 +91,7 @@ func (c *Crawler) Preprocess() *goquery.Document {
 	document, err := goquery.NewDocumentFromReader(reader)
 
 	if err != nil {
-		panic(err.Error())
+		return nil, err
 	}
 
 	cs := c.GetCharset(document)
@@ -102,18 +102,21 @@ func (c *Crawler) Preprocess() *goquery.Document {
 		document, err = goquery.NewDocumentFromReader(reader)
 
 		if nil != err {
-			panic(err.Error())
+			return nil, err
 		}
 	}
 
-	return document
+	return document, nil
 }
 
 // Crawl fetches the HTML body and returns an Article
 func (c Crawler) Crawl() *Article {
 	article := new(Article)
 
-	document := c.Preprocess()
+	document, err := c.Preprocess()
+	if nil != err {
+		panic(err.Error())
+	}
 	if nil == document {
 		return article
 	}
