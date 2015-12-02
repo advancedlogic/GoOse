@@ -29,7 +29,7 @@ func (formatter *outputFormatter) getTopNode() *goquery.Selection {
 	return formatter.topNode
 }
 
-func (formatter *outputFormatter) GetFormattedText(topNode *goquery.Selection, lang string) (output string, links []string) {
+func (formatter *outputFormatter) getFormattedText(topNode *goquery.Selection, lang string) (output string, links []string) {
 	formatter.topNode = topNode
 	formatter.language = formatter.getLanguage(lang)
 	if formatter.language == "" {

@@ -255,6 +255,12 @@ func (extr *ContentExtractor) GetTags(document *goquery.Document) *set.Set {
 	return tags
 }
 
+// GetCleanTextAndLinks parses the main HTML node for text and links
+func (extr *ContentExtractor) GetCleanTextAndLinks(topNode *goquery.Selection, lang string) (string, []string) {
+	outputFormatter := new(outputFormatter)
+	return outputFormatter.getFormattedText(topNode, lang)
+}
+
 // CalculateBestNode checks for the HTML node most likely to contain the main content.
 //we're going to start looking for where the clusters of paragraphs are. We'll score a cluster based on the number of stopwords
 //and the number of consecutive paragraphs together, which should form the cluster of text that this node is around

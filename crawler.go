@@ -152,7 +152,7 @@ func (c Crawler) Crawl() *Article {
 	if article.TopNode != nil {
 		article.TopNode = extractor.PostCleanup(article.TopNode)
 
-		article.CleanedText, article.Links = c.GetCleanTextAndLinks(article.TopNode, article.MetaLang)
+		article.CleanedText, article.Links = extractor.GetCleanTextAndLinks(article.TopNode, article.MetaLang)
 
 		videoExtractor := NewVideoExtractor()
 		article.Movies = videoExtractor.GetVideos(document)
@@ -161,12 +161,6 @@ func (c Crawler) Crawl() *Article {
 	article.Delta = time.Now().UnixNano() - startTime
 
 	return article
-}
-
-// GetCleanTextAndLinks parses the main HTML node for text and links
-func (c Crawler) GetCleanTextAndLinks(topNode *goquery.Selection, lang string) (string, []string) {
-	outputFormatter := new(outputFormatter)
-	return outputFormatter.GetFormattedText(topNode, lang)
 }
 
 // In many cases, like at the end of each <li> element or between </span><span> tags,
