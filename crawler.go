@@ -82,7 +82,7 @@ func (c *Crawler) Preprocess() (*goquery.Document, error) {
 		c.RawHTML = c.fetchHTML(c.url, c.config.timeout)
 	}
 	if c.RawHTML == "" {
-		return nil
+		return nil, nil
 	}
 
 	c.RawHTML = c.addSpacesBetweenTags(c.RawHTML)
