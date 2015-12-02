@@ -1,11 +1,12 @@
 package goose
 
 import (
-	"github.com/PuerkitoBio/goquery"
-	"golang.org/x/net/html"
 	"regexp"
 	"strconv"
 	"strings"
+
+	"github.com/PuerkitoBio/goquery"
+	"golang.org/x/net/html"
 )
 
 var normalizeWhitespaceRegexp = regexp.MustCompile(`[ \r\f\v\t]+`)
@@ -17,11 +18,9 @@ type outputFormatter struct {
 	language string
 }
 
-func (formatter *outputFormatter) getLanguage(article *Article) string {
-	if formatter.config.useMetaLanguage {
-		if article.MetaLang != "" {
-			return article.MetaLang
-		}
+func (formatter *outputFormatter) getLanguage(lang string) string {
+	if formatter.config.useMetaLanguage && "" != lang {
+		return lang
 	}
 	return formatter.config.targetLanguage
 }
@@ -30,9 +29,9 @@ func (formatter *outputFormatter) getTopNode() *goquery.Selection {
 	return formatter.topNode
 }
 
-func (formatter *outputFormatter) getFormattedText(article *Article) (output string, links []string) {
-	formatter.topNode = article.TopNode
-	formatter.language = formatter.getLanguage(article)
+func (formatter *outputFormatter) GetFormattedText(topNode *goquery.Selection, lang string) (output string, links []string) {
+	formatter.topNode = topNode
+	formatter.language = formatter.getLanguage(lang)
 	if formatter.language == "" {
 		formatter.language = formatter.config.targetLanguage
 	}

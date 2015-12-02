@@ -1,6 +1,7 @@
 package goose
 
 import (
+	"fmt"
 	"strings"
 	"unicode/utf8"
 
@@ -53,7 +54,12 @@ func NormaliseCharset(characterSet string) string {
 // UTF8encode converts a string from the source character set to UTF-8, skipping invalid byte sequences
 // @see http://stackoverflow.com/questions/32512500/ignore-illegal-bytes-when-decoding-text-with-go
 func UTF8encode(raw string, sourceCharset string) string {
-	enc, _ := charset.Lookup(sourceCharset)
+	enc, name := charset.Lookup(sourceCharset)
+	if nil == enc {
+		fmt.Println("Cannot convert from", sourceCharset, ":", name)
+		return raw
+	}
+
 	dst := make([]byte, len(raw))
 	d := enc.NewDecoder()
 

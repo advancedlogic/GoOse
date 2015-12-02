@@ -200,7 +200,8 @@ var removeNodesRegEx = regexp.MustCompile("" +
 	"^whats[_-]next$|" +
 	"wp-caption-text")
 
-func (c *Cleaner) clean(docToClean *goquery.Document) *goquery.Document {
+// Clean removes HTML elements around the main content and prepares the document for parsing
+func (c *Cleaner) Clean(docToClean *goquery.Document) *goquery.Document {
 	if c.config.debug {
 		log.Println("Starting cleaning phase with Cleaner")
 	}
