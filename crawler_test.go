@@ -22,7 +22,10 @@ func ReadRawHTML(a Article) string {
 // ValidateArticle validates (test) the specified article
 func ValidateArticle(expected Article, removed *[]string) error {
 	g := New()
-	result := g.ExtractFromRawHTML(expected.FinalURL, ReadRawHTML(expected))
+	result, err := g.ExtractFromRawHTML(expected.FinalURL, ReadRawHTML(expected))
+	if err != nil {
+		return err
+	}
 
 	// DEBUG
 	//fmt.Printf("article := Article{\n\tDomain:          %q,\n\tTitle:           %q,\n\tMetaDescription: %q,\n\tCleanedText:     %q,\n\tMetaKeywords:    %q,\n\tCanonicalLink:   %q,\n\tTopImage:        %q,\n}\n\n", expected.Domain, result.Title, result.MetaDescription, result.CleanedText, result.MetaKeywords, result.CanonicalLink, result.TopImage)
