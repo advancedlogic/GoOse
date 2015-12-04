@@ -22,6 +22,7 @@ var motleyReplacement = "&#65533;" // U+FFFD (decimal 65533) is the "replacement
 var titleDelimiters = []string{
 	"|",
 	" - ",
+	" — ",
 	"»",
 	":",
 }
@@ -47,12 +48,20 @@ func NewExtractor(config Configuration) ContentExtractor {
 func (extr *ContentExtractor) GetTitle(document *goquery.Document) string {
 	title := ""
 
-	ogTitleElement := document.Find(`meta[property="og:title"]`)
-	if ogTitleElement != nil && ogTitleElement.Size() > 0 {
-		title, _ = ogTitleElement.Attr("content")
+	titleElement := document.Find("title")
+	if titleElement != nil && titleElement.Size() > 0 {
+		title = titleElement.Text()
 	}
+
 	if title == "" {
-		titleElement := document.Find("title,post-title,headline")
+		ogTitleElement := document.Find(`meta[property="og:title"]`)
+		if ogTitleElement != nil && ogTitleElement.Size() > 0 {
+			title, _ = ogTitleElement.Attr("content")
+		}
+	}
+
+	if title == "" {
+		titleElement = document.Find("post-title,headline")
 		if titleElement == nil || titleElement.Size() == 0 {
 			return title
 		}
