@@ -32,16 +32,15 @@ func NewCrawler(config Configuration, url string, RawHTML string) Crawler {
 // SetCharset can be used to force a charset (e.g. when read from the HTTP headers)
 // rather than relying on the detection from the HTML meta tags
 func (c *Crawler) SetCharset(cs string) {
+	cs = strings.Replace(cs, " ", "", -1)
+	if strings.HasPrefix(cs, "text/html;charset=") {
+		cs = strings.TrimPrefix(cs, "text/html;charset=")
+	}
 	c.Charset = NormaliseCharset(cs)
 }
 
-// GetCharset returns a normalised charset string extracted from the meta tags
-func (c Crawler) GetCharset(document *goquery.Document) string {
-	// manually-provided charset (from HTTP headers?) takes priority
-	if "" != c.Charset {
-		return c.Charset
-	}
-
+// GetContentType returns the Content-Type string extracted from the meta tags
+func (c Crawler) GetContentType(document *goquery.Document) string {
 	// <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 	selection := document.Find("meta").EachWithBreak(func(i int, s *goquery.Selection) bool {
 		attr, exists := s.Attr("http-equiv")
@@ -53,16 +52,31 @@ func (c Crawler) GetCharset(document *goquery.Document) string {
 
 	if selection != nil {
 		attr, _ := selection.Attr("content")
-		attr = strings.Replace(attr, " ", "", -1)
+		return attr
+	}
 
-		if strings.HasPrefix(attr, "text/html;charset=") {
-			cs := strings.TrimPrefix(attr, "text/html;charset=")
+	return ""
+}
+
+// GetCharset returns a normalised charset string extracted from the meta tags
+func (c Crawler) GetCharset(document *goquery.Document) string {
+	// manually-provided charset (from HTTP headers?) takes priority
+	if "" != c.Charset {
+		return c.Charset
+	}
+
+	// <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	ct := c.GetContentType(document)
+	if "" != ct {
+		ct = strings.Replace(ct, " ", "", -1)
+		if strings.HasPrefix(ct, "text/html;charset=") {
+			cs := strings.TrimPrefix(ct, "text/html;charset=")
 			return NormaliseCharset(cs)
 		}
 	}
 
 	// <meta charset="utf-8">
-	selection = document.Find("meta").EachWithBreak(func(i int, s *goquery.Selection) bool {
+	selection := document.Find("meta").EachWithBreak(func(i int, s *goquery.Selection) bool {
 		_, exists := s.Attr("charset")
 		return !exists
 	})
