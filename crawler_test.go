@@ -23,7 +23,10 @@ func ReadRawHTML(a Article) string {
 func ValidateArticle(expected Article, removed *[]string) error {
 	g := New()
 	//g.config.debug = true
-	result := g.ExtractFromRawHTML(expected.FinalURL, ReadRawHTML(expected))
+	result, err := g.ExtractFromRawHTML(expected.FinalURL, ReadRawHTML(expected))
+	if nil != err {
+		return err
+	}
 
 	// DEBUG
 	//fmt.Printf("article := Article{\n\tDomain:          %q,\n\tTitle:           %q,\n\tMetaDescription: %q,\n\tCleanedText:     %q,\n\tMetaKeywords:    %q,\n\tCanonicalLink:   %q,\n\tTopImage:        %q,\n}\n\n", expected.Domain, result.Title, result.MetaDescription, result.CleanedText, result.MetaKeywords, result.CanonicalLink, result.TopImage)
@@ -38,7 +41,6 @@ func ValidateArticle(expected Article, removed *[]string) error {
 	}
 
 	if !strings.Contains(result.CleanedText, expected.CleanedText) {
-		//fmt.Println("EXPECTED:    ", expected.CleanedText, "\n\nACTUAL:   ", result.CleanedText, "\n\n")
 		return fmt.Errorf("article cleanedText does not contain %q", expected.CleanedText)
 	}
 

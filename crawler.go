@@ -124,22 +124,25 @@ func (c *Crawler) Preprocess() (*goquery.Document, error) {
 }
 
 // Crawl fetches the HTML body and returns an Article
-func (c Crawler) Crawl() *Article {
+func (c Crawler) Crawl() (*Article, error) {
 	article := new(Article)
 
 	document, err := c.Preprocess()
 	if nil != err {
-		panic(err.Error())
+		return nil, err
 	}
 	if nil == document {
-		return article
+		return article, nil
 	}
 
 	extractor := NewExtractor(c.config)
 
 	startTime := time.Now().UnixNano()
 
-	article.RawHTML, _ = document.Html()
+	article.RawHTML, err = document.Html()
+	if nil != err {
+		return nil, err
+	}
 	article.FinalURL = c.url
 	article.Doc = document
 	article.Title = extractor.GetTitle(document)
@@ -174,7 +177,7 @@ func (c Crawler) Crawl() *Article {
 
 	article.Delta = time.Now().UnixNano() - startTime
 
-	return article
+	return article, nil
 }
 
 // In many cases, like at the end of each <li> element or between </span><span> tags,
