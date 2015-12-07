@@ -268,6 +268,7 @@ func (extr *ContentExtractor) GetTags(document *goquery.Document) *set.Set {
 // GetCleanTextAndLinks parses the main HTML node for text and links
 func (extr *ContentExtractor) GetCleanTextAndLinks(topNode *goquery.Selection, lang string) (string, []string) {
 	outputFormatter := new(outputFormatter)
+	outputFormatter.config = extr.config
 	return outputFormatter.getFormattedText(topNode, lang)
 }
 
