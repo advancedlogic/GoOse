@@ -1,8 +1,8 @@
 package goose
 
 import (
-	"fmt"
 	"io/ioutil"
+	"log"
 	"regexp"
 	"strings"
 
@@ -23,9 +23,10 @@ func NewStopwords() StopWords {
 		lines := strings.Split(stopwords, "\n")
 		cachedStopWords[lang] = set.New()
 		for _, line := range lines {
-			line = strings.Trim(line, " ")
-			line = strings.Trim(line, "\t")
-			line = strings.Trim(line, "\r")
+			if strings.HasPrefix(line, "#") {
+				continue
+			}
+			line = strings.TrimSpace(line)
 			cachedStopWords[lang].Add(line)
 		}
 	}
@@ -111,7 +112,7 @@ func (stop StopWords) SimpleLanguageDetector(text string) string {
 func ReadLinesOfFile(filename string) []string {
 	content, err := ioutil.ReadFile(filename)
 	if err != nil {
-		fmt.Println(err.Error())
+		log.Println(err.Error())
 	}
 	lines := strings.Split(string(content), "\n")
 	return lines
