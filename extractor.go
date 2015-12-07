@@ -2,15 +2,16 @@ package goose
 
 import (
 	"container/list"
-	"github.com/PuerkitoBio/goquery"
-	"golang.org/x/net/html"
-	"golang.org/x/net/html/atom"
-	"gopkg.in/fatih/set.v0"
 	"log"
 	"math"
 	"net/url"
 	"strconv"
 	"strings"
+
+	"github.com/PuerkitoBio/goquery"
+	"golang.org/x/net/html"
+	"golang.org/x/net/html/atom"
+	"gopkg.in/fatih/set.v0"
 )
 
 const defaultLanguage = "en"
