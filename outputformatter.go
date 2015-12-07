@@ -11,6 +11,7 @@ import (
 
 var normalizeWhitespaceRegexp = regexp.MustCompile(`[ \r\f\v\t]+`)
 var normalizeNl = regexp.MustCompile(`[\n]+`)
+var validURLRegex = regexp.MustCompile("^http[s]?://")
 
 type outputFormatter struct {
 	topNode  *goquery.Selection
@@ -57,6 +58,11 @@ func (formatter *outputFormatter) convertToText() string {
 	return strings.Join(txts, "\n\n")
 }
 
+// check if this is a valid URL
+func isValidURL(u string) bool {
+	return validURLRegex.MatchString(u)
+}
+
 func (formatter *outputFormatter) linksToText() []string {
 	var urlList []string
 	links := formatter.topNode.Find("a")
@@ -68,8 +74,7 @@ func (formatter *outputFormatter) linksToText() []string {
 			node.Type = html.TextNode
 			// save a list of URLs
 			url, _ := a.Attr("href")
-			isValidURL, _ := regexp.MatchString("^http[s]?://", url)
-			if isValidURL {
+			if isValidURL(url) {
 				urlList = append(urlList, url)
 			}
 		}
