@@ -29,14 +29,21 @@ func NewCrawler(config Configuration, url string, RawHTML string) Crawler {
 	}
 }
 
-// SetCharset can be used to force a charset (e.g. when read from the HTTP headers)
-// rather than relying on the detection from the HTML meta tags
-func (c *Crawler) SetCharset(cs string) {
-	cs = strings.Replace(cs, " ", "", -1)
+func getCharsetFromContentType(cs string) string {
+	cs = strings.ToLower(strings.Replace(cs, " ", "", -1))
 	if strings.HasPrefix(cs, "text/html;charset=") {
 		cs = strings.TrimPrefix(cs, "text/html;charset=")
 	}
-	c.Charset = NormaliseCharset(cs)
+	if strings.HasPrefix(cs, "application/xhtml+xml;charset=") {
+		cs = strings.TrimPrefix(cs, "application/xhtml+xml;charset=")
+	}
+	return NormaliseCharset(cs)
+}
+
+// SetCharset can be used to force a charset (e.g. when read from the HTTP headers)
+// rather than relying on the detection from the HTML meta tags
+func (c *Crawler) SetCharset(cs string) {
+	c.Charset = getCharsetFromContentType(cs)
 }
 
 // GetContentType returns the Content-Type string extracted from the meta tags
@@ -68,11 +75,7 @@ func (c Crawler) GetCharset(document *goquery.Document) string {
 	// <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 	ct := c.GetContentType(document)
 	if "" != ct {
-		ct = strings.Replace(ct, " ", "", -1)
-		if strings.HasPrefix(ct, "text/html;charset=") {
-			cs := strings.TrimPrefix(ct, "text/html;charset=")
-			return NormaliseCharset(cs)
-		}
+		return getCharsetFromContentType(ct)
 	}
 
 	// <meta charset="utf-8">
