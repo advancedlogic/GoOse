@@ -163,6 +163,8 @@ var removeNodesRegEx = regexp.MustCompile("" +
 	"skyscraper|" +
 	"socialNetworking|" +
 	"social_|" +
+	"social\\-share|" +
+	"social\\-count|" +
 	"socialnetworking|" +
 	"socialtools|" +
 	"source|" +
