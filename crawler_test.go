@@ -33,11 +33,11 @@ func ValidateArticle(expected Article, removed *[]string) error {
 	//fmt.Printf("%#v\n", result.Links)
 
 	if result.Title != expected.Title {
-		return fmt.Errorf("article title does not match. Got %q", result.Title)
+		return fmt.Errorf("article title does not match. Got '%q', Expected '%q'", result.Title, expected.Title)
 	}
 
 	if result.MetaDescription != expected.MetaDescription {
-		return fmt.Errorf("article metaDescription does not match. Got %q", result.MetaDescription)
+		return fmt.Errorf("article metaDescription does not match. Got '%q', Expected '%q'", result.MetaDescription, expected.MetaDescription)
 	}
 
 	if !strings.Contains(result.CleanedText, expected.CleanedText) {
@@ -52,14 +52,14 @@ func ValidateArticle(expected Article, removed *[]string) error {
 	}
 
 	if result.MetaKeywords != expected.MetaKeywords {
-		return fmt.Errorf("article keywords does not match. Got %q", result.MetaKeywords)
+		return fmt.Errorf("article keywords does not match. Got %q\n Expected: %q", result.MetaKeywords, expected.MetaKeywords)
 	}
 	if result.CanonicalLink != expected.CanonicalLink {
-		return fmt.Errorf("article CanonicalLink does not match. Got %q", result.CanonicalLink)
+		return fmt.Errorf("article CanonicalLink does not match. Got %q, Expected '%q'", result.CanonicalLink, expected.CanonicalLink)
 	}
 
 	if result.TopImage != expected.TopImage {
-		return fmt.Errorf("article topImage does not match. Got %q", result.TopImage)
+		return fmt.Errorf("article topImage does not match. Got %q, Expected %q", result.TopImage, expected.TopImage)
 	}
 
 	if expected.Links != nil && !reflect.DeepEqual(result.Links, expected.Links) {
@@ -699,6 +699,25 @@ func Test_ProfitLindorffFi(t *testing.T) {
 	}
 }
 
+func Test_PrnewswireCom(t *testing.T) {
+	article := Article{
+		Domain:          "prnewswire.com",
+		Title:           "Atlantic Merchant Capital makes lead investment in Social Quant -- TAMPA, Fla., April 29, 2015 /PRNewswire/ --",
+		MetaDescription: "TAMPA, Fla., April 29, 2015 /PRNewswire/ -- Atlantic Merchant Capital makes lead investment in Social Quant.",
+		CleanedText:     "TAMPA, Fla. , April 29, 2015 /PRNewswire/ -- Atlantic Merchant Capital Investors announced today that it has made a lead investment in conjunction with Fleur De Lis Partners, into Social Quant, LLC.  Social Quant is a Tampa -based technology start-up, formed by Dr. Morten Middelfart.  It provides clients with big data algorithmic support tools to increase the size and quality of their Twitter audiences.  Dr. Middelfart is a serial entrepreneur and globally-respected author and thinker on the uses of big data and artificial intelligence.\n\n\"We are very excited to have the opportunity to back Dr. Middelfart in this exciting new social media venture.  We think the company's IT engine can be expanded for uses with other social media tools.  As a result, we think Dr. Middelfart's company and services will gain greater scale and relevance over the next several years.  He has a history of success with projects like this and we are excited to be a part of this venture.  We think the value of his IP is substantial already, but over time we think this can become an extraordinarily valuable IP asset,\" said Allan Martin , CEO of Atlantic.\n\n\"The team at Social Quant is enthusiastic about our new capital partnership with Atlantic,\" said Dr. Morten Middelfart , founder of Social Quant.  \"The capital provided by Atlantic will allow us to execute marketing initiatives we believe are necessary to scale our offerings.  We are also excited about the opportunity to work with the Atlantic principals in the ongoing development of our strategy.  They are proving to add much more than capital to our business.\"\n\nAtlantic Merchant Capital Investors is a Tampa -based private equity firm founded in 2009 with investments in middle-market companies throughout the United States.  Its primary investment focus is financial services with emphasis on insurance and banking.  However, it has a growing portfolio of investments in scalable start-ups in an effort to support entrepreneurship in the Tampa Bay area.\n\nFleur De Lis Partners is a private investment partnership (controlled by Atlantic), also based in Tampa, Florida .\n\nContact:  Doug Licker, Atlantic Merchant Capital Investors 813-443-0745.  Doug.Licker@amci360.com.\n\nSOURCE Atlantic Merchant Capital Investors\n\nRELATED LINKS",
+		MetaKeywords:    "Atlantic Merchant Capital Investors, florida, Financing Agreements, Banking & Financial Services, Social Media, Internet Technology, Computer & Electronics",
+		CanonicalLink:   "http://www.prnewswire.com/news-releases/atlantic-merchant-capital-makes-lead-investment-in-social-quant-300074212.html",
+		TopImage:        "http://content.prnewswire.com/designimages/logo-prn-01_PRN.gif",
+	}
+	//article.Links = []string{}
+
+	removed := []string{"~~~REMOVED~~~"}
+	err := ValidateArticle(article, &removed)
+	if err != nil {
+		t.Error(err)
+	}
+}
+
 // Relative image test
 func Test_RelativeImageWithSpecialChars(t *testing.T) {
 	article := Article{
@@ -722,6 +741,27 @@ func Test_RelativeImageWithSpecialChars(t *testing.T) {
 	}
 
 	err := ValidateArticle(article, &[]string{"~~~REMOVED~~~"})
+	if err != nil {
+		t.Error(err)
+	}
+}
+
+func Test_SlideshareNet(t *testing.T) {
+	article := Article{
+		Domain:          "slideshare.net",
+		Title:           "Lessons on Growth (Boston 2014)",
+		MetaDescription: "This is the version of the talk \"Lessons in Growth\" I gave in Boston at the PayPal HQ on Feb 24, 2014.",
+		CleanedText:     "Share\n\nPublished on Feb 24, 2014\n\nThis is the version of the talk \"Lessons in Growth\" I gave in Boston at the PayPal HQ on Feb 24, 2014.\n\n...\n\nBusiness\n\nTechnology\n\n0 Comments\n\nStatistics\n\nNotes\n\n,\n\n,\n\nShow More\n\nViews\n\n0\n\nActions\n\n0\n\n0\n\n0\n\nEmbeds\n\n0\n\nwealthfront.com LESSONS IN GROWTH Adam\n\nNash @adamnash February 24, 2014\n\nLessons in Growth eBay Express\n\nBuild it and they will come?   LinkedIn  Viral growth just works… as long as you make it.  Wealthfront  An incredible service and business… if. wealthfront.com | 2\n\nWhy Growth Matters History is\n\nwritten by the victors Victory for consumer software is almost always deﬁned by your market reach Growth does not just happen, it has to be designed into your product and service The market is brutally competitive. If you don’t ﬁgure it out, your competitors will. wealthfront.com | 3\n\nThink About Non-Users Software companies\n\ntend to focus almost exclusively on their users Growth is about the experience you provide for nonusers (aka guests, visitors) When you are small and growing, almost all of your future users have not signed up yet Whats pages & features do you have for non-users? wealthfront.com | 4\n\nFive Sources of Web Traffic\n\nOrganic  People seek you out directly Email  You send out email, they click SEO  You expose pages that are indexed in Search Paid / Aﬃliate  Paid links to your content Social  Links to your content shared by users wealthfront.com | 5\n\nUnderstanding Virality One of the\n\nkey insights of our growth strategy from 2008. Extensible to literally all engagement features. Key measure used by applications on social platforms. This is an extremely useful frame. How does a new customer   today lead to a new customer   tomorrow? wealthfront.com | 6\n\nUnderstanding Virality At the heart\n\nof virality is an exponential based on branching factor and cycle time. Would your rather 10x every week, or 2x every day? Rabbits make lots of rabbits not because of big litters, but because they breed frequently. “n” matters more than “m”. n m number of cycles branching factor wealthfront.com | 7\n\nThree Steps to Virality Clearly\n\narticulate the ﬂows where content from a user can touch a non-user. Wireframes are ﬁne. Build a simple mathematical model for conversion rates and multipliers and cycle time. Instrument your ﬂows for these metrics. Develop, release, measure, iterate. Be prepared to execute 6-8 release cycles to get your factor high enough to contribute meaningfully. wealthfront.com | 8\n\nGrowth in a Mobile World\n\nNative apps work for a simple reason: they generate organic trafﬁc at scale. Transaction ﬂows are still heavily optimized for the web, and conversion rates are better. Non-users don’t have your app. It’s that simple. Engaged users, on your app, publishing content that reach non-users, likely converting on a web ﬂow. iOS, Android, Facebook & Twitter all working on bridging the native / transactional gap. wealthfront.com | 9\n\nValue First, Then Growth Engineering\n\ngrowth over a product that doesn’t provide real value will be short term, at best. Engagement and/or economic value must be at the heart of any sustainable growth curve. Don’t underestimate the power of word of mouth to drive your brand, your trafﬁc, and your conversion rates. wealthfront.com | 10\n\nFinal Thoughts We can be\n\nour own harshest critics. In the mirror we see every ﬂaw, every mistake, every imperfection. These are the very early years. Things that seem small now can and will be huge in 5 years. Each of you can and will have a profound impact on that future. Behavior matters. Values matter. wealthfront.com | 11",
+		MetaKeywords:    "",
+		CanonicalLink:   "http://www.slideshare.net/adamnash/lessons-on-growth-boston-2014",
+		TopImage:        "https://cdn.slidesharecdn.com/ss_thumbnails/lessonsongrowthv2-140224231617-phpapp01-thumbnail-4.jpg?cb=1393332344",
+	}
+	article.Links = []string{
+		"http://www.linkedin.com/legal/copyright-policy",
+	}
+
+	removed := []string{"~~~REMOVED~~~"}
+	err := ValidateArticle(article, &removed)
 	if err != nil {
 		t.Error(err)
 	}

@@ -1,5 +1,3 @@
-<!-- http://www.mozilla.gr.jp/standards/webtips0022.html -->
-
 <?xml version="1.0" encoding="euc-jp"?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="ja" lang="ja">
@@ -7,9 +5,9 @@
 	<meta http-equiv="Content-Type" content="application/xhtml+xml; charset=euc-jp" />
 	<meta http-equiv="Content-Script-Type" content="text/javascript" />
 	<meta http-equiv="Content-Style-Type" content="text/css" />
-	<title>文字コード宣言は行いましょう(HTML) - Web標準普及プロジェクト</title>
-	<link rel="top" href="index.html" title="Web標準普及プロジェクトトップページ" />
-	<link rel="up" href="webtips/index.html" title="Web標準化Tips" />
+	<title>ʸ������������ϹԤ��ޤ��礦(HTML) - Webɸ����ڥץ���������</title>
+	<link rel="top" href="index.html" title="Webɸ����ڥץ��������ȥȥåץڡ���" />
+	<link rel="up" href="webtips/index.html" title="Webɸ�ಽTips" />
 	<link rel="icon" type="image/png" href="images/wsp_favicon.png" />
 	
 	<link rel="stylesheet" type="text/css" media="all" href="http://www.mozilla.gr.jp/css/default.css" title="Default Style of MozillaGumi" />
@@ -17,59 +15,59 @@
 </head>
 <body  class="webtips">
 	<div class="header">
-		<h1 class="logo"><a href="http://www.mozilla.gr.jp/standards/"><img src="images/wsp_logo_125.png" width="125" height="45" alt="Web標準普及プロジェクト" /></a></h1>
+		<h1 class="logo"><a href="http://www.mozilla.gr.jp/standards/"><img src="images/wsp_logo_125.png" width="125" height="45" alt="Webɸ����ڥץ���������" /></a></h1>
 	</div>
 	<div class="globalmenu">
-		<p class="menu1"><a href="index.html">Web標準普及プロジェクトホーム</a> | <a href="about.html">Web標準普及プロジェクトとは?</a> | <a href="links.html">リンク</a></p>
-		<p class="menu2"><a href="http://www.mozilla.gr.jp/">もじら組</a> | <a href="http://bugzilla.mozilla.gr.jp/">Bugzilla-jp</a></p>
+		<p class="menu1"><a href="index.html">Webɸ����ڥץ��������ȥۡ���</a> | <a href="about.html">Webɸ����ڥץ��������ȤȤ�?</a> | <a href="links.html">���</a></p>
+		<p class="menu2"><a href="http://www.mozilla.gr.jp/">�⤸����</a> | <a href="http://bugzilla.mozilla.gr.jp/">Bugzilla-jp</a></p>
 	</div>
 	<div class="localmenu">
-		<p class="menu1"><a href="webtips/index.html">Web標準化Tips</a></p>
+		<p class="menu1"><a href="webtips/index.html">Webɸ�ಽTips</a></p>
 		<p class="menu2">&nbsp;</p>
 	</div>
 	
 	<div class="content nosidebar">
 		<div class="section">
-			<h2 id="c1"><a href="#c1" class="selflink">文字コード宣言は行いましょう(HTML)</a></h2>
+			<h2 id="c1"><a href="#c1" class="selflink">ʸ������������ϹԤ��ޤ��礦(HTML)</a></h2>
 			
 			<p class="OverView">
-				HTMLで日本語を使用する場合、そのファイルの保存方法が複数存在します。
-				それはいくつかのルールを使用して日本語を保存し、ブラウザがそのルールに則って読みとることで表示するためです。
-				このルールのことを文字の符号化方式と言います。
+				HTML�����ܸ����Ѥ����硢���Υե��������¸��ˡ��ʣ��¸�ߤ��ޤ���
+				����Ϥ����Ĥ��Υ롼�����Ѥ������ܸ����¸�����֥饦�������Υ롼���§�ä��ɤߤȤ뤳�Ȥ�ɽ�����뤿��Ǥ���
+				���Υ롼��Τ��Ȥ�ʸ������沽�����ȸ����ޤ���
 			</p>
 			
 			<div class="section">
-				<h3 id="c1_1"><a href="#c1_1" class="selflink">何故文字コードの宣言が必要なのか</a></h3>
+				<h3 id="c1_1"><a href="#c1_1" class="selflink">����ʸ�������ɤ������ɬ�פʤΤ�</a></h3>
 				<p>
-					保存する時の文字コードとブラウザが読みとる時に使う文字コードが違っていると文字化けが発生してしまいます。
-					これは一部の符号化方式を除き、そのファイルがどのような文字コードで保存されたものなのかをブラウザが判別できる確実な手段が無いために発生します。
-					しかし、そのHTMLファイルの作者がブラウザに対してどのような文字コードで保存したのかを明示することによってブラウザは確実に表示できるようになります。
-					それが文字コードの宣言です。文字コードは次のようにmetaタグを使って宣言します。
+					��¸�������ʸ�������ɤȥ֥饦�����ɤߤȤ���˻Ȥ�ʸ�������ɤ���äƤ����ʸ��������ȯ�����Ƥ��ޤ��ޤ���
+					����ϰ�������沽��������������Υե����뤬�ɤΤ褦��ʸ�������ɤ���¸���줿��ΤʤΤ���֥饦����Ƚ�̤Ǥ���μ¤ʼ��ʤ�̵�������ȯ�����ޤ���
+					������������HTML�ե�����κ�Ԥ��֥饦�����Ф��ƤɤΤ褦��ʸ�������ɤ���¸�����Τ����������뤳�Ȥˤ�äƥ֥饦���ϳμ¤�ɽ���Ǥ���褦�ˤʤ�ޤ���
+					���줬ʸ�������ɤ�����Ǥ���ʸ�������ɤϼ��Τ褦��meta������Ȥä�������ޤ���
 				</p>
 				
 				<dl>
-					<dt>ISO-2022-JP(いわゆるJIS)</dt>
+					<dt>ISO-2022-JP(������JIS)</dt>
 					<dd>
 						<code>&lt;meta http-equiv=&quot;Content-Type&quot; content=&quot;text/html; charset=iso-2022-jp&quot;&gt;</code>
 					</dd>
 					
-					<dt>Shift_JIS(WindowsやMacではこの文字コードがよく使われます)</dt>
+					<dt>Shift_JIS(Windows��Mac�ǤϤ���ʸ�������ɤ��褯�Ȥ��ޤ�)</dt>
 					<dd>
 						<code>&lt;meta http-equiv=&quot;Content-Type&quot; content=&quot;text/html; charset=shift_jis&quot;&gt;</code>
 					</dd>
 					
-					<dt>EUC-JP(UNIX系OSではこの文字コードがよく使われます)</dt>
+					<dt>EUC-JP(UNIX��OS�ǤϤ���ʸ�������ɤ��褯�Ȥ��ޤ�)</dt>
 					<dd>
 						<code>&lt;meta http-equiv=&quot;Content-Type&quot; content=&quot;text/html; charset=euc-jp&quot;&gt;</code>
 					</dd>
 				</dl>
 				<p>
-					これをhead要素内の<em>できるだけ先頭</em>に記述することによってブラウザは、
-					文字化けを起こさずに正しく表示することができるようになります。
+					�����head�������<em>�Ǥ��������Ƭ</em>�˵��Ҥ��뤳�Ȥˤ�äƥ֥饦���ϡ�
+					ʸ�������򵯤�������������ɽ�����뤳�Ȥ��Ǥ���褦�ˤʤ�ޤ���
 				</p>
 				
 				<p>
-					具体的には次のようにします。
+					����Ū�ˤϼ��Τ褦�ˤ��ޤ���
 				</p>
 				
 <pre class="example">
@@ -78,108 +76,108 @@
         <strong>&lt;meta http-equiv=&quot;Content-Type&quot; 
             content=&quot;text/html; charset=iso-2022-jp&quot;&gt;</strong>
         
-        &lt;title&gt;<em>既に文字コードが宣言されていますので、
-            日本語タイトルが安全に使えます</em>&lt;/title&gt;
+        &lt;title&gt;<em>����ʸ�������ɤ��������Ƥ��ޤ��Τǡ�
+            ���ܸ쥿���ȥ뤬�����˻Ȥ��ޤ�</em>&lt;/title&gt;
         
-        &lt;meta name=&quot;description&quot; content=&quot;<em>検索エンジンに表示したい文章も、
-            このように文字コード宣言の後ろに書きます。</em>&quot;&gt;
+        &lt;meta name=&quot;description&quot; content=&quot;<em>�������󥸥��ɽ��������ʸ�Ϥ⡢
+            ���Τ褦��ʸ������������θ���˽񤭤ޤ���</em>&quot;&gt;
         
-        &lt;!-- <em>当然日本語のコメントも文字コード宣言の後ろに書くべきです</em> --&gt;
+        &lt;!-- <em>�������ܸ�Υ����Ȥ�ʸ������������θ���˽񤯤٤��Ǥ�</em> --&gt;
     &lt;/head&gt;
     &lt;body&gt;
         &lt;p&gt;
-            <em>文字コード宣言に沿った文字コードで保存した日本語で</em>
-            <em>記述すると文字化けしません</em>
+            <em>ʸ������������˱�ä�ʸ�������ɤ���¸�������ܸ��</em>
+            <em>���Ҥ����ʸ���������ޤ���</em>
         &lt;/p&gt;
     &lt;/body&gt;
 &lt;/html&gt;
 </pre>
 			</div>
 			<div class="section">
-				<h3 id="c1_2"><a href="#c1_2" class="selflink">文字コード宣言に関する注意</a></h3>
+				<h3 id="c1_2"><a href="#c1_2" class="selflink">ʸ������������˴ؤ�������</a></h3>
 				<p>
-					それでは過去の事例や筆者の経験から注意点をいくつか挙げておきます。これらは全て重要なことです。
+					����Ǥϲ��λ����ɮ�Ԥηи������������򤤤��Ĥ��󤲤Ƥ����ޤ������������ƽ��פʤ��ȤǤ���
 				</p>
 				
 				<dl>
-					<dt>文字コード宣言より手前に日本語を書かない</dt>
+					<dt>ʸ����������������������ܸ��񤫤ʤ�</dt>
 					<dd>
 						<p>
-							上記の例にあるように、日本語は文字コードを宣言した後で使うことが原則です。
-							これは<em>コメント内の文章も例外ではありません</em>。
+							�嵭����ˤ���褦�ˡ����ܸ��ʸ�������ɤ����������ǻȤ����Ȥ���§�Ǥ���
+							�����<em>���������ʸ�Ϥ��㳰�ǤϤ���ޤ���</em>��
 						</p>
 					</dd>
-					<dt>文字コード宣言とは異なる文字コードで保存しない</dt>
+					<dt>ʸ������������Ȥϰۤʤ�ʸ�������ɤ���¸���ʤ�</dt>
 					<dd>
 						<p>
-							文字コードをShift_JISだと宣言しているのに別の文字コードで保存したりすると確実に文字化けします。
-							何故なら、冒頭で述べたように文字コードを確実に判別できる手段が存在しないため、
-							ブラウザは文字コード宣言を信じる他にないからです。
+							ʸ�������ɤ�Shift_JIS����������Ƥ���Τ��̤�ʸ�������ɤ���¸�����ꤹ��ȳμ¤�ʸ���������ޤ���
+							���Τʤ顢��Ƭ�ǽҤ٤��褦��ʸ�������ɤ�μ¤�Ƚ�̤Ǥ�����ʤ�¸�ߤ��ʤ����ᡢ
+							�֥饦����ʸ������������򿮤���¾�ˤʤ�����Ǥ���
 						</p>
 					</dd>
-					<dt>文字コード宣言を間違えない</dt>
+					<dt>ʸ�������������ְ㤨�ʤ�</dt>
 					<dd>
 						<p>
-							文字コードの名前は大文字、小文字は区別されませんのでShift_JISとshift_jisは同じ意味を持ちます。
-							しかし、Shift_JISをShift-JIS等、存在しない文字コード名で書いてしまうと文字化けする可能性が高いので注意してください。
+							ʸ�������ɤ�̾������ʸ������ʸ���϶��̤���ޤ���Τ�Shift_JIS��shift_jis��Ʊ����̣������ޤ���
+							��������Shift_JIS��Shift-JIS����¸�ߤ��ʤ�ʸ��������̾�ǽ񤤤Ƥ��ޤ���ʸ�����������ǽ�����⤤�Τ����դ��Ƥ���������
 						</p>
 					</dd>
-					<dt>フレーム定義ファイルのタイトルに日本語を使う場合はフレーム定義ファイルでも文字コードを宣言しましょう</dt>
+					<dt>�ե졼������ե�����Υ����ȥ�����ܸ��Ȥ����ϥե졼������ե�����Ǥ�ʸ�������ɤ�������ޤ��礦</dt>
 					<dd>
 						<p>
-							フレーム内のファイルには文字コード宣言を行っていても、
-							そのフレームを読み込むHTMLファイルで文字コード宣言が行われていない場合、タイトルが文字化けしてしまいます。
-							文字コードの自動判別は文章が長い方が精度が高くなりますが、
-							タイトルのような一文で確実な判定ができることは希です。
-							通常のファイル以上に気をつけて文字コードを宣言しましょう。
+							�ե졼����Υե�����ˤ�ʸ�������������ԤäƤ��Ƥ⡢
+							���Υե졼����ɤ߹���HTML�ե������ʸ��������������Ԥ��Ƥ��ʤ���硢�����ȥ뤬ʸ���������Ƥ��ޤ��ޤ���
+							ʸ�������ɤμ�ưȽ�̤�ʸ�Ϥ�Ĺ���������٤��⤯�ʤ�ޤ�����
+							�����ȥ�Τ褦�ʰ�ʸ�ǳμ¤�Ƚ�꤬�Ǥ��뤳�Ȥϴ��Ǥ���
+							�̾�Υե�����ʾ�˵���Ĥ���ʸ�������ɤ�������ޤ��礦��
 						</p>
 					</dd>
-					<dt>文字コード宣言は1回だけ</dt>
+					<dt>ʸ�������������1�����</dt>
 					<dd>
 						<p>
-							文字コードの宣言を2回以上行うと、どちらの指定を優先するかはブラウザの仕様に依存することになります。
-							これではわざわざ文字コードを宣言するメリットがなくなりますので注意しましょう。
+							ʸ�������ɤ������2��ʾ�Ԥ��ȡ��ɤ���λ����ͥ�褹�뤫�ϥ֥饦���λ��ͤ˰�¸���뤳�Ȥˤʤ�ޤ���
+							����ǤϤ虜�虜ʸ�������ɤ����������åȤ��ʤ��ʤ�ޤ��Τ����դ��ޤ��礦��
 						</p>
 					</dd>
 				</dl>
 				
 				<p>
-					文字コードは日本語を使う場合、必ず宣言するようにしましょう。
+					ʸ�������ɤ����ܸ��Ȥ���硢ɬ���������褦�ˤ��ޤ��礦��
 				</p>
 			</div>
 			<ins class="BlockEdit">
 				<div class="section">
-					<h3 id="c1_3"><a href="#c1_3" class="selflink">補足: HTTPヘッダとの競合</a></h3>
+					<h3 id="c1_3"><a href="#c1_3" class="selflink">��­: HTTP�إå��Ȥζ���</a></h3>
 					<p>
-						HTTPヘッダにContent-typeという項目があり、上記のMETAタグによる指定はこれを補完するものです。
-						ただし、Mozillaの場合はHTTPヘッダに文字コード宣言が入っていた場合、METAタグの記述を無視します。
-						つまり、このMETAタグが有効なのはHTTPヘッダのContent-typeに文字コードが指定されていない場合、となります。
+						HTTP�إå���Content-type�Ȥ������ܤ����ꡢ�嵭��META�����ˤ�����Ϥ�����䴰�����ΤǤ���
+						��������Mozilla�ξ���HTTP�إå���ʸ����������������äƤ�����硢META�����ε��Ҥ�̵�뤷�ޤ���
+						�Ĥޤꡢ����META������ͭ���ʤΤ�HTTP�إå���Content-type��ʸ�������ɤ����ꤵ��Ƥ��ʤ���硢�Ȥʤ�ޤ���
 					</p>
 					<p>
-						なお、本来であれば文字コード宣言はHTMLファイル内ではなく、HTTPヘッダで指定されているべきものです。
-						しかし、サーバ設定の変更が必要なため、日本の多くのプロバイダのサーバではContent-type: text/htmlとだけ送信し、
-						文字コードを付加しないようになっています。
+						�ʤ�������Ǥ����ʸ�������������HTML�ե�������ǤϤʤ���HTTP�إå��ǻ��ꤵ��Ƥ���٤���ΤǤ���
+						��������������������ѹ���ɬ�פʤ��ᡢ���ܤ�¿���Υץ��Х����Υ����ФǤ�Content-type: text/html�Ȥ�����������
+						ʸ�������ɤ��ղä��ʤ��褦�ˤʤäƤ��ޤ���
 					</p>
 					<p>
-						逆に言えば、サーバ設定を変更できる人でサイト内のページが全て同じ文字コードの場合、
-						Content-type: text/html; charset=Shift_JISをHTMLファイル送信時に付加するようにすれば、
-						各HTMLファイルでの文字コード指定は必要なくなります。
+						�դ˸����С�������������ѹ��Ǥ���ͤǥ�������Υڡ���������Ʊ��ʸ�������ɤξ�硢
+						Content-type: text/html; charset=Shift_JIS��HTML�ե��������������ղä���褦�ˤ���С�
+						��HTML�ե�����Ǥ�ʸ�������ɻ����ɬ�פʤ��ʤ�ޤ���
 					</p>
 				</div>
 			</ins>
 				
 			<div class="section">
-				<h3 id="LinkList"><a href="#LinkList" class="selflink">関連リンク</a></h3>
+				<h3 id="LinkList"><a href="#LinkList" class="selflink">��Ϣ���</a></h3>
 				<ol>
 					<li><a href="http://www.w3.org/TR/html401/charset.html#h-5.2.2">5.2.2 Specifying the character encoding</a>(W3C)</li>
-					<li><a href="http://www.asahi-net.or.jp/%7Esd5a-ucd/rec-html401j/charset.html#h-5.2.2">5.2.2 文字符号化方法の指定</a>(邦訳)</li>
-					<li><a href="http://www.kanzaki.com/docs/jcode.html">日本語と文字コード</a>(The Web KANZAKI)</li>
-					<li><a href="http://tohoho.wakusei.ne.jp/wwwxx005.htm">文字化けしないようにするには</a>(とほほのWWW入門)</li>
-					<li><a href="webtips0023.html">文字コード宣言は行いましょう(CSS)</a>(Web標準普及プロジェクト)</li>
-					<li><a href="http://bugzilla.mozilla.gr.jp/show_bug.cgi?id=1288">間違った文字コードを指定している。</a>(Bugzilla-jp)</li>
-					<li><a href="http://bugzilla.mozilla.gr.jp/show_bug.cgi?id=1429">半角カナ入りのページが文字化け</a>(Bugzilla-jp)</li>
-					<li><a href="http://bugzilla.mozilla.gr.jp/show_bug.cgi?id=1548">文字コードの相違とHTMLソースの誤り</a>(Bugzilla-jp)</li>
-					<li><a href="http://bugzilla.mozilla.gr.jp/show_bug.cgi?id=2015"> HTTPヘッダが間違っているため、文字化けする</a>(Bugzilla-jp)</li>
+					<li><a href="http://www.asahi-net.or.jp/%7Esd5a-ucd/rec-html401j/charset.html#h-5.2.2">5.2.2 ʸ����沽��ˡ�λ���</a>(ˮ��)</li>
+					<li><a href="http://www.kanzaki.com/docs/jcode.html">���ܸ��ʸ��������</a>(The Web KANZAKI)</li>
+					<li><a href="http://tohoho.wakusei.ne.jp/wwwxx005.htm">ʸ���������ʤ��褦�ˤ���ˤ�</a>(�Ȥۤۤ�WWW����)</li>
+					<li><a href="webtips0023.html">ʸ������������ϹԤ��ޤ��礦(CSS)</a>(Webɸ����ڥץ���������)</li>
+					<li><a href="http://bugzilla.mozilla.gr.jp/show_bug.cgi?id=1288">�ְ�ä�ʸ�������ɤ���ꤷ�Ƥ��롣</a>(Bugzilla-jp)</li>
+					<li><a href="http://bugzilla.mozilla.gr.jp/show_bug.cgi?id=1429">Ⱦ�ѥ�������Υڡ�����ʸ������</a>(Bugzilla-jp)</li>
+					<li><a href="http://bugzilla.mozilla.gr.jp/show_bug.cgi?id=1548">ʸ�������ɤ�����HTML�������θ���</a>(Bugzilla-jp)</li>
+					<li><a href="http://bugzilla.mozilla.gr.jp/show_bug.cgi?id=2015"> HTTP�إå����ְ�äƤ��뤿�ᡢʸ����������</a>(Bugzilla-jp)</li>
 				</ol>
 			</div>
 		</div>
@@ -188,11 +186,11 @@
 	<hr class="hidden" />
 	<div class="footer">
 		<address>
-			2002/06/22作成:中野雅之(<a href="mailto:&#x6D;&#x61;&#x73;&#x61;&#x79;&#x75;&#x6B;&#x69;&#x40;&#x64;&#x2D;&#x74;&#x6F;&#x79;&#x62;&#x6F;&#x78;&#x2E;&#x63;&#x6F;&#x6D;">&#x6D;&#x61;&#x73;&#x61;&#x79;&#x75;&#x6B;&#x69;&#x40;&#x64;&#x2D;&#x74;&#x6F;&#x79;&#x62;&#x6F;&#x78;&#x2E;&#x63;&#x6F;&#x6D;</a>)<br />
-			2003/02/08改訂:中野雅之(<a href="mailto:&#x6D;&#x61;&#x73;&#x61;&#x79;&#x75;&#x6B;&#x69;&#x40;&#x64;&#x2D;&#x74;&#x6F;&#x79;&#x62;&#x6F;&#x78;&#x2E;&#x63;&#x6F;&#x6D;">&#x6D;&#x61;&#x73;&#x61;&#x79;&#x75;&#x6B;&#x69;&#x40;&#x64;&#x2D;&#x74;&#x6F;&#x79;&#x62;&#x6F;&#x78;&#x2E;&#x63;&#x6F;&#x6D;</a>)
+			2002/06/22����:�����Ƿ(<a href="mailto:&#x6D;&#x61;&#x73;&#x61;&#x79;&#x75;&#x6B;&#x69;&#x40;&#x64;&#x2D;&#x74;&#x6F;&#x79;&#x62;&#x6F;&#x78;&#x2E;&#x63;&#x6F;&#x6D;">&#x6D;&#x61;&#x73;&#x61;&#x79;&#x75;&#x6B;&#x69;&#x40;&#x64;&#x2D;&#x74;&#x6F;&#x79;&#x62;&#x6F;&#x78;&#x2E;&#x63;&#x6F;&#x6D;</a>)<br />
+			2003/02/08����:�����Ƿ(<a href="mailto:&#x6D;&#x61;&#x73;&#x61;&#x79;&#x75;&#x6B;&#x69;&#x40;&#x64;&#x2D;&#x74;&#x6F;&#x79;&#x62;&#x6F;&#x78;&#x2E;&#x63;&#x6F;&#x6D;">&#x6D;&#x61;&#x73;&#x61;&#x79;&#x75;&#x6B;&#x69;&#x40;&#x64;&#x2D;&#x74;&#x6F;&#x79;&#x62;&#x6F;&#x78;&#x2E;&#x63;&#x6F;&#x6D;</a>)
 		</address>
 		<p><span class="copyright">Copyright &#169;</span> Web Standardization Project. All Rights Reserved.</p>
-		<p><a href="contact.html">お問い合わせ</a></p>
+		<p><a href="contact.html">���䤤��碌</a></p>
 	</div>
 </body>
 </html>

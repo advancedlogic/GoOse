@@ -48,21 +48,12 @@ func (c *Crawler) SetCharset(cs string) {
 
 // GetContentType returns the Content-Type string extracted from the meta tags
 func (c Crawler) GetContentType(document *goquery.Document) string {
+	var attr string
 	// <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-	selection := document.Find("meta").EachWithBreak(func(i int, s *goquery.Selection) bool {
-		attr, exists := s.Attr("http-equiv")
-		if exists && attr == "Content-Type" {
-			return false
-		}
-		return true
+	document.Find("meta[http-equiv#=(?i)^Content\\-type$]").Each(func(i int, s *goquery.Selection) {
+		attr, _ = s.Attr("content")
 	})
-
-	if selection != nil {
-		attr, _ := selection.Attr("content")
-		return attr
-	}
-
-	return ""
+	return attr
 }
 
 // GetCharset returns a normalised charset string extracted from the meta tags
@@ -74,7 +65,7 @@ func (c Crawler) GetCharset(document *goquery.Document) string {
 
 	// <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 	ct := c.GetContentType(document)
-	if "" != ct {
+	if "" != ct && strings.Contains(strings.ToLower(ct), "charset") {
 		return getCharsetFromContentType(ct)
 	}
 
@@ -112,6 +103,7 @@ func (c *Crawler) Preprocess() (*goquery.Document, error) {
 	}
 
 	cs := c.GetCharset(document)
+	//log.Println("-------------------------------------------CHARSET:", cs)
 	if "" != cs && "UTF-8" != cs {
 		// the net/html parser and goquery require UTF-8 data
 		c.RawHTML = UTF8encode(c.RawHTML, cs)
