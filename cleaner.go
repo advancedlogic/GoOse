@@ -79,6 +79,7 @@ var removeNodesRegEx = regexp.MustCompile("" +
 	"^date$|" +
 	"detail_new_|" +
 	"related|" +
+	"downloadLink|" +
 	"^DYSRC$|" +
 	"^early-body|" +
 	"^[^entry-]more.*$|" +
@@ -192,6 +193,7 @@ var removeNodesRegEx = regexp.MustCompile("" +
 	"tracking|" +
 	"[^-]twitter|" +
 	"-uix-button|" +
+	"updateBrowser|" +
 	"^username-modal$|" +
 	"^user-|" +
 	"^vestpocket$|" +

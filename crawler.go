@@ -182,6 +182,7 @@ func (c Crawler) addSpacesBetweenTags(text string) string {
 	text = strings.Replace(text, "><", "> <", -1)
 	text = strings.Replace(text, "</blockquote>", "</blockquote>\n", -1)
 	text = strings.Replace(text, "<img ", "\n<img ", -1)
+	text = strings.Replace(text, "</li>", "</li>\n", -1)
 	return strings.Replace(text, "</p>", "</p>\n", -1)
 }
 
