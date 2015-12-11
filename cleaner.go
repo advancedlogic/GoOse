@@ -26,7 +26,6 @@ var divToPElementsPattern = regexp.MustCompile("<(a|blockquote|dl|div|img|ol|p|p
 var tabsRegEx = regexp.MustCompile("\\t|^\\s+$]")
 var removeVisibilityStyleRegEx = regexp.MustCompile("visibility:[ ]*hidden|display:[ ]*none")
 var removeNodesRegEx = regexp.MustCompile("" +
-	"PopularQuestions|" +
 	"[Cc]omentario|" +
 	"[Ff]ooter|" +
 	"^fn$|" +
@@ -78,10 +77,10 @@ var removeNodesRegEx = regexp.MustCompile("" +
 	"^critical-alerts$|" +
 	"^date$|" +
 	"detail_new_|" +
-	"related|" +
 	"downloadLink|" +
 	"^DYSRC$|" +
 	"^early-body|" +
+	"ec_blogs|" +
 	"^[^entry-]more.*$|" +
 	"error|" +
 	"[^-]facebook|" +
@@ -100,6 +99,7 @@ var removeNodesRegEx = regexp.MustCompile("" +
 	"header|" +
 	"hidden|" +
 	"img_popup_single|" +
+	"inline-share-tools|" +
 	"inread|" +
 	"^interstitial-ad-modal$|" +
 	"^Inv[0-9]$|" +
@@ -108,8 +108,7 @@ var removeNodesRegEx = regexp.MustCompile("" +
 	"^kxhead$|" +
 	"leading|" +
 	"^lede[_-]container$|" +
-	"legend|" +
-	"legende|" +
+	"legende?|" +
 	"^lightningjs-|" +
 	"links|" +
 	"^login-modal$|" +
@@ -136,17 +135,20 @@ var removeNodesRegEx = regexp.MustCompile("" +
 	"panelss2|" +
 	"panesCity|" +
 	"player|" +
+	"PopularQuestions|" +
 	"popup|" +
 	"post[_-]attributes|" +
 	"post[_-]title|" +
 	"preview|" +
 	"[_-]print[_-]|" +
+	"products\\-events|" +
 	"^prop[0-9]$|" +
 	"^pulse-loaders|" +
 	"^rail$|" +
 	"recommend|" +
 	"^registration-modal$|" +
 	"relacionado|" +
+	"related|" +
 	"remote|" +
 	"retweet|" +
 	"^ribbon$|" +
@@ -162,23 +164,23 @@ var removeNodesRegEx = regexp.MustCompile("" +
 	"site[_-]box|" +
 	"site[_-]nav|" +
 	"skyscraper|" +
-	"socialNetworking|" +
+	"social[Nn]etworking|" +
 	"social_|" +
 	"social\\-share|" +
 	"social\\-count|" +
-	"socialnetworking|" +
 	"socialtools|" +
 	"source|" +
-	"[_-]spinner$|" +
-	"^spr-|" +
-	"^suggestions$|" +
 	"^speed-bump-wrapper$|" +
+	"[_-]spinner$|" +
 	"^Splash$|" +
 	"sponsor|" +
+	"^spr-|" +
+	"storytopbar\\-bucket|" +
 	"^stream-sidebar|" +
 	"sub_nav|" +
 	"subscribe|" +
 	"subscription|" +
+	"^suggestions$|" +
 	"tabsCity|" +
 	"tag_|" +
 	"tags|" +
@@ -196,6 +198,7 @@ var removeNodesRegEx = regexp.MustCompile("" +
 	"updateBrowser|" +
 	"^username-modal$|" +
 	"^user-|" +
+	"utility-bar|" +
 	"^vestpocket$|" +
 	"vcard|" +
 	"^watch-action-panels$|" +

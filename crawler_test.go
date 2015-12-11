@@ -317,6 +317,28 @@ func Test_MatchExactDescriptionMetaTag(t *testing.T) {
 	}
 }
 
+func Test_EconomistCom(t *testing.T) {
+	article := Article{
+		Domain:          "economist.com",
+		Title:           "Renting hotel rooms by the hour: A quick in and out",
+		MetaDescription: "A Spanish hotel-reservation platform that allows customers to book rooms in three hour slots is looking to expand into Britain.",
+		CleanedText:     "BYHOURS, a Spanish hotel-reservation platform that allows customers to rent rooms in three-hour slots, is looking to expand into Britain. Travelmole  that the website aims to sign up 25 hotels in the country by the end of the month, although so far only six have taken the plunge.\n\nMany people, when bringing to mind short-stay hotel rooms, will no doubt picture businessmen with their cinq-à-septs or, perhaps, company a little more transactional than that. Banish such grubby thoughts from your minds; having the option of booking a bedroom for three hours is a great and practical idea.\n\nIt is no coincidence that several of the establishments that have signed up with ByHours are close to airports and train stations. How often have you had several hours to kill at an airport and longed for a place to shower and snooze? And Gulliver has written before about that horrible dead time when, having checked out of a hotel in the morning, with your flight not until late in the evening, you have ages to kill wandering around a strange town dragging a wheely-bag. Then there are those day trips when you fly in to town at some ungodly early hour and are scheduled to fly out at an equally uncivilised late one; how much more pleasant if you could pop your head down for a few hours in the afternoon? In fact you needn’t even be a visitor. Back when Gulliver's daughter was a sleep-averse baby, he would have paid handsomely for the chance to close his eyes for an hour in a short-stay hotel during his lunch break.\n\nIt is also easy to see why it would appeal to hotels, which could sweat their assets more, filling gaps between guests checking out and in. According to Travelmole, in Spain last year more than 150,000 bookings were made through ByHours at more than 1,500 hotels. However, for the consumer the big drawback would appear to be pricing. Prices for a three-hour stay in London tomorrow start at €50 and quickly hit the hundreds. That is understandable. By its nature it is often likely to be a last-minute purchase, and hotels will obviously price very short reservations at a premium. But the more hotels that sign up, the easier it will be to find something more budget friendly.",
+		MetaKeywords:    "",
+		CanonicalLink:   "http://www.economist.com/blogs/gulliver/2015/04/renting-hotel-rooms-hour",
+		TopImage:        "https://www.economist.com/sites/default/files/images/guliver.png",
+	}
+	article.Links = []string{
+		"http://www.travelmole.com/news_feature.php?news_id=2016292",
+		"http://content.time.com/time/magazine/article/0,9171,843018,00.html",
+		"http://www.economist.com/blogs/gulliver/2013/04/surreptitious-snoozing",
+	}
+
+	err := ValidateArticle(article, &[]string{"~~~REMOVED~~~"})
+	if err != nil {
+		t.Error(err)
+	}
+}
+
 func Test_EditionCnnCom(t *testing.T) {
 	article := Article{
 		Domain:          "edition.cnn.com",
@@ -768,6 +790,25 @@ func Test_SlideshareNet(t *testing.T) {
 	}
 }
 
+func Test_SoundCloudCom(t *testing.T) {
+	article := Article{
+		Domain:          "soundcloud2.com",
+		Title:           "#18 Silence And Respect by Reply All",
+		MetaDescription: "Stream #18 Silence And Respect by Reply All from desktop or your mobile device",
+		CleanedText:     "In 2012, a woman named Lindsey Stone posted a picture she took as a joke to her Facebook page. A month later, she was under attack from all corners of the internet, out of a job, hounded by the press. The internet had targeted her for a public shaming. Jon Ronson, journalist and author of the new book \"So You've Been Publicly Shamed\", walks us through Lindsey's story and introduces us to the sometimes sketchy world of online reputation management.",
+		MetaKeywords:    "record, sounds, share, sound, audio, tracks, music, soundcloud",
+		CanonicalLink:   "https://soundcloud.com/replyall/18-silence-and-respect",
+		TopImage:        "https://i1.sndcdn.com/artworks-000112044299-u970sx-t500x500.jpg",
+	}
+	//article.Links = []string{}
+
+	removed := []string{"~~~REMOVED~~~"}
+	err := ValidateArticle(article, &removed)
+	if err != nil {
+		t.Error(err)
+	}
+}
+
 func Test_TechCrunchCom(t *testing.T) {
 	article := Article{
 		Domain:          "techcrunch.com",
@@ -842,16 +883,10 @@ func Test_UsaTodayCom(t *testing.T) {
 		Domain:          "usatoday.com",
 		Title:           "Social Security, Medicare changes are coming with new budget law",
 		MetaDescription: "President Obama signed into law a bipartisan budget bill last week (Monday) that, among other things, changes — for better and worse — Social Security and Medicare laws. Here's a wrap-up.",
-		CleanedText:     "Share This Story! Let friends in your social network know what you are reading about\n\nTwitter Google+ LinkedIn Pinterest Posted! A link has been posted to your Facebook feed.\n\nSocial Security, Medicare changes are coming with new budget law President Obama signed into law a bipartisan budget bill last week that, among other things, changes —\u00a0for better and worse — Social Security and Medicare laws. Here's a wrap-up:\n\n•\u00a0File and suspend.\u00a0Currently,\u00a0a married person — typically the higher wage earner in a couple — who's\u00a0at least full retirement age could file for his or her own Social Security benefits and then immediately suspend those benefits while the spouse could file\u00a0for spousal benefits. By doing this, the higher wage earner’s benefits would grow 8% per year. In the meantime, the couple still get\u00a0a Social Security check, and down the road the surviving spouse could get a higher benefit.\n\nThat option is ending for new filers starting May 1, 2016, so if you're\u00a0interested, now's the time to apply. People already using\u00a0this strategy will be grandfathered in until age 70.\n\nUSA TODAY\n\nFull retirement age is a magic number for Social Security benefits\n\n•\u00a0Restricted application.\u00a0\u00a0This is also being phased out.\u00a0Currently, individuals\u00a0eligible for both a spousal benefit based their spouse's work record and a retirement benefit based on his or her own work record could choose to elect only a spousal benefit at full retirement age, according to Social Security Timing. That would let them collect a higher benefit later on.\n\nUnder the new law, however, only those born Jan. 1, 1954, or earlier can use this option. Anyone younger will\u00a0just automatically get the larger of the two benefits,\u00a0according to Social Security Timing.\n\n•\u00a0Social Security Disability.\u00a0\u00a0The Social Security Disability trust was on pace\u00a0to run out money next year and, as a result, millions of Americans were going to receive an automatic 19% reduction in their disability benefits in the fourth quarter of 2016. The new law fixes that\u00a0by shifting payroll tax revenue from one Social Security trust fund —\u00a0the Old-Age and Survivors Insurance Trust fund —\u00a0to another,\u00a0the Disability Insurance Trust fund.\n\nUSA TODAY\n\nRetirement: When you should take Social Security\n\n•\u00a0Medicare Part B.\u00a0Some 30% of Medicare beneficiaries were expecting a 52% increase in their Medicare Part B medical insurance premiums and deductible\u00a0in 2016.\u00a0Under the new law, those beneficiaries —\u00a0an estimated 17 million Americans —\u00a0will pay about $119\u00a0per month, instead of $159.30, for Part B. (Some 70% of Medicare beneficiaries will continue to pay the same premium in 2016 as they did in 2015, $104.90.)\n\nBeneficiaries, however, will also have to pay an extra $3 per month to help pay down a loan the government gave to Medicare to offset lost revenue.\u00a0 Plus, all Part B beneficiaries will see their annual deductible increase by 15% to about $166\u00a0in 2016.\n\nRobert Powell is editor of Retirement Weekly, contributes regularly to MarketWatch, The Wall Street Journal, USA TODAY, and teaches at Boston University.",
+		CleanedText:     "President Obama signed into law a bipartisan budget bill last week that, among other things, changes —\u00a0for better and worse — Social Security and Medicare laws. Here's a wrap-up:\n\n•\u00a0File and suspend.\u00a0Currently,\u00a0a married person — typically the higher wage earner in a couple — who's\u00a0at least full retirement age could file for his or her own Social Security benefits and then immediately suspend those benefits while the spouse could file\u00a0for spousal benefits. By doing this, the higher wage earner’s benefits would grow 8% per year. In the meantime, the couple still get\u00a0a Social Security check, and down the road the surviving spouse could get a higher benefit.\n\nThat option is ending for new filers starting May 1, 2016, so if you're\u00a0interested, now's the time to apply. People already using\u00a0this strategy will be grandfathered in until age 70.\n\nUSA TODAY\n\nFull retirement age is a magic number for Social Security benefits\n\n•\u00a0Restricted application.\u00a0\u00a0This is also being phased out.\u00a0Currently, individuals\u00a0eligible for both a spousal benefit based their spouse's work record and a retirement benefit based on his or her own work record could choose to elect only a spousal benefit at full retirement age, according to Social Security Timing. That would let them collect a higher benefit later on.\n\nUnder the new law, however, only those born Jan. 1, 1954, or earlier can use this option. Anyone younger will\u00a0just automatically get the larger of the two benefits,\u00a0according to Social Security Timing.\n\n•\u00a0Social Security Disability.\u00a0\u00a0The Social Security Disability trust was on pace\u00a0to run out money next year and, as a result, millions of Americans were going to receive an automatic 19% reduction in their disability benefits in the fourth quarter of 2016. The new law fixes that\u00a0by shifting payroll tax revenue from one Social Security trust fund —\u00a0the Old-Age and Survivors Insurance Trust fund —\u00a0to another,\u00a0the Disability Insurance Trust fund.\n\nUSA TODAY\n\nRetirement: When you should take Social Security\n\n•\u00a0Medicare Part B.\u00a0Some 30% of Medicare beneficiaries were expecting a 52% increase in their Medicare Part B medical insurance premiums and deductible\u00a0in 2016.\u00a0Under the new law, those beneficiaries —\u00a0an estimated 17 million Americans —\u00a0will pay about $119\u00a0per month, instead of $159.30, for Part B. (Some 70% of Medicare beneficiaries will continue to pay the same premium in 2016 as they did in 2015, $104.90.)\n\nBeneficiaries, however, will also have to pay an extra $3 per month to help pay down a loan the government gave to Medicare to offset lost revenue.\u00a0 Plus, all Part B beneficiaries will see their annual deductible increase by 15% to about $166\u00a0in 2016.\n\nRobert Powell is editor of Retirement Weekly, contributes regularly to MarketWatch, The Wall Street Journal, USA TODAY, and teaches at Boston University.",
 		MetaKeywords:    "",
 		CanonicalLink:   "http://www.usatoday.com/story/money/columnist/powell/2015/11/12/social-security-medicare-changes-budget-law-retirement/75164246/",
 		TopImage:        "http://www.gannett-cdn.com/-mm-/eba3ab7ada1c4fcc1a671898ecfb68274260e9c9/c=0-48-508-335&r=x633&c=1200x630/local/-/media/2015/02/24/USATODAY/USATODAY/635603784536631512-177533853.jpg",
-	}
-	article.Links = []string{
-		"https://twitter.com/intent/tweet?url=http%3A//usat.ly/1iXh7zM&text=Social%20Security%2C%20Medicare%20changes%20are%20coming%20with%20new%20budget%20law&via=usatoday",
-		"http://www.linkedin.com/shareArticle?url=http%3A//usat.ly/1iXh7zM&mini=true",
-		"https://twitter.com/intent/tweet?url=http%3A//usat.ly/1iXh7zM&text=Social%20Security%2C%20Medicare%20changes%20are%20coming%20with%20new%20budget%20law&via=usatoday",
-		"http://www.linkedin.com/shareArticle?url=http%3A//usat.ly/1iXh7zM&mini=true",
 	}
 
 	removed := []string{"~~~REMOVED~~~"}
