@@ -1,7 +1,7 @@
 package goose
 
 import (
-	"github.com/advancedlogic/gojs-config"
+	"github.com/gravicle/gojs-config"
 	"time"
 )
 
