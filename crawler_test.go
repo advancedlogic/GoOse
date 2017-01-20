@@ -41,7 +41,7 @@ func ValidateArticle(expected Article, removed *[]string) error {
 	}
 
 	if !strings.Contains(result.CleanedText, expected.CleanedText) {
-		//fmt.Printf("EXPECTED:       %s \n\n\n\nACTUAL:    %s\n\n", expected.CleanedText, result.CleanedText)
+		fmt.Printf("EXPECTED:       %s \n\n\n\nACTUAL:    %s\n\n", expected.CleanedText, result.CleanedText)
 		return fmt.Errorf("article cleanedText does not contain %q", expected.CleanedText)
 	}
 
@@ -560,6 +560,25 @@ func Test_HuffingtonPostCoUk(t *testing.T) {
 		MetaKeywords:    "changing, channels:, how, we, are, controlling, the, future, of, tv, scheduling, uk, entertainment",
 		CanonicalLink:   "http://www.huffingtonpost.co.uk/2015/10/29/how-we-are-changing-the-future-of-tv-scheduling_n_8303736.html",
 		TopImage:        "http://i.huffpost.com/gen/3507100/images/o-TELEVISION-REMOTE-CONTROL-facebook.jpg",
+	}
+	//article.Links = []string{""}
+
+	removed := []string{"~~~REMOVED~~~"}
+	err := ValidateArticle(article, &removed)
+	if err != nil {
+		t.Error(err)
+	}
+}
+
+func Test_HuffingtonPostJp(t *testing.T) {
+	article := Article{
+		Domain:          "huffingtonpost.jp",
+		Title:           "クロマグロ残り2匹　葛西臨海水族園の大量死は未だに原因不明",
+		MetaDescription: "クロマグロやカツオ類が大量死した問題で、葛西臨海水族園（東京都江戸川区）は３日、病理検査の結果、海の養殖魚を大量死させることで知られる２種類のウイルスが原因ではないことが確認されたと発表した。",
+		CleanedText:     "",
+		MetaKeywords:    "クロマグロ残り2匹　葛西臨海水族園の大量死は未だに原因不明, japan",
+		CanonicalLink:   "http://www.huffingtonpost.jp/2015/03/03/tuna-death_n_6796602.html",
+		TopImage:        "http://i.huffpost.com/gen/2678692/images/o-TUNA-DEATH-facebook.jpg",
 	}
 	//article.Links = []string{""}
 

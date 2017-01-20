@@ -83,7 +83,6 @@ func (formatter *outputFormatter) linksToText() []string {
 }
 
 func (formatter *outputFormatter) getOutputText() string {
-
 	out := formatter.topNode.Text()
 	out = normalizeWhitespaceRegexp.ReplaceAllString(out, " ")
 
