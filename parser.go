@@ -17,7 +17,11 @@ func (p Parser) dropTag(selection *goquery.Selection) {
 	selection.Each(func(i int, s *goquery.Selection) {
 		node := s.Get(0)
 		node.Data = s.Text()
+		node.Attr = []html.Attribute{}
+		node.DataAtom = 0
 		node.Type = html.TextNode
+		node.FirstChild = nil
+		node.LastChild = nil
 	})
 }
 
