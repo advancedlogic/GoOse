@@ -2,7 +2,6 @@ package goose
 
 import (
 	"bytes"
-	"log"
 	"regexp"
 	"strconv"
 	"strings"
@@ -100,12 +99,6 @@ func (formatter *outputFormatter) Text(s *goquery.Selection) string {
 	var f func(*html.Node)
 	f = func(n *html.Node) {
 		if n.Type == html.TextNode && 0 == n.DataAtom { // NB: had to add the DataAtom check to avoid printing text twice when a textual node embeds another textual node
-			if n.DataAtom != 0 {
-				fatal := false
-				if n.DataAtom == 0x9504 {
-					fatal = true
-				}
-			}
 			// Keep newlines and spaces, like jQuery
 			buf.WriteString(n.Data)
 		}
