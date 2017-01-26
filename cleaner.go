@@ -10,6 +10,9 @@ import (
 	"strings"
 )
 
+var whitelistedTextAtomTypes = []atom.Atom{atom.Span, atom.Em, atom.I, atom.Strong, atom.B, atom.P, atom.H1, atom.H2, atom.H3, atom.H4}
+var whitelistedExtAtomTypes = []atom.Atom{atom.A, atom.Span, atom.Em, atom.I, atom.Strong, atom.B, atom.P, atom.H1, atom.H2, atom.H3, atom.H4}
+
 // Cleaner removes menus, ads, sidebars, etc. and leaves the main content
 type Cleaner struct {
 	config Configuration
@@ -19,6 +22,75 @@ type Cleaner struct {
 func NewCleaner(config Configuration) Cleaner {
 	return Cleaner{
 		config: config,
+	}
+}
+
+// replaceTagWithContents removes the tag, replacing it with its text contents
+// e.g. "<em>some text</em>" becomes "some text"
+func replaceTagWithContents(tagSelection *goquery.Selection, collapsibleAtomTypes []atom.Atom) {
+	if tagSelection.Length() == 0 {
+		return
+	}
+	node := tagSelection.Get(0)
+	node.Data = tagSelection.Text()
+	node.Type = html.TextNode
+	if node.FirstChild == nil {
+		node.Attr = []html.Attribute{}
+		node.DataAtom = 0
+		node.FirstChild = nil
+		node.LastChild = nil
+	} else {
+		// If all children are text only, the parent already contains the text, so drop them
+		collapseTextNodes(node, collapsibleAtomTypes)
+	}
+}
+
+func isAtomTypeWhitelisted(t atom.Atom, whitelist []atom.Atom) bool {
+	for _, allowed := range whitelist {
+		if t == allowed {
+			return true
+		}
+	}
+	return false
+}
+
+func collapseTextNodes(node *html.Node, collapsibleAtomTypes []atom.Atom) {
+	if node.FirstChild == nil {
+		return
+	}
+
+	if !isAtomTypeWhitelisted(node.DataAtom, collapsibleAtomTypes) {
+		return
+	}
+
+	if node.FirstChild.DataAtom == 0 && node.FirstChild == node.LastChild {
+		// this tag only contains a single textual node, already contained in the parent
+		node.Attr = []html.Attribute{}
+		node.Type = html.TextNode
+		node.DataAtom = 0
+		node.FirstChild = nil
+		node.LastChild = nil
+		return
+	}
+
+	// If all children are text only, the parent already contains the text, so drop them
+	allTextNodes := true
+	for c := node.FirstChild; c != nil; c = c.NextSibling {
+		// attempt collapsing recursively
+		collapseTextNodes(c, collapsibleAtomTypes)
+		if c.DataAtom != 0 {
+			// not collapsed
+			allTextNodes = false
+			break
+		}
+	}
+	if allTextNodes {
+		// text already contained in the parent node => drop children
+		node.Attr = []html.Attribute{}
+		node.Type = html.TextNode
+		node.DataAtom = 0
+		node.FirstChild = nil
+		node.LastChild = nil
 	}
 }
 
@@ -213,6 +285,7 @@ func (c *Cleaner) Clean(docToClean *goquery.Document) *goquery.Document {
 	if c.config.debug {
 		log.Println("Starting cleaning phase with Cleaner\n")
 	}
+	docToClean = c.cleanBr(docToClean)
 	docToClean = c.cleanArticleTags(docToClean)
 	docToClean = c.cleanEMTags(docToClean)
 	docToClean = c.dropCaps(docToClean)
@@ -237,6 +310,21 @@ func (c *Cleaner) cleanArticleTags(doc *goquery.Document) *goquery.Document {
 		for _, tag := range tags {
 			c.config.parser.delAttr(s, tag)
 		}
+	})
+	return doc
+}
+
+// replace <br /> with \n\n
+func (c *Cleaner) cleanBr(doc *goquery.Document) *goquery.Document {
+	linebreaks := doc.Find("br")
+	linebreaks.Each(func(i int, br *goquery.Selection) {
+		node := br.Get(0)
+		node.Data = "\n\n"
+		node.Type = html.TextNode
+		node.Attr = []html.Attribute{}
+		node.DataAtom = 0
+		node.FirstChild = nil
+		node.LastChild = nil
 	})
 	return doc
 }
@@ -350,14 +438,13 @@ func (c *Cleaner) cleanBadTags(doc *goquery.Document, pattern *regexp.Regexp, se
 	return doc
 }
 
+// Replace <p><span>...</span></p>   with  <p>...</p>
 func (c *Cleaner) cleanParaSpans(doc *goquery.Document) *goquery.Document {
 	spans := doc.Find("span")
 	spans.Each(func(i int, s *goquery.Selection) {
 		parent := s.Parent()
 		if parent != nil && parent.Length() > 0 && parent.Get(0).DataAtom == atom.P {
-			node := s.Get(0)
-			node.Data = s.Text()
-			node.Type = html.TextNode
+			replaceTagWithContents(s, whitelistedTextAtomTypes)
 		}
 	})
 	return doc
@@ -385,6 +472,7 @@ func (c *Cleaner) replaceWithPara(div *goquery.Selection) {
 		node := div.Get(0)
 		node.Data = atom.P.String()
 		node.DataAtom = atom.P
+		node.Attr = []html.Attribute{}
 	}
 }
 

@@ -1,6 +1,8 @@
 package goose
 
 import (
+	"bytes"
+	"log"
 	"regexp"
 	"strconv"
 	"strings"
@@ -40,6 +42,7 @@ func (formatter *outputFormatter) getFormattedText(topNode *goquery.Selection, l
 	links = formatter.linksToText()
 	formatter.replaceTagsWithText()
 	formatter.removeParagraphsWithFewWords()
+
 	output = formatter.getOutputText()
 	return output, links
 }
@@ -68,22 +71,60 @@ func (formatter *outputFormatter) linksToText() []string {
 	links := formatter.topNode.Find("a")
 	links.Each(func(i int, a *goquery.Selection) {
 		imgs := a.Find("img")
+		// ignore linked images
 		if imgs.Length() == 0 {
-			node := a.Get(0)
-			node.Data = a.Text()
-			node.Type = html.TextNode
 			// save a list of URLs
 			url, _ := a.Attr("href")
 			if isValidURL(url) {
 				urlList = append(urlList, url)
 			}
+			// replace <a> tag with its text contents
+			replaceTagWithContents(a, whitelistedExtAtomTypes)
+
+			// see whether we can collapse the parent node now
+			replaceTagWithContents(a.Parent(), whitelistedTextAtomTypes)
 		}
 	})
+
 	return urlList
 }
 
+// Text gets the combined text contents of each element in the set of matched
+// elements, including their descendants.
+//
+// @see https://github.com/PuerkitoBio/goquery/blob/master/property.go
+func (formatter *outputFormatter) Text(s *goquery.Selection) string {
+	var buf bytes.Buffer
+
+	// Slightly optimized vs calling Each: no single selection object created
+	var f func(*html.Node)
+	f = func(n *html.Node) {
+		if n.Type == html.TextNode && 0 == n.DataAtom { // NB: had to add the DataAtom check to avoid printing text twice when a textual node embeds another textual node
+			if n.DataAtom != 0 {
+				fatal := false
+				if n.DataAtom == 0x9504 {
+					fatal = true
+				}
+			}
+			// Keep newlines and spaces, like jQuery
+			buf.WriteString(n.Data)
+		}
+		if n.FirstChild != nil {
+			for c := n.FirstChild; c != nil; c = c.NextSibling {
+				f(c)
+			}
+		}
+	}
+	for _, n := range s.Nodes {
+		f(n)
+	}
+
+	return buf.String()
+}
+
 func (formatter *outputFormatter) getOutputText() string {
-	out := formatter.topNode.Text()
+	//out := formatter.topNode.Text()
+	out := formatter.Text(formatter.topNode)
 	out = normalizeWhitespaceRegexp.ReplaceAllString(out, " ")
 
 	strArr := strings.Split(out, "\n")
@@ -122,29 +163,12 @@ func (formatter *outputFormatter) removeNegativescoresNodes() {
 }
 
 func (formatter *outputFormatter) replaceTagsWithText() {
-	strongs := formatter.topNode.Find("strong")
-	strongs.Each(func(i int, strong *goquery.Selection) {
-		text := strong.Text()
-		node := strong.Get(0)
-		node.Type = html.TextNode
-		node.Data = text
-	})
-
-	bolds := formatter.topNode.Find("b")
-	bolds.Each(func(i int, bold *goquery.Selection) {
-		text := bold.Text()
-		node := bold.Get(0)
-		node.Type = html.TextNode
-		node.Data = text
-	})
-
-	italics := formatter.topNode.Find("i")
-	italics.Each(func(i int, italic *goquery.Selection) {
-		text := italic.Text()
-		node := italic.Get(0)
-		node.Type = html.TextNode
-		node.Data = text
-	})
+	for _, tag := range []string{"em", "strong", "b", "i", "span", "h1", "h2", "h3", "h4"} {
+		nodes := formatter.topNode.Find(tag)
+		nodes.Each(func(i int, node *goquery.Selection) {
+			replaceTagWithContents(node, whitelistedTextAtomTypes)
+		})
+	}
 }
 
 func (formatter *outputFormatter) removeParagraphsWithFewWords() {
@@ -160,5 +184,4 @@ func (formatter *outputFormatter) removeParagraphsWithFewWords() {
 			node.Parent.RemoveChild(node)
 		}
 	})
-
 }
