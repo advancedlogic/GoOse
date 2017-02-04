@@ -9,6 +9,7 @@ import (
 
 	"github.com/advancedlogic/goquery"
 	"github.com/rogpeppe/go-charset/charset"
+	_ "github.com/rogpeppe/go-charset/data"
 )
 
 // Crawler can fetch the target HTML page
