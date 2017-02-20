@@ -283,7 +283,7 @@ var removeNodesRegEx = regexp.MustCompile("" +
 // Clean removes HTML elements around the main content and prepares the document for parsing
 func (c *Cleaner) Clean(docToClean *goquery.Document) *goquery.Document {
 	if c.config.debug {
-		log.Println("Starting cleaning phase with Cleaner\n")
+		log.Println("Starting cleaning phase with Cleaner")
 	}
 	docToClean = c.cleanBr(docToClean)
 	docToClean = c.cleanArticleTags(docToClean)
