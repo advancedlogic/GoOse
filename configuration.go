@@ -1,6 +1,9 @@
 package goose
 
-import "time"
+import (
+	"github.com/gravicle/gojs-config"
+	"time"
+)
 
 const defaultUserAgent = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_7_2) AppleWebKit/534.52.7 (KHTML, like Gecko) Version/5.1.2 Safari/534.52.7"
 
@@ -8,8 +11,6 @@ const defaultUserAgent = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_7_2) AppleWe
 type Configuration struct {
 	localStoragePath        string //not used in this version
 	imagesMinBytes          int    //not used in this version
-	enableImageFetching     bool
-	useMetaLanguage         bool
 	targetLanguage          string
 	imageMagickConvertPath  string //not used in this version
 	imageMagickIdentifyPath string //not used in this version
@@ -17,6 +18,8 @@ type Configuration struct {
 	debug                   bool
 	extractPublishDate      bool
 	additionalDataExtractor bool
+	enableImageFetching     bool
+	useMetaLanguage         bool
 
 	//path to the stopwords folder
 	stopWordsPath string
