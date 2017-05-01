@@ -1,13 +1,15 @@
 package goose
 
 import (
+	"io/ioutil"
+	"log"
 	"regexp"
 	"strings"
 
 	"gopkg.in/fatih/set.v0"
 )
 
-var punctuationRegex = regexp.MustCompile("[^\\p{Ll}\\p{Lu}\\p{Lt}\\p{Lo}\\p{Nd}\\p{Pc}\\s]")
+var punctuationRegex = regexp.MustCompile(`[^\p{Ll}\p{Lu}\p{Lt}\p{Lo}\p{Nd}\p{Pc}\s]`)
 
 // StopWords implements a simple language detector
 type StopWords struct {
@@ -21,9 +23,10 @@ func NewStopwords() StopWords {
 		lines := strings.Split(stopwords, "\n")
 		cachedStopWords[lang] = set.New()
 		for _, line := range lines {
-			line = strings.Trim(line, " ")
-			line = strings.Trim(line, "\t")
-			line = strings.Trim(line, "\r")
+			if strings.HasPrefix(line, "#") {
+				continue
+			}
+			line = strings.TrimSpace(line)
 			cachedStopWords[lang].Add(line)
 		}
 	}
@@ -103,6 +106,16 @@ func (stop StopWords) SimpleLanguageDetector(text string) string {
 	}
 
 	return currentLang
+}
+
+// ReadLinesOfFile returns the lines from a file as a slice of strings
+func ReadLinesOfFile(filename string) []string {
+	content, err := ioutil.ReadFile(filename)
+	if err != nil {
+		log.Println(err.Error())
+	}
+	lines := strings.Split(string(content), "\n")
+	return lines
 }
 
 var sw = map[string]string{

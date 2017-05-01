@@ -2,33 +2,36 @@ package goose
 
 import (
 	"container/list"
-	"github.com/advancedlogic/goquery"
-	"golang.org/x/net/html"
-	"golang.org/x/net/html/atom"
-	"gopkg.in/fatih/set.v0"
 	"log"
 	"math"
 	"net/url"
-	"regexp"
 	"strconv"
 	"strings"
+
+	"github.com/PuerkitoBio/goquery"
+	"golang.org/x/net/html"
+	"golang.org/x/net/html/atom"
+	"gopkg.in/fatih/set.v0"
 )
 
 const defaultLanguage = "en"
 
-var motleyReplacement = "&#65533;"
-var escapedFragmentReplacement = regexp.MustCompile("#!")
-var titleReplacements = regexp.MustCompile("&raquo;")
+var motleyReplacement = "&#65533;" // U+FFFD (decimal 65533) is the "replacement character".
+//var escapedFragmentReplacement = regexp.MustCompile("#!")
+//var titleReplacements = regexp.MustCompile("&raquo;")
 
-var pipeSplitter = regexp.MustCompile("\\|")
-var dashSplitter = regexp.MustCompile(" - ")
-var arrowsSplitter = regexp.MustCompile("»")
-var colonSplitter = regexp.MustCompile(":")
-var spaceSplitter = regexp.MustCompile(" ")
+var titleDelimiters = []string{
+	"|",
+	" - ",
+	" — ",
+	"»",
+	":",
+}
 
 var aRelTagSelector = "a[rel=tag]"
 var aHrefTagSelector = [...]string{"/tag/", "/tags/", "/topic/", "?keyword"}
-var langRegEx = "^[A-Za-z]{2}$"
+
+//var langRegEx = "^[A-Za-z]{2}$"
 
 // ContentExtractor can parse the HTML and fetch various properties
 type ContentExtractor struct {
@@ -42,43 +45,35 @@ func NewExtractor(config Configuration) ContentExtractor {
 	}
 }
 
-//if the article has a title set in the source, use that
-func (extr *ContentExtractor) getTitle(article *Article) string {
+// GetTitle returns the title set in the source, if the article has one
+func (extr *ContentExtractor) GetTitle(document *goquery.Document) string {
 	title := ""
-	doc := article.Doc
 
-	ogTitleElement := doc.Find(`meta[property="og:title"]`)
-	if ogTitleElement != nil && ogTitleElement.Size() > 0 {
-		title, _ = ogTitleElement.Attr("content")
+	titleElement := document.Find("title")
+	if titleElement != nil && titleElement.Size() > 0 {
+		title = titleElement.Text()
 	}
+
 	if title == "" {
-		titleElement := doc.Find("title,post-title,headline")
+		ogTitleElement := document.Find(`meta[property="og:title"]`)
+		if ogTitleElement != nil && ogTitleElement.Size() > 0 {
+			title, _ = ogTitleElement.Attr("content")
+		}
+	}
+
+	if title == "" {
+		titleElement = document.Find("post-title,headline")
 		if titleElement == nil || titleElement.Size() == 0 {
 			return title
 		}
 		title = titleElement.Text()
 	}
 
-	usedDelimiter := false
-
-	if strings.Contains(title, "|") {
-		title = extr.splitTitle(RegSplit(title, pipeSplitter))
-		usedDelimiter = true
-	}
-
-	if !usedDelimiter && strings.Contains(title, "-") {
-		title = extr.splitTitle(RegSplit(title, dashSplitter))
-		usedDelimiter = true
-	}
-
-	if !usedDelimiter && strings.Contains(title, "»") {
-		title = extr.splitTitle(RegSplit(title, arrowsSplitter))
-		usedDelimiter = true
-	}
-
-	if !usedDelimiter && strings.Contains(title, ":") {
-		title = extr.splitTitle(RegSplit(title, colonSplitter))
-		usedDelimiter = true
+	for _, delimiter := range titleDelimiters {
+		if strings.Contains(title, delimiter) {
+			title = extr.splitTitle(strings.Split(title, delimiter))
+			break
+		}
 	}
 
 	title = strings.Replace(title, motleyReplacement, "", -1)
@@ -104,18 +99,17 @@ func (extr *ContentExtractor) splitTitle(titles []string) string {
 	return title
 }
 
-//if the article has meta language set in the source, use that
-func (extr *ContentExtractor) getMetaLanguage(article *Article) string {
-	language := ""
-	doc := article.Doc
-	shtml := doc.Find("html")
+// GetMetaLanguage returns the meta language set in the source, if the article has one
+func (extr *ContentExtractor) GetMetaLanguage(document *goquery.Document) string {
+	var language string
+	shtml := document.Find("html")
 	attr, _ := shtml.Attr("lang")
 	if attr == "" {
-		attr, _ = doc.Attr("lang")
+		attr, _ = document.Attr("lang")
 	}
 	if attr == "" {
-		selection := doc.Find("meta").EachWithBreak(func(i int, s *goquery.Selection) bool {
-			exists := false
+		selection := document.Find("meta").EachWithBreak(func(i int, s *goquery.Selection) bool {
+			var exists bool
 			attr, exists = s.Attr("http-equiv")
 			if exists && attr == "content-language" {
 				return false
@@ -146,11 +140,10 @@ func (extr *ContentExtractor) getMetaLanguage(article *Article) string {
 	return language
 }
 
-//if the article has favicon set in the source, use that
-func (extr *ContentExtractor) getFavicon(article *Article) string {
+// GetFavicon returns the favicon set in the source, if the article has one
+func (extr *ContentExtractor) GetFavicon(document *goquery.Document) string {
 	favicon := ""
-	doc := article.Doc
-	doc.Find("link").EachWithBreak(func(i int, s *goquery.Selection) bool {
+	document.Find("link").EachWithBreak(func(i int, s *goquery.Selection) bool {
 		attr, exists := s.Attr("rel")
 		if exists && strings.Contains(attr, "icon") {
 			favicon, _ = s.Attr("href")
@@ -161,18 +154,17 @@ func (extr *ContentExtractor) getFavicon(article *Article) string {
 	return favicon
 }
 
-func (extr *ContentExtractor) getMetaContentWithSelector(article *Article, selector string) string {
-	content := ""
-	doc := article.Doc
-	selection := doc.Find(selector)
-	content, _ = selection.Attr("content")
+// GetMetaContentWithSelector returns the content attribute of meta tag matching the selector
+func (extr *ContentExtractor) GetMetaContentWithSelector(document *goquery.Document, selector string) string {
+	selection := document.Find(selector)
+	content, _ := selection.Attr("content")
 	return strings.TrimSpace(content)
 }
 
-func (extr *ContentExtractor) getMetaContent(article *Article, metaName string) string {
+// GetMetaContent returns the content attribute of meta tag with the given property name
+func (extr *ContentExtractor) GetMetaContent(document *goquery.Document, metaName string) string {
 	content := ""
-	doc := article.Doc
-	doc.Find("meta").EachWithBreak(func(i int, s *goquery.Selection) bool {
+	document.Find("meta").EachWithBreak(func(i int, s *goquery.Selection) bool {
 		attr, exists := s.Attr("name")
 		if exists && attr == metaName {
 			content, _ = s.Attr("content")
@@ -188,11 +180,11 @@ func (extr *ContentExtractor) getMetaContent(article *Article, metaName string) 
 	return content
 }
 
-func (extr *ContentExtractor) getMetaContents(article *Article, metaNames *set.Set) map[string]string {
+// GetMetaContents returns all the meta tags as name->content pairs
+func (extr *ContentExtractor) GetMetaContents(document *goquery.Document, metaNames *set.Set) map[string]string {
 	contents := make(map[string]string)
-	doc := article.Doc
 	counter := metaNames.Size()
-	doc.Find("meta").EachWithBreak(func(i int, s *goquery.Selection) bool {
+	document.Find("meta").EachWithBreak(func(i int, s *goquery.Selection) bool {
 		attr, exists := s.Attr("name")
 		if exists && metaNames.Has(attr) {
 			content, _ := s.Attr("content")
@@ -207,30 +199,29 @@ func (extr *ContentExtractor) getMetaContents(article *Article, metaNames *set.S
 	return contents
 }
 
-//if the article has meta description set in the source, use that
-func (extr *ContentExtractor) getMetaDescription(article *Article) string {
-	return extr.getMetaContent(article, "description")
+// GetMetaDescription returns the meta description set in the source, if the article has one
+func (extr *ContentExtractor) GetMetaDescription(document *goquery.Document) string {
+	return extr.GetMetaContent(document, "description")
 }
 
-//if the article has meta keywords set in the source, use that
-func (extr *ContentExtractor) getMetaKeywords(article *Article) string {
-	return extr.getMetaContent(article, "keywords")
+// GetMetaKeywords returns the meta keywords set in the source, if the article has them
+func (extr *ContentExtractor) GetMetaKeywords(document *goquery.Document) string {
+	return extr.GetMetaContent(document, "keywords")
 }
 
-//if the article has meta author set in the source, use that
-func (extr *ContentExtractor) getMetaAuthor(article *Article) string {
-	return extr.getMetaContent(article, "author")
+// GetMetaAuthor returns the meta author set in the source, if the article has one
+func (extr *ContentExtractor) GetMetaAuthor(document *goquery.Document) string {
+	return extr.GetMetaContent(document, "author")
 }
 
-//if the article has meta content location set in the source, use that
-func (extr *ContentExtractor) getMetaContentLocation(article *Article) string {
-	return extr.getMetaContent(article, "contentLocation")
+// GetMetaContentLocation returns the meta content location set in the source, if the article has one
+func (extr *ContentExtractor) GetMetaContentLocation(document *goquery.Document) string {
+	return extr.GetMetaContent(document, "contentLocation")
 }
 
-//if the article has meta canonical link set in the url
-func (extr *ContentExtractor) getCanonicalLink(article *Article) string {
-	doc := article.Doc
-	metas := doc.Find("link[rel=canonical]")
+// GetCanonicalLink returns the meta canonical link set in the source
+func (extr *ContentExtractor) GetCanonicalLink(document *goquery.Document) string {
+	metas := document.Find("link[rel=canonical]")
 	if metas.Length() > 0 {
 		meta := metas.First()
 		href, _ := meta.Attr("href")
@@ -240,12 +231,11 @@ func (extr *ContentExtractor) getCanonicalLink(article *Article) string {
 			return href
 		}
 	}
-	return article.FinalURL
+	return ""
 }
 
-//extract domain and use that
-func (extr *ContentExtractor) getDomain(article *Article) string {
-	canonicalLink := article.CanonicalLink
+// GetDomain extracts the domain from a link
+func (extr *ContentExtractor) GetDomain(canonicalLink string) string {
 	u, err := url.Parse(canonicalLink)
 	if err == nil {
 		return u.Host
@@ -253,15 +243,14 @@ func (extr *ContentExtractor) getDomain(article *Article) string {
 	return ""
 }
 
-//if the article has tags set in the source, use that
-func (extr *ContentExtractor) getTags(article *Article) *set.Set {
+// GetTags returns the tags set in the source, if the article has them
+func (extr *ContentExtractor) GetTags(document *goquery.Document) *set.Set {
 	tags := set.New()
-	doc := article.Doc
-	selections := doc.Find(aRelTagSelector)
+	selections := document.Find(aRelTagSelector)
 	selections.Each(func(i int, s *goquery.Selection) {
 		tags.Add(s.Text())
 	})
-	selections = doc.Find("a")
+	selections = document.Find("a")
 	selections.Each(func(i int, s *goquery.Selection) {
 		href, exists := s.Attr("href")
 		if exists {
@@ -276,13 +265,20 @@ func (extr *ContentExtractor) getTags(article *Article) *set.Set {
 	return tags
 }
 
+// GetCleanTextAndLinks parses the main HTML node for text and links
+func (extr *ContentExtractor) GetCleanTextAndLinks(topNode *goquery.Selection, lang string) (string, []string) {
+	outputFormatter := new(outputFormatter)
+	outputFormatter.config = extr.config
+	return outputFormatter.getFormattedText(topNode, lang)
+}
+
+// CalculateBestNode checks for the HTML node most likely to contain the main content.
 //we're going to start looking for where the clusters of paragraphs are. We'll score a cluster based on the number of stopwords
 //and the number of consecutive paragraphs together, which should form the cluster of text that this node is around
 //also store on how high up the paragraphs are, comments are usually at the bottom and should get a lower score
-func (extr *ContentExtractor) calculateBestNode(article *Article) *goquery.Selection {
-	doc := article.Doc
+func (extr *ContentExtractor) CalculateBestNode(document *goquery.Document) *goquery.Selection {
 	var topNode *goquery.Selection
-	nodesToCheck := extr.nodesToCheck(doc)
+	nodesToCheck := extr.nodesToCheck(document)
 	if extr.config.debug {
 		log.Printf("Nodes to check %d\n", len(nodesToCheck))
 	}
@@ -421,7 +417,7 @@ func (extr *ContentExtractor) updateNodeCount(node *goquery.Selection, addToCoun
 
 //a lot of times the first paragraph might be the caption under an image so we'll want to make sure if we're going to
 //boost a parent node that it should be connected to other paragraphs, at least for the first n paragraphs
-//so we'll want to make sure that the next sibling is a paragraph and has at least some substatial weight to it
+//so we'll want to make sure that the next sibling is a paragraph and has at least some substantial weight to it
 func (extr *ContentExtractor) isBoostable(node *goquery.Selection) bool {
 	stepsAway := 0
 	next := node.Next()
@@ -490,7 +486,7 @@ func (extr *ContentExtractor) isHighLinkDensity(node *goquery.Selection) bool {
 	score := linkDivisor * float64(nlinks)
 
 	if extr.config.debug {
-		logText := ""
+		var logText string
 		if len(node.Text()) >= 51 {
 			logText = node.Text()[0:50]
 		} else {
@@ -621,8 +617,8 @@ func (extr *ContentExtractor) addSiblings(topNode *goquery.Selection) *goquery.S
 	return topNode
 }
 
-//remove any divs that looks like non-content, clusters of links, or paras with no gusto
-func (extr *ContentExtractor) postCleanup(targetNode *goquery.Selection) *goquery.Selection {
+//PostCleanup removes any divs that looks like non-content, clusters of links, or paras with no gusto
+func (extr *ContentExtractor) PostCleanup(targetNode *goquery.Selection) *goquery.Selection {
 	if extr.config.debug {
 		log.Println("Starting cleanup Node")
 	}

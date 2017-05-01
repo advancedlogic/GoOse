@@ -2,13 +2,16 @@ package goose
 
 import (
 	"container/list"
-	"github.com/advancedlogic/goquery"
+	"github.com/PuerkitoBio/goquery"
 	"golang.org/x/net/html"
 	"golang.org/x/net/html/atom"
 	"log"
 	"regexp"
 	"strings"
 )
+
+var whitelistedTextAtomTypes = []atom.Atom{atom.Span, atom.Em, atom.I, atom.Strong, atom.B, atom.P, atom.H1, atom.H2, atom.H3, atom.H4}
+var whitelistedExtAtomTypes = []atom.Atom{atom.A, atom.Span, atom.Em, atom.I, atom.Strong, atom.B, atom.P, atom.H1, atom.H2, atom.H3, atom.H4}
 
 // Cleaner removes menus, ads, sidebars, etc. and leaves the main content
 type Cleaner struct {
@@ -22,10 +25,79 @@ func NewCleaner(config Configuration) Cleaner {
 	}
 }
 
+// replaceTagWithContents removes the tag, replacing it with its text contents
+// e.g. "<em>some text</em>" becomes "some text"
+func replaceTagWithContents(tagSelection *goquery.Selection, collapsibleAtomTypes []atom.Atom) {
+	if tagSelection.Length() == 0 {
+		return
+	}
+	node := tagSelection.Get(0)
+	node.Data = tagSelection.Text()
+	node.Type = html.TextNode
+	if node.FirstChild == nil {
+		node.Attr = []html.Attribute{}
+		node.DataAtom = 0
+		node.FirstChild = nil
+		node.LastChild = nil
+	} else {
+		// If all children are text only, the parent already contains the text, so drop them
+		collapseTextNodes(node, collapsibleAtomTypes)
+	}
+}
+
+func isAtomTypeWhitelisted(t atom.Atom, whitelist []atom.Atom) bool {
+	for _, allowed := range whitelist {
+		if t == allowed {
+			return true
+		}
+	}
+	return false
+}
+
+func collapseTextNodes(node *html.Node, collapsibleAtomTypes []atom.Atom) {
+	if node.FirstChild == nil {
+		return
+	}
+
+	if !isAtomTypeWhitelisted(node.DataAtom, collapsibleAtomTypes) {
+		return
+	}
+
+	if node.FirstChild.DataAtom == 0 && node.FirstChild == node.LastChild {
+		// this tag only contains a single textual node, already contained in the parent
+		node.Attr = []html.Attribute{}
+		node.Type = html.TextNode
+		node.DataAtom = 0
+		node.FirstChild = nil
+		node.LastChild = nil
+		return
+	}
+
+	// If all children are text only, the parent already contains the text, so drop them
+	allTextNodes := true
+	for c := node.FirstChild; c != nil; c = c.NextSibling {
+		// attempt collapsing recursively
+		collapseTextNodes(c, collapsibleAtomTypes)
+		if c.DataAtom != 0 {
+			// not collapsed
+			allTextNodes = false
+			break
+		}
+	}
+	if allTextNodes {
+		// text already contained in the parent node => drop children
+		node.Attr = []html.Attribute{}
+		node.Type = html.TextNode
+		node.DataAtom = 0
+		node.FirstChild = nil
+		node.LastChild = nil
+	}
+}
+
 var divToPElementsPattern = regexp.MustCompile("<(a|blockquote|dl|div|img|ol|p|pre|table|ul)")
-var tabsRegEx, _ = regexp.Compile("\\t|^\\s+$]")
+var tabsRegEx = regexp.MustCompile(`\t|^\s+$]`)
+var removeVisibilityStyleRegEx = regexp.MustCompile("visibility:[ ]*hidden|display:[ ]*none")
 var removeNodesRegEx = regexp.MustCompile("" +
-	"PopularQuestions|" +
 	"[Cc]omentario|" +
 	"[Ff]ooter|" +
 	"^fn$|" +
@@ -51,8 +123,9 @@ var removeNodesRegEx = regexp.MustCompile("" +
 	"^banner|" +
 	"^bar$|" +
 	"blog-pager|" +
-	"button|" +
+	"brass\\-rail|" +
 	"breadcrumbs|" +
+	"button|" +
 	"byline|" +
 	"cabecalho|" +
 	"^caption$|" +
@@ -77,9 +150,10 @@ var removeNodesRegEx = regexp.MustCompile("" +
 	"^critical-alerts$|" +
 	"^date$|" +
 	"detail_new_|" +
-	"related|" +
+	"downloadLink|" +
 	"^DYSRC$|" +
 	"^early-body|" +
+	"ec_blogs|" +
 	"^[^entry-]more.*$|" +
 	"error|" +
 	"[^-]facebook|" +
@@ -98,6 +172,7 @@ var removeNodesRegEx = regexp.MustCompile("" +
 	"header|" +
 	"hidden|" +
 	"img_popup_single|" +
+	"inline-share-tools|" +
 	"inread|" +
 	"^interstitial-ad-modal$|" +
 	"^Inv[0-9]$|" +
@@ -106,8 +181,7 @@ var removeNodesRegEx = regexp.MustCompile("" +
 	"^kxhead$|" +
 	"leading|" +
 	"^lede[_-]container$|" +
-	"legend|" +
-	"legende|" +
+	"legende?|" +
 	"^lightningjs-|" +
 	"links|" +
 	"^login-modal$|" +
@@ -134,17 +208,20 @@ var removeNodesRegEx = regexp.MustCompile("" +
 	"panelss2|" +
 	"panesCity|" +
 	"player|" +
+	"PopularQuestions|" +
 	"popup|" +
 	"post[_-]attributes|" +
 	"post[_-]title|" +
 	"preview|" +
 	"[_-]print[_-]|" +
+	"products\\-events|" +
 	"^prop[0-9]$|" +
 	"^pulse-loaders|" +
 	"^rail$|" +
 	"recommend|" +
 	"^registration-modal$|" +
 	"relacionado|" +
+	"related|" +
 	"remote|" +
 	"retweet|" +
 	"^ribbon$|" +
@@ -160,21 +237,23 @@ var removeNodesRegEx = regexp.MustCompile("" +
 	"site[_-]box|" +
 	"site[_-]nav|" +
 	"skyscraper|" +
-	"socialNetworking|" +
+	"social[Nn]etworking|" +
 	"social_|" +
-	"socialnetworking|" +
+	"social\\-share|" +
+	"social\\-count|" +
 	"socialtools|" +
 	"source|" +
-	"[_-]spinner$|" +
-	"^spr-|" +
-	"^suggestions$|" +
 	"^speed-bump-wrapper$|" +
+	"[_-]spinner$|" +
 	"^Splash$|" +
 	"sponsor|" +
+	"^spr-|" +
+	"storytopbar\\-bucket|" +
 	"^stream-sidebar|" +
 	"sub_nav|" +
 	"subscribe|" +
 	"subscription|" +
+	"^suggestions$|" +
 	"tabsCity|" +
 	"tag_|" +
 	"tags|" +
@@ -189,8 +268,10 @@ var removeNodesRegEx = regexp.MustCompile("" +
 	"tracking|" +
 	"[^-]twitter|" +
 	"-uix-button|" +
+	"updateBrowser|" +
 	"^username-modal$|" +
 	"^user-|" +
+	"utility-bar|" +
 	"^vestpocket$|" +
 	"vcard|" +
 	"^watch-action-panels$|" +
@@ -199,17 +280,18 @@ var removeNodesRegEx = regexp.MustCompile("" +
 	"^whats[_-]next$|" +
 	"wp-caption-text")
 
-func (c *Cleaner) clean(article *Article) *goquery.Document {
+// Clean removes HTML elements around the main content and prepares the document for parsing
+func (c *Cleaner) Clean(docToClean *goquery.Document) *goquery.Document {
 	if c.config.debug {
 		log.Println("Starting cleaning phase with Cleaner")
 	}
-	docToClean := article.Doc
+	docToClean = c.cleanBr(docToClean)
 	docToClean = c.cleanArticleTags(docToClean)
 	docToClean = c.cleanEMTags(docToClean)
 	docToClean = c.dropCaps(docToClean)
 	docToClean = c.removeScriptsStyle(docToClean)
 	docToClean = c.cleanBadTags(docToClean, removeNodesRegEx, &[]string{"id", "class", "name"})
-	docToClean = c.cleanBadTags(docToClean, regexp.MustCompile("visibility:[ ]*hidden|display:[ ]*none"), &[]string{"style"})
+	docToClean = c.cleanBadTags(docToClean, removeVisibilityStyleRegEx, &[]string{"style"})
 	docToClean = c.removeTags(docToClean, &[]string{"nav", "footer", "aside", "cite"})
 	docToClean = c.cleanParaSpans(docToClean)
 
@@ -228,6 +310,21 @@ func (c *Cleaner) cleanArticleTags(doc *goquery.Document) *goquery.Document {
 		for _, tag := range tags {
 			c.config.parser.delAttr(s, tag)
 		}
+	})
+	return doc
+}
+
+// replace <br /> with \n\n
+func (c *Cleaner) cleanBr(doc *goquery.Document) *goquery.Document {
+	linebreaks := doc.Find("br")
+	linebreaks.Each(func(i int, br *goquery.Selection) {
+		node := br.Get(0)
+		node.Data = "\n\n"
+		node.Type = html.TextNode
+		node.Attr = []html.Attribute{}
+		node.DataAtom = 0
+		node.FirstChild = nil
+		node.LastChild = nil
 	})
 	return doc
 }
@@ -263,9 +360,7 @@ func (c *Cleaner) cleanDivs(doc *goquery.Document) *goquery.Document {
 	divs.Each(func(i int, s *goquery.Selection) {
 		children := s.Children()
 		if children.Size() == 0 {
-			text := s.Text()
-			text = strings.Trim(text, " ")
-			text = strings.Trim(text, "\t")
+			text := strings.Trim(s.Text(), " \t")
 			text = strings.ToLower(text)
 			frames[text]++
 			if framesNodes[text] == nil {
@@ -306,7 +401,7 @@ func (c *Cleaner) removeScriptsStyle(doc *goquery.Document) *goquery.Document {
 	if c.config.debug {
 		log.Println("Starting to remove script tags")
 	}
-	count := 0 // remove
+	count := 0 // number of removed nodes
 	scripts := doc.Find("script,noscript,style")
 	scripts.Each(func(i int, s *goquery.Selection) {
 		c.config.parser.removeNode(s)
@@ -343,14 +438,13 @@ func (c *Cleaner) cleanBadTags(doc *goquery.Document, pattern *regexp.Regexp, se
 	return doc
 }
 
+// Replace <p><span>...</span></p>   with  <p>...</p>
 func (c *Cleaner) cleanParaSpans(doc *goquery.Document) *goquery.Document {
 	spans := doc.Find("span")
 	spans.Each(func(i int, s *goquery.Selection) {
 		parent := s.Parent()
 		if parent != nil && parent.Length() > 0 && parent.Get(0).DataAtom == atom.P {
-			node := s.Get(0)
-			node.Data = s.Text()
-			node.Type = html.TextNode
+			replaceTagWithContents(s, whitelistedTextAtomTypes)
 		}
 	})
 	return doc
@@ -378,6 +472,7 @@ func (c *Cleaner) replaceWithPara(div *goquery.Selection) {
 		node := div.Get(0)
 		node.Data = atom.P.String()
 		node.DataAtom = atom.P
+		node.Attr = []html.Attribute{}
 	}
 }
 

@@ -1,9 +1,14 @@
 # GoOse
 
+*HTML Content / Article Extractor in Golang*
+
 [![Build Status](https://secure.travis-ci.org/advancedlogic/GoOse.png?branch=master)](https://travis-ci.org/advancedlogic/GoOse?branch=master)
 [![Coverage Status](https://coveralls.io/repos/advancedlogic/GoOse/badge.svg?branch=master&service=github)](https://coveralls.io/github/advancedlogic/GoOse?branch=master)
+[![Go Report Card](https://goreportcard.com/badge/github.com/advancedlogic/GoOse)](https://goreportcard.com/report/github.com/advancedlogic/GoOse)
+[![GoDoc](https://godoc.org/github.com/advancedlogic/GoOse?status.svg)](http://godoc.org/github.com/advancedlogic/GoOse)
 
-Html Content / Article Extractor in Golang
+
+## Description
 
 This is a golang port of "Goose" originaly licensed to Gravity.com
 under one or more contributor license agreements.  See the NOTICE file
@@ -62,19 +67,14 @@ To see all available options:
 make help
 ```
 
-To build the project
-```bash
-make build
-```
-
 Before committing the code, please check if it passes all tests using
 ```bash
+make deps
 make qa
 ```
 
 ## TODO
 - [ ] better organize code
-- [ ] add comments and godoc
 - [ ] improve "xpath" like queries
 - [ ] add other image extractions techniques (imagemagick)
 

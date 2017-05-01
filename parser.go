@@ -1,7 +1,7 @@
 package goose
 
 import (
-	"github.com/advancedlogic/goquery"
+	"github.com/PuerkitoBio/goquery"
 	"golang.org/x/net/html"
 )
 
@@ -15,9 +15,7 @@ func NewParser() *Parser {
 
 func (p Parser) dropTag(selection *goquery.Selection) {
 	selection.Each(func(i int, s *goquery.Selection) {
-		node := s.Get(0)
-		node.Data = s.Text()
-		node.Type = html.TextNode
+		replaceTagWithContents(s, whitelistedTextAtomTypes)
 	})
 }
 

@@ -1,7 +1,7 @@
 package goose
 
 import (
-	"github.com/advancedlogic/goquery"
+	"github.com/PuerkitoBio/goquery"
 	"gopkg.in/fatih/set.v0"
 	"strconv"
 	"strings"
@@ -130,8 +130,7 @@ func (ve *VideoExtractor) getObjectTag(node *goquery.Selection) video {
 }
 
 // GetVideos returns the video tags embedded in the article
-func (ve *VideoExtractor) GetVideos(article *Article) *set.Set {
-	doc := article.Doc
+func (ve *VideoExtractor) GetVideos(doc *goquery.Document) *set.Set {
 	var nodes *goquery.Selection
 	for _, videoTag := range videoTags {
 		tmpNodes := doc.Find(videoTag)
@@ -148,19 +147,12 @@ func (ve *VideoExtractor) GetVideos(article *Article) *set.Set {
 		switch tag {
 		case "video":
 			movie = ve.getVideoTag(node)
-			break
 		case "embed":
 			movie = ve.getEmbedTag(node)
-			break
 		case "object":
 			movie = ve.getObjectTag(node)
-			break
 		case "iframe":
 			movie = ve.getIFrame(node)
-			break
-		default:
-			{
-			}
 		}
 
 		if movie.src != "" {
