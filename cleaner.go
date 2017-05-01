@@ -95,7 +95,7 @@ func collapseTextNodes(node *html.Node, collapsibleAtomTypes []atom.Atom) {
 }
 
 var divToPElementsPattern = regexp.MustCompile("<(a|blockquote|dl|div|img|ol|p|pre|table|ul)")
-var tabsRegEx = regexp.MustCompile("\\t|^\\s+$]")
+var tabsRegEx = regexp.MustCompile(`\t|^\s+$]`)
 var removeVisibilityStyleRegEx = regexp.MustCompile("visibility:[ ]*hidden|display:[ ]*none")
 var removeNodesRegEx = regexp.MustCompile("" +
 	"[Cc]omentario|" +

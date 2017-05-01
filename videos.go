@@ -147,19 +147,12 @@ func (ve *VideoExtractor) GetVideos(doc *goquery.Document) *set.Set {
 		switch tag {
 		case "video":
 			movie = ve.getVideoTag(node)
-			break
 		case "embed":
 			movie = ve.getEmbedTag(node)
-			break
 		case "object":
 			movie = ve.getObjectTag(node)
-			break
 		case "iframe":
 			movie = ve.getIFrame(node)
-			break
-		default:
-			{
-			}
 		}
 
 		if movie.src != "" {

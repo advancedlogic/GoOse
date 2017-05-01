@@ -210,7 +210,10 @@ func (c *Crawler) fetchHTML(u string, timeout time.Duration) string {
 	} else {
 		log.Println(err.Error())
 	}
-	resp.Body.Close()
+	err = resp.Body.Close()
+	if err != nil {
+		log.Println(err.Error())
+	}
 
 	return c.RawHTML
 }

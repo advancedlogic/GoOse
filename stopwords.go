@@ -9,7 +9,7 @@ import (
 	"gopkg.in/fatih/set.v0"
 )
 
-var punctuationRegex = regexp.MustCompile("[^\\p{Ll}\\p{Lu}\\p{Lt}\\p{Lo}\\p{Nd}\\p{Pc}\\s]")
+var punctuationRegex = regexp.MustCompile(`[^\p{Ll}\p{Lu}\p{Lt}\p{Lo}\p{Nd}\p{Pc}\s]`)
 
 // StopWords implements a simple language detector
 type StopWords struct {

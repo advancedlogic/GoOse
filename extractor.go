@@ -101,7 +101,7 @@ func (extr *ContentExtractor) splitTitle(titles []string) string {
 
 // GetMetaLanguage returns the meta language set in the source, if the article has one
 func (extr *ContentExtractor) GetMetaLanguage(document *goquery.Document) string {
-	language := ""
+	var language string
 	shtml := document.Find("html")
 	attr, _ := shtml.Attr("lang")
 	if attr == "" {
@@ -109,7 +109,7 @@ func (extr *ContentExtractor) GetMetaLanguage(document *goquery.Document) string
 	}
 	if attr == "" {
 		selection := document.Find("meta").EachWithBreak(func(i int, s *goquery.Selection) bool {
-			exists := false
+			var exists bool
 			attr, exists = s.Attr("http-equiv")
 			if exists && attr == "content-language" {
 				return false
@@ -417,7 +417,7 @@ func (extr *ContentExtractor) updateNodeCount(node *goquery.Selection, addToCoun
 
 //a lot of times the first paragraph might be the caption under an image so we'll want to make sure if we're going to
 //boost a parent node that it should be connected to other paragraphs, at least for the first n paragraphs
-//so we'll want to make sure that the next sibling is a paragraph and has at least some substatial weight to it
+//so we'll want to make sure that the next sibling is a paragraph and has at least some substantial weight to it
 func (extr *ContentExtractor) isBoostable(node *goquery.Selection) bool {
 	stepsAway := 0
 	next := node.Next()
@@ -486,7 +486,7 @@ func (extr *ContentExtractor) isHighLinkDensity(node *goquery.Selection) bool {
 	score := linkDivisor * float64(nlinks)
 
 	if extr.config.debug {
-		logText := ""
+		var logText string
 		if len(node.Text()) >= 51 {
 			logText = node.Text()[0:50]
 		} else {

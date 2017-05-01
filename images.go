@@ -91,13 +91,13 @@ func score(tag *goquery.Selection) int {
 func WebPageResolver(article *Article) string {
 	doc := article.Doc
 	imgs := doc.Find("img")
-	topImage := ""
+	var topImage string
 	var candidates []candidate
 	significantSurface := 320 * 200
 	significantSurfaceCount := 0
 	src := ""
 	imgs.Each(func(i int, tag *goquery.Selection) {
-		surface := 0
+		var surface int
 		src, _ = tag.Attr("src")
 		if src == "" {
 			src, _ = tag.Attr("data-src")
@@ -240,7 +240,7 @@ type ogImage struct {
 func OpenGraphResolver(doc *goquery.Document) string {
 	meta := doc.Find("meta")
 	links := doc.Find("link")
-	topImage := ""
+	var topImage string
 	meta = meta.Union(links)
 	var ogImages []ogImage
 	meta.Each(func(i int, tag *goquery.Selection) {
@@ -285,8 +285,7 @@ IMAGE_FINALIZE:
 // assume that len(ogImages)>=2
 func findBestImageFromScore(ogImages []ogImage) ogImage {
 	max := 0
-	var bestOGImage ogImage
-	bestOGImage = ogImages[0]
+	bestOGImage := ogImages[0]
 	for _, ogImage := range ogImages[1:] {
 		score := ogImage.score
 		if score > max {

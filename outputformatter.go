@@ -142,7 +142,7 @@ func (formatter *outputFormatter) getOutputText() string {
 func (formatter *outputFormatter) removeNegativescoresNodes() {
 	gravityItems := formatter.topNode.Find("*[gravityScore]")
 	gravityItems.Each(func(i int, s *goquery.Selection) {
-		score := 0
+		var score int
 		sscore, exists := s.Attr("gravityScore")
 		if exists {
 			score, _ = strconv.Atoi(sscore)
