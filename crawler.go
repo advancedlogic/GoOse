@@ -2,7 +2,6 @@ package goose
 
 import (
 	"io/ioutil"
-	"log"
 	"net/http"
 	"net/http/cookiejar"
 	"strings"
@@ -30,21 +29,24 @@ func NewCrawler(config Configuration, url string, RawHTML string) Crawler {
 }
 
 // Crawl fetches the HTML body and returns an Article
-func (c Crawler) Crawl() *Article {
+func (c Crawler) Crawl() (*Article, error) {
 
 	article := new(Article)
 	c.assignParseCandidate()
-	c.assignHTML()
+	err := c.assignHTML()
+	if err != nil {
+		return nil, err
+	}
 
+	// This was supposed to have been set by assignHTML, so something went wrong
 	if c.RawHTML == "" {
-		return article
+		return article, nil
 	}
 
 	reader := strings.NewReader(c.RawHTML)
 	document, err := goquery.NewDocumentFromReader(reader)
-
 	if err != nil {
-		panic(err.Error())
+		return nil, err
 	}
 
 	selection := document.Find("meta").EachWithBreak(func(i int, s *goquery.Selection) bool {
@@ -78,48 +80,52 @@ func (c Crawler) Crawl() *Article {
 		}
 	}
 
-	if err == nil {
-		extractor := NewExtractor(c.config)
-		html, _ := document.Html()
-		startTime := time.Now().UnixNano()
-		article.RawHTML = html
-		article.FinalURL = c.helper.url
-		article.LinkHash = c.helper.linkHash
-		article.Doc = document
-		article.Title = extractor.getTitle(article)
-		article.MetaLang = extractor.getMetaLanguage(article)
-		article.MetaFavicon = extractor.getFavicon(article)
-
-		article.MetaDescription = extractor.getMetaContentWithSelector(article, "meta[name#=(?i)^description$]")
-		article.MetaKeywords = extractor.getMetaContentWithSelector(article, "meta[name#=(?i)^keywords$]")
-		article.CanonicalLink = extractor.getCanonicalLink(article)
-		article.Domain = extractor.getDomain(article)
-		article.Tags = extractor.getTags(article)
-
-		cleaner := NewCleaner(c.config)
-		article.Doc = cleaner.clean(article)
-
-		article.TopImage = OpenGraphResolver(article)
-		if article.TopImage == "" {
-			article.TopImage = WebPageResolver(article)
-		}
-		article.TopNode = extractor.calculateBestNode(article)
-		if article.TopNode != nil {
-			article.TopNode = extractor.postCleanup(article.TopNode)
-
-			outputFormatter := new(outputFormatter)
-			article.CleanedText, article.Links = outputFormatter.getFormattedText(article)
-
-			videoExtractor := NewVideoExtractor()
-			article.Movies = videoExtractor.GetVideos(article)
-		}
-
-		article.Delta = time.Now().UnixNano() - startTime
-
-	} else {
-		panic(err.Error())
+	if err != nil {
+		return nil, err
 	}
-	return article
+
+	extractor := NewExtractor(c.config)
+	html, err := document.Html()
+	if err != nil {
+		return nil, err
+	}
+
+	startTime := time.Now().UnixNano()
+	article.RawHTML = html
+	article.FinalURL = c.helper.url
+	article.LinkHash = c.helper.linkHash
+	article.Doc = document
+	article.Title = extractor.getTitle(article)
+	article.MetaLang = extractor.getMetaLanguage(article)
+	article.MetaFavicon = extractor.getFavicon(article)
+
+	article.MetaDescription = extractor.getMetaContentWithSelector(article, "meta[name#=(?i)^description$]")
+	article.MetaKeywords = extractor.getMetaContentWithSelector(article, "meta[name#=(?i)^keywords$]")
+	article.CanonicalLink = extractor.getCanonicalLink(article)
+	article.Domain = extractor.getDomain(article)
+	article.Tags = extractor.getTags(article)
+
+	cleaner := NewCleaner(c.config)
+	article.Doc = cleaner.clean(article)
+
+	article.TopImage = OpenGraphResolver(article)
+	if article.TopImage == "" {
+		article.TopImage = WebPageResolver(article)
+	}
+	article.TopNode = extractor.calculateBestNode(article)
+	if article.TopNode != nil {
+		article.TopNode = extractor.postCleanup(article.TopNode)
+
+		outputFormatter := new(outputFormatter)
+		article.CleanedText, article.Links = outputFormatter.getFormattedText(article)
+
+		videoExtractor := NewVideoExtractor()
+		article.Movies = videoExtractor.GetVideos(article)
+	}
+
+	article.Delta = time.Now().UnixNano() - startTime
+
+	return article, nil
 }
 
 func (c *Crawler) assignParseCandidate() {
@@ -130,7 +136,7 @@ func (c *Crawler) assignParseCandidate() {
 	}
 }
 
-func (c *Crawler) assignHTML() {
+func (c *Crawler) assignHTML() error {
 	if c.RawHTML == "" {
 		cookieJar, _ := cookiejar.New(nil)
 		client := &http.Client{
@@ -139,21 +145,19 @@ func (c *Crawler) assignHTML() {
 		}
 		req, err := http.NewRequest("GET", c.url, nil)
 		if err != nil {
-			log.Println(err.Error())
-			return
+			return err
 		}
 		req.Header.Set("User-Agent", "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_6_7) AppleWebKit/534.30 (KHTML, like Gecko) Chrome/12.0.742.91 Safari/534.30")
 		resp, err := client.Do(req)
 		if err != nil {
-			log.Println(err.Error())
-			return
+			return err
 		}
 		defer resp.Body.Close()
 		contents, err := ioutil.ReadAll(resp.Body)
-		if err == nil {
-			c.RawHTML = string(contents)
-		} else {
-			log.Println(err.Error())
+		if err != nil {
+			return err
 		}
+		c.RawHTML = string(contents)
 	}
+	return nil
 }
