@@ -140,6 +140,7 @@ func (c Crawler) Crawl() (*Article, error) {
 	}
 	article.FinalURL = c.url
 	article.Doc = document
+
 	article.Title = extractor.GetTitle(document)
 	article.MetaLang = extractor.GetMetaLanguage(document)
 	article.MetaFavicon = extractor.GetFavicon(document)
@@ -156,10 +157,13 @@ func (c Crawler) Crawl() (*Article, error) {
 	cleaner := NewCleaner(c.config)
 	article.Doc = cleaner.Clean(article.Doc)
 
-	article.TopImage = OpenGraphResolver(document)
 	if article.TopImage == "" {
-		article.TopImage = WebPageResolver(article)
+		article.TopImage = OpenGraphResolver(document)
+		if article.TopImage == "" {
+			article.TopImage = WebPageResolver(article)
+		}
 	}
+
 	article.TopNode = extractor.CalculateBestNode(document)
 	if article.TopNode != nil {
 		article.TopNode = extractor.PostCleanup(article.TopNode)
