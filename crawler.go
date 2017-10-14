@@ -31,12 +31,9 @@ func NewCrawler(config Configuration, url string, RawHTML string) Crawler {
 
 func getCharsetFromContentType(cs string) string {
 	cs = strings.ToLower(strings.Replace(cs, " ", "", -1))
-	if strings.HasPrefix(cs, "text/html;charset=") {
-		cs = strings.TrimPrefix(cs, "text/html;charset=")
-	}
-	if strings.HasPrefix(cs, "application/xhtml+xml;charset=") {
-		cs = strings.TrimPrefix(cs, "application/xhtml+xml;charset=")
-	}
+	cs = strings.TrimPrefix(cs, "text/html;charset=")
+	cs = strings.TrimPrefix(cs, "text/xhtml;charset=")
+	cs = strings.TrimPrefix(cs, "application/xhtml+xml;charset=")
 	return NormaliseCharset(cs)
 }
 
