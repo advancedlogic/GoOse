@@ -1,7 +1,7 @@
 package goose
 
 import (
-	"fmt"
+	"log"
 	"strings"
 	"unicode/utf8"
 
@@ -56,7 +56,7 @@ func NormaliseCharset(characterSet string) string {
 func UTF8encode(raw string, sourceCharset string) string {
 	enc, name := charset.Lookup(sourceCharset)
 	if nil == enc {
-		fmt.Println("Cannot convert from", sourceCharset, ":", name)
+		log.Println("Cannot convert from", sourceCharset, ":", name)
 		return raw
 	}
 
