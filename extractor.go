@@ -5,10 +5,15 @@ import (
 	"log"
 	"math"
 	"net/url"
+	"regexp"
 	"strconv"
 	"strings"
+	"time"
 
 	"github.com/PuerkitoBio/goquery"
+	"github.com/araddon/dateparse"
+	"github.com/gigawattio/window"
+	"github.com/jaytaylor/html2text"
 	"golang.org/x/net/html"
 	"golang.org/x/net/html/atom"
 	"gopkg.in/fatih/set.v0"
@@ -263,6 +268,84 @@ func (extr *ContentExtractor) GetTags(document *goquery.Document) *set.Set {
 	})
 
 	return tags
+}
+
+// GetPublishDate returns the publication date, if one can be located.
+func (extr *ContentExtractor) GetPublishDate(document *goquery.Document) *time.Time {
+	raw, err := document.Html()
+	if err != nil {
+		log.Printf("Error converting document HTML nodes to raw HTML: %s (publish date detection aborted)\n", err)
+		return nil
+	}
+
+	text, err := html2text.FromString(raw)
+	if err != nil {
+		log.Printf("Error converting document HTML to plaintext: %s (publish date detection aborted)\n", err)
+		return nil
+	}
+
+	text = strings.ToLower(text)
+
+	// Simplify months because the dateparse pkg only handles abbreviated.
+	for k, v := range map[string]string{
+		"january":  "jan",
+		"march":    "mar",
+		"february": "feb",
+		"april":    "apr",
+		// "may":       "may", // Pointless.
+		"june":      "jun",
+		"august":    "aug",
+		"september": "sep",
+		"sept":      "sep",
+		"october":   "oct",
+		"november":  "nov",
+		"december":  "dec",
+		"th,":       ",", // Strip day number suffixes.
+		"rd,":       ",",
+	} {
+		text = strings.Replace(text, k, v, -1)
+	}
+	text = strings.Replace(text, "\n", " ", -1)
+	text = regexp.MustCompile(" +").ReplaceAllString(text, " ")
+
+	tuple1 := strings.Split(text, " ")
+
+	var (
+		expr  = regexp.MustCompile("[0-9]")
+		ts    time.Time
+		found bool
+	)
+	for _, n := range []int{3, 4, 5, 2, 6} {
+		for _, win := range window.Rolling(tuple1, n) {
+			if !expr.MatchString(strings.Join(win, " ")) {
+				continue
+			}
+
+			input := strings.Join(win, " ")
+			ts, err = dateparse.ParseAny(input)
+			if err == nil && ts.Year() > 0 && ts.Month() > 0 && ts.Day() > 0 {
+				found = true
+				break
+			}
+
+			// Try injecting a comma for dateparse.
+			win[1] = win[1] + ","
+			input = strings.Join(win, " ")
+			ts, err = dateparse.ParseAny(input)
+			if err == nil && ts.Year() > 0 && ts.Month() > 0 && ts.Day() > 0 {
+				found = true
+				break
+			}
+		}
+		if found {
+			break
+		}
+	}
+
+	if found {
+		return &ts
+	}
+	return nil
 }
 
 // GetCleanTextAndLinks parses the main HTML node for text and links
