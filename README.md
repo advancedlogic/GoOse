@@ -47,7 +47,7 @@ import (
 
 func main() {
 	g := goose.New()
-	article := g.ExtractFromURL("http://edition.cnn.com/2012/07/08/opinion/banzi-ted-open-source/index.html")
+	article, _ := g.ExtractFromURL("http://edition.cnn.com/2012/07/08/opinion/banzi-ted-open-source/index.html")
 	println("title", article.Title)
 	println("description", article.MetaDescription)
 	println("keywords", article.MetaKeywords)
