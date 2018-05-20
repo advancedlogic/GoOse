@@ -18,10 +18,13 @@ func (c *candidate) GetUrl() string {
 	return c.url
 }
 
-var largebig = regexp.MustCompile("(large|big)")
+var largebig = regexp.MustCompile("(large|big|full)")
+
+var classRules = map[*regexp.Regexp]int{
+	regexp.MustCompile("(promo|ads|banner)"): -1}
 
 var rules = map[*regexp.Regexp]int{
-	regexp.MustCompile("(large|big)"):          1,
+	largebig:                                   1,
 	regexp.MustCompile("upload"):               1,
 	regexp.MustCompile("media"):                1,
 	regexp.MustCompile("gravatar.com"):         -1,
@@ -51,7 +54,7 @@ var rules = map[*regexp.Regexp]int{
 		"diggthis|" +
 		"diggThis|" +
 		"adserver|" +
-		"/ads/|" +
+		"/(ads|promos|banners)/|" +
 		"ec.atdmt.com|" +
 		"mediaplex.com|" +
 		"adsatt|" +
@@ -97,6 +100,16 @@ func score(tag *goquery.Selection) int {
 			tagScore++
 		}
 	}
+
+	class, exists := tag.Attr("class")
+	if exists {
+		for rule, score := range classRules {
+			if rule.MatchString(class) {
+				tagScore += score
+			}
+		}
+	}
+
 	return tagScore
 }
 
