@@ -57,14 +57,23 @@ var rules = map[*regexp.Regexp]int{
 		"adsatt|" +
 		"view.atdmt"): -1}
 
-func score(tag *goquery.Selection) int {
+func getImageSrc(tag *goquery.Selection) string {
 	src, _ := tag.Attr("src")
+	// skip inline images
+	if strings.Contains(src, "data:image/") {
+		src = ""
+	}
 	if src == "" {
 		src, _ = tag.Attr("data-src")
 	}
 	if src == "" {
 		src, _ = tag.Attr("data-lazy-src")
 	}
+	return src
+}
+
+func score(tag *goquery.Selection) int {
+	src := getImageSrc(tag)
 	if src == "" {
 		return -1
 	}
@@ -101,13 +110,7 @@ func WebPageImageResolver(doc *goquery.Document) ([]candidate, int) {
 	src := ""
 	imgs.Each(func(i int, tag *goquery.Selection) {
 		var surface int
-		src, _ = tag.Attr("src")
-		if src == "" {
-			src, _ = tag.Attr("data-src")
-		}
-		if src == "" {
-			src, _ = tag.Attr("data-lazy-src")
-		}
+		src = getImageSrc(tag)
 		if src == "" {
 			return
 		}
