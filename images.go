@@ -14,6 +14,10 @@ type candidate struct {
 	score   int
 }
 
+func (c *candidate) GetUrl() string {
+	return c.url
+}
+
 var largebig = regexp.MustCompile("(large|big)")
 
 var rules = map[*regexp.Regexp]int{
@@ -87,11 +91,10 @@ func score(tag *goquery.Selection) int {
 	return tagScore
 }
 
-// WebPageResolver fetches the main image from the HTML page
-func WebPageResolver(article *Article) string {
-	doc := article.Doc
+// WebPageResolver fetches all candidate images from the HTML page
+func WebPageImageResolver(doc *goquery.Document) ([]candidate, int) {
 	imgs := doc.Find("img")
-	var topImage string
+
 	var candidates []candidate
 	significantSurface := 320 * 200
 	significantSurfaceCount := 0
@@ -143,17 +146,28 @@ func WebPageResolver(article *Article) string {
 	})
 
 	if len(candidates) == 0 {
+		return nil, 0
+	}
+
+	return candidates, significantSurfaceCount
+
+}
+
+// WebPageResolver fetches the main image from the HTML page
+func WebPageResolver(article *Article) string {
+	candidates, significantSurfaceCount := WebPageImageResolver(article.Doc)
+	if candidates == nil {
 		return ""
 	}
-
+	var bestCandidate candidate
+	var topImage string
 	if significantSurfaceCount > 0 {
-		bestCandidate := findBestCandidateFromSurface(candidates)
-		topImage = bestCandidate.url
+		bestCandidate = findBestCandidateFromSurface(candidates)
 	} else {
-		bestCandidate := findBestCandidateFromScore(candidates)
-		topImage = bestCandidate.url
+		bestCandidate = findBestCandidateFromScore(candidates)
 	}
 
+	topImage = bestCandidate.url
 	a, err := url.Parse(topImage)
 	if err != nil {
 		return topImage
