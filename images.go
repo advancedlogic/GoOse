@@ -14,10 +14,17 @@ type candidate struct {
 	score   int
 }
 
-var largebig = regexp.MustCompile("(large|big)")
+func (c *candidate) GetUrl() string {
+	return c.url
+}
+
+var largebig = regexp.MustCompile("(large|big|full)")
+
+var classRules = map[*regexp.Regexp]int{
+	regexp.MustCompile("(promo|ads|banner)"): -1}
 
 var rules = map[*regexp.Regexp]int{
-	regexp.MustCompile("(large|big)"):          1,
+	largebig:                                   1,
 	regexp.MustCompile("upload"):               1,
 	regexp.MustCompile("media"):                1,
 	regexp.MustCompile("gravatar.com"):         -1,
@@ -47,20 +54,29 @@ var rules = map[*regexp.Regexp]int{
 		"diggthis|" +
 		"diggThis|" +
 		"adserver|" +
-		"/ads/|" +
+		"/(ads|promos|banners)/|" +
 		"ec.atdmt.com|" +
 		"mediaplex.com|" +
 		"adsatt|" +
 		"view.atdmt"): -1}
 
-func score(tag *goquery.Selection) int {
+func getImageSrc(tag *goquery.Selection) string {
 	src, _ := tag.Attr("src")
+	// skip inline images
+	if strings.Contains(src, "data:image/") {
+		src = ""
+	}
 	if src == "" {
 		src, _ = tag.Attr("data-src")
 	}
 	if src == "" {
 		src, _ = tag.Attr("data-lazy-src")
 	}
+	return src
+}
+
+func score(tag *goquery.Selection) int {
+	src := getImageSrc(tag)
 	if src == "" {
 		return -1
 	}
@@ -84,27 +100,30 @@ func score(tag *goquery.Selection) int {
 			tagScore++
 		}
 	}
+
+	class, exists := tag.Attr("class")
+	if exists {
+		for rule, score := range classRules {
+			if rule.MatchString(class) {
+				tagScore += score
+			}
+		}
+	}
+
 	return tagScore
 }
 
-// WebPageResolver fetches the main image from the HTML page
-func WebPageResolver(article *Article) string {
-	doc := article.Doc
+// WebPageResolver fetches all candidate images from the HTML page
+func WebPageImageResolver(doc *goquery.Document) ([]candidate, int) {
 	imgs := doc.Find("img")
-	var topImage string
+
 	var candidates []candidate
 	significantSurface := 320 * 200
 	significantSurfaceCount := 0
 	src := ""
 	imgs.Each(func(i int, tag *goquery.Selection) {
 		var surface int
-		src, _ = tag.Attr("src")
-		if src == "" {
-			src, _ = tag.Attr("data-src")
-		}
-		if src == "" {
-			src, _ = tag.Attr("data-lazy-src")
-		}
+		src = getImageSrc(tag)
 		if src == "" {
 			return
 		}
@@ -143,17 +162,28 @@ func WebPageResolver(article *Article) string {
 	})
 
 	if len(candidates) == 0 {
+		return nil, 0
+	}
+
+	return candidates, significantSurfaceCount
+
+}
+
+// WebPageResolver fetches the main image from the HTML page
+func WebPageResolver(article *Article) string {
+	candidates, significantSurfaceCount := WebPageImageResolver(article.Doc)
+	if candidates == nil {
 		return ""
 	}
-
+	var bestCandidate candidate
+	var topImage string
 	if significantSurfaceCount > 0 {
-		bestCandidate := findBestCandidateFromSurface(candidates)
-		topImage = bestCandidate.url
+		bestCandidate = findBestCandidateFromSurface(candidates)
 	} else {
-		bestCandidate := findBestCandidateFromScore(candidates)
-		topImage = bestCandidate.url
+		bestCandidate = findBestCandidateFromScore(candidates)
 	}
 
+	topImage = bestCandidate.url
 	a, err := url.Parse(topImage)
 	if err != nil {
 		return topImage
