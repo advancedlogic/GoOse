@@ -250,7 +250,7 @@ func (extr *ContentExtractor) GetDomain(canonicalLink string) string {
 
 // GetTags returns the tags set in the source, if the article has them
 func (extr *ContentExtractor) GetTags(document *goquery.Document) *set.Set {
-	tags := set.New()
+	tags := set.New(set.ThreadSafe).(*set.Set)
 	selections := document.Find(aRelTagSelector)
 	selections.Each(func(i int, s *goquery.Selection) {
 		tags.Add(s.Text())
@@ -368,7 +368,7 @@ func (extr *ContentExtractor) CalculateBestNode(document *goquery.Document) *goq
 	startingBoost := 1.0
 	cnt := 0
 	i := 0
-	parentNodes := set.New()
+	parentNodes := set.New(set.ThreadSafe).(*set.Set)
 	nodesWithText := list.New()
 	for _, node := range nodesToCheck {
 		textNode := node.Text()

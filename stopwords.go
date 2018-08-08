@@ -21,7 +21,7 @@ func NewStopwords() StopWords {
 	cachedStopWords := make(map[string]*set.Set)
 	for lang, stopwords := range sw {
 		lines := strings.Split(stopwords, "\n")
-		cachedStopWords[lang] = set.New()
+		cachedStopWords[lang] = set.New(set.ThreadSafe).(*set.Set)
 		for _, line := range lines {
 			if strings.HasPrefix(line, "#") {
 				continue
@@ -71,7 +71,7 @@ func (stop *StopWords) stopWordsCount(lang string, text string) wordStats {
 		return wordStats{}
 	}
 	ws := wordStats{}
-	stopWords := set.New()
+	stopWords := set.New(set.ThreadSafe).(*set.Set)
 	text = strings.ToLower(text)
 	items := strings.Split(text, " ")
 	stops := stop.cachedStopWords[lang]
