@@ -12,11 +12,11 @@ import (
 
 	"github.com/PuerkitoBio/goquery"
 	"github.com/araddon/dateparse"
+	"github.com/fatih/set"
 	"github.com/gigawattio/window"
 	"github.com/jaytaylor/html2text"
 	"golang.org/x/net/html"
 	"golang.org/x/net/html/atom"
-	"gopkg.in/fatih/set.v0"
 )
 
 const defaultLanguage = "en"

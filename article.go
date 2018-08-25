@@ -4,7 +4,7 @@ import (
 	"time"
 
 	"github.com/PuerkitoBio/goquery"
-	"gopkg.in/fatih/set.v0"
+	"github.com/fatih/set"
 )
 
 // Article is a collection of properties extracted from the HTML body

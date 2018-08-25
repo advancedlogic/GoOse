@@ -5,7 +5,7 @@ import (
 	"strings"
 
 	"github.com/PuerkitoBio/goquery"
-	"gopkg.in/fatih/set.v0"
+	"github.com/fatih/set"
 )
 
 // VideoExtractor can extract the main video from an HTML page
