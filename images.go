@@ -113,7 +113,7 @@ func score(tag *goquery.Selection) int {
 	return tagScore
 }
 
-// WebPageResolver fetches all candidate images from the HTML page
+// WebPageImageResolver fetches all candidate images from the HTML page
 func WebPageImageResolver(doc *goquery.Document) ([]candidate, int) {
 	imgs := doc.Find("img")
 
