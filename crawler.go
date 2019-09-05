@@ -6,9 +6,11 @@ import (
 	"net/http"
 	"net/http/cookiejar"
 	"strings"
+	"sync"
 	"time"
 
 	"github.com/PuerkitoBio/goquery"
+	"github.com/fatih/set"
 )
 
 // Crawler can fetch the target HTML page
@@ -121,10 +123,10 @@ func (c Crawler) Crawl() (*Article, error) {
 	article := new(Article)
 
 	document, err := c.Preprocess()
-	if nil != err {
+	if err != nil {
 		return nil, err
 	}
-	if nil == document {
+	if document == nil {
 		return article, nil
 	}
 
@@ -133,24 +135,73 @@ func (c Crawler) Crawl() (*Article, error) {
 	startTime := time.Now().UnixNano()
 
 	article.RawHTML, err = document.Html()
-	if nil != err {
+	if err != nil {
 		return nil, err
 	}
 	article.FinalURL = c.url
 	article.Doc = document
 
-	article.Title = extractor.GetTitle(document)
-	article.MetaLang = extractor.GetMetaLanguage(document)
-	article.MetaFavicon = extractor.GetFavicon(document)
+	var wg sync.WaitGroup
+	
+	TitleChannel := make(chan (*string), 1)
+	wg.Add(1)
+	go extractor.GetTitle(document, &wg, TitleChannel)
 
-	article.MetaDescription = extractor.GetMetaContentWithSelector(document, "meta[name#=(?i)^description$]")
-	article.MetaKeywords = extractor.GetMetaContentWithSelector(document, "meta[name#=(?i)^keywords$]")
-	article.CanonicalLink = extractor.GetCanonicalLink(document)
+	MetaLangChannel := make(chan (*string), 1)
+	wg.Add(1)
+	go extractor.GetMetaLanguage(document, &wg, MetaLangChannel)
+
+	MetaFaviconChannel := make(chan (*string), 1)
+	wg.Add(1)
+	go extractor.GetFavicon(document, &wg, MetaFaviconChannel)
+
+	MetaDescriptionChannel := make(chan (*string), 1)
+	wg.Add(1)
+	go extractor.GetMetaContentWithSelector(document, "meta[name#=(?i)^description$]", &wg, MetaDescriptionChannel)
+
+	MetaKeywordsChannel := make(chan (*string), 1)
+	wg.Add(1)
+	go extractor.GetMetaContentWithSelector(document, "meta[name#=(?i)^keywords$]", &wg, MetaKeywordsChannel)
+
+	CanonicalLinkChannel := make(chan (*string), 1)
+	wg.Add(1)
+	go extractor.GetCanonicalLink(document, &wg, CanonicalLinkChannel)
+
+	DomainChannel := make(chan (*string), 1)
+	wg.Add(1)
+	go extractor.GetDomain(article.CanonicalLink, &wg, DomainChannel)
+
+	TagsChannel := make(chan (*set.Set), 1)
+	wg.Add(1)
+	go extractor.GetTags(document, &wg, TagsChannel)
+
+	TopNodeChannel := make(chan (*goquery.Selection), 1)
+	wg.Add(1)
+	go extractor.CalculateBestNode(document, &wg, TopNodeChannel)
+
+	wg.Wait()
+	article.Title = *<-TitleChannel
+	close(TitleChannel)
+	article.MetaLang = *<-MetaLangChannel
+	close(MetaLangChannel)
+	article.MetaFavicon = *<-MetaFaviconChannel
+	close(MetaFaviconChannel)
+	article.MetaDescription = *<-MetaDescriptionChannel
+	close(MetaDescriptionChannel)
+	article.MetaKeywords = *<-MetaKeywordsChannel
+	close(MetaKeywordsChannel)
+	article.CanonicalLink = *<-CanonicalLinkChannel
+	close(CanonicalLinkChannel)
+	article.Domain = *<-DomainChannel
+	close(DomainChannel)
+	article.Tags = <-TagsChannel
+	close(TagsChannel)
+	article.TopNode = <-TopNodeChannel
+	close(TopNodeChannel)
+
 	if "" == article.CanonicalLink {
 		article.CanonicalLink = article.FinalURL
 	}
-	article.Domain = extractor.GetDomain(article.CanonicalLink)
-	article.Tags = extractor.GetTags(document)
 
 	if c.config.extractPublishDate {
 		if timestamp := extractor.GetPublishDate(document); timestamp != nil {
@@ -166,7 +217,6 @@ func (c Crawler) Crawl() (*Article, error) {
 		article.TopImage = WebPageResolver(article)
 	}
 
-	article.TopNode = extractor.CalculateBestNode(document)
 	if article.TopNode != nil {
 		article.TopNode = extractor.PostCleanup(article.TopNode)
 
