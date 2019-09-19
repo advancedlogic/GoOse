@@ -144,60 +144,60 @@ func (c Crawler) Crawl() (*Article, error) {
 	var wg sync.WaitGroup
 	
 	TitleChannel := make(chan (*string), 1)
+	defer close(TitleChannel)
 	wg.Add(1)
 	go extractor.GetTitle(document, &wg, TitleChannel)
 
 	MetaLangChannel := make(chan (*string), 1)
+	defer close(MetaLangChannel)
 	wg.Add(1)
 	go extractor.GetMetaLanguage(document, &wg, MetaLangChannel)
 
 	MetaFaviconChannel := make(chan (*string), 1)
+	defer close(MetaFaviconChannel)
 	wg.Add(1)
 	go extractor.GetFavicon(document, &wg, MetaFaviconChannel)
 
 	MetaDescriptionChannel := make(chan (*string), 1)
+	defer close(MetaDescriptionChannel)
 	wg.Add(1)
 	go extractor.GetMetaContentWithSelector(document, "meta[name#=(?i)^description$]", &wg, MetaDescriptionChannel)
 
 	MetaKeywordsChannel := make(chan (*string), 1)
+	defer close(MetaKeywordsChannel)
 	wg.Add(1)
 	go extractor.GetMetaContentWithSelector(document, "meta[name#=(?i)^keywords$]", &wg, MetaKeywordsChannel)
 
 	CanonicalLinkChannel := make(chan (*string), 1)
+	defer close(CanonicalLinkChannel)
 	wg.Add(1)
 	go extractor.GetCanonicalLink(document, &wg, CanonicalLinkChannel)
 
 	DomainChannel := make(chan (*string), 1)
+	defer close(DomainChannel)
 	wg.Add(1)
 	go extractor.GetDomain(article.CanonicalLink, &wg, DomainChannel)
 
 	TagsChannel := make(chan (*set.Set), 1)
+	defer close(TagsChannel)
 	wg.Add(1)
 	go extractor.GetTags(document, &wg, TagsChannel)
 
 	TopNodeChannel := make(chan (*goquery.Selection), 1)
+	defer close(TopNodeChannel)
 	wg.Add(1)
 	go extractor.CalculateBestNode(document, &wg, TopNodeChannel)
 
 	wg.Wait()
 	article.Title = *<-TitleChannel
-	close(TitleChannel)
 	article.MetaLang = *<-MetaLangChannel
-	close(MetaLangChannel)
 	article.MetaFavicon = *<-MetaFaviconChannel
-	close(MetaFaviconChannel)
 	article.MetaDescription = *<-MetaDescriptionChannel
-	close(MetaDescriptionChannel)
 	article.MetaKeywords = *<-MetaKeywordsChannel
-	close(MetaKeywordsChannel)
 	article.CanonicalLink = *<-CanonicalLinkChannel
-	close(CanonicalLinkChannel)
 	article.Domain = *<-DomainChannel
-	close(DomainChannel)
 	article.Tags = <-TagsChannel
-	close(TagsChannel)
 	article.TopNode = <-TopNodeChannel
-	close(TopNodeChannel)
 
 	if "" == article.CanonicalLink {
 		article.CanonicalLink = article.FinalURL

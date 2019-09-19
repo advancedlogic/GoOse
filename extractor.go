@@ -53,6 +53,7 @@ func NewExtractor(config Configuration) ContentExtractor {
 
 // GetTitle returns the title set in the source, if the article has one
 func (extr *ContentExtractor) GetTitle(document *goquery.Document, wg *sync.WaitGroup, channel chan (*string)) {
+	defer wg.Done()
 	title := ""
 
 	titleElement := document.Find("title")
@@ -71,7 +72,6 @@ func (extr *ContentExtractor) GetTitle(document *goquery.Document, wg *sync.Wait
 		titleElement = document.Find("post-title,headline")
 		if titleElement == nil || titleElement.Size() == 0 {
 			channel <- &title
-			wg.Done()
 			return
 		}
 		title = titleElement.Text()
@@ -91,7 +91,6 @@ func (extr *ContentExtractor) GetTitle(document *goquery.Document, wg *sync.Wait
 	}
 	title = strings.TrimSpace(title)
 	channel <- &title
-	wg.Done()
 
 }
 
@@ -111,6 +110,7 @@ func (extr *ContentExtractor) splitTitle(titles []string) string {
 
 // GetMetaLanguage returns the meta language set in the source, if the article has one
 func (extr *ContentExtractor) GetMetaLanguage(document *goquery.Document, wg *sync.WaitGroup, channel chan (*string)) {
+	defer wg.Done()
 	var language string
 	shtml := document.Find("html")
 	attr, _ := shtml.Attr("lang")
@@ -141,7 +141,6 @@ func (extr *ContentExtractor) GetMetaLanguage(document *goquery.Document, wg *sy
 
 	extr.config.targetLanguage = language
 	channel <- &language
-	wg.Done()
 	return
 }
 
@@ -156,6 +155,7 @@ func equivExists(i int, s *goquery.Selection) bool {
 
 // GetFavicon returns the favicon set in the source, if the article has one
 func (extr *ContentExtractor) GetFavicon(document *goquery.Document, wg *sync.WaitGroup, channel chan (*string)) {
+	defer wg.Done()
 	favicon := ""
 	document.Find("link").EachWithBreak(func(i int, s *goquery.Selection) bool {
 		attr, exists := s.Attr("rel")
@@ -166,18 +166,15 @@ func (extr *ContentExtractor) GetFavicon(document *goquery.Document, wg *sync.Wa
 		return true
 	})
 	channel <- &favicon
-	wg.Done()
-	return
 }
 
 // GetMetaContentWithSelector returns the content attribute of meta tag matching the selector
 func (extr *ContentExtractor) GetMetaContentWithSelector(document *goquery.Document, selector string, wg *sync.WaitGroup, channel chan (*string)) {
+	defer wg.Done()
 	selection := document.Find(selector)
 	content, _ := selection.Attr("content")
 	content = strings.TrimSpace(content)
 	channel <- &content
-	wg.Done()
-	return
 }
 
 // GetMetaContent returns the content attribute of meta tag with the given property name
@@ -240,6 +237,7 @@ func (extr *ContentExtractor) GetMetaContentLocation(document *goquery.Document)
 
 // GetCanonicalLink returns the meta canonical link set in the source
 func (extr *ContentExtractor) GetCanonicalLink(document *goquery.Document, wg *sync.WaitGroup, channel chan (*string)) {
+	defer wg.Done()
 	metas := document.Find("link[rel=canonical]")
 	href := ""
 	if metas.Length() > 0 {
@@ -249,25 +247,22 @@ func (extr *ContentExtractor) GetCanonicalLink(document *goquery.Document, wg *s
 		href = strings.Trim(href, " ")
 	}
 	channel <- &href
-	wg.Done()
-	return
-
 }
 
 // GetDomain extracts the domain from a link
 func (extr *ContentExtractor) GetDomain(canonicalLink string, wg *sync.WaitGroup, channel chan (*string)) {
+	defer wg.Done()
 	u, err := url.Parse(canonicalLink)
 	var domain string
 	if err == nil {
 		domain = u.Host
 	}
 	channel <- &domain
-	wg.Done()
-	return
 }
 
 // GetTags returns the tags set in the source, if the article has them
 func (extr *ContentExtractor) GetTags(document *goquery.Document, wg *sync.WaitGroup, channel chan (*set.Set)) {
+	defer wg.Done()
 	tags := set.New(set.ThreadSafe).(*set.Set)
 	selections := document.Find(aRelTagSelector)
 	selections.Each(func(i int, s *goquery.Selection) {
@@ -285,8 +280,6 @@ func (extr *ContentExtractor) GetTags(document *goquery.Document, wg *sync.WaitG
 		}
 	})
 	channel <- tags
-	wg.Done()
-	return
 }
 
 // GetPublishDate returns the publication date, if one can be located.
@@ -378,7 +371,8 @@ func (extr *ContentExtractor) GetCleanTextAndLinks(topNode *goquery.Selection, l
 //we're going to start looking for where the clusters of paragraphs are. We'll score a cluster based on the number of stopwords
 //and the number of consecutive paragraphs together, which should form the cluster of text that this node is around
 //also store on how high up the paragraphs are, comments are usually at the bottom and should get a lower score
-func (extr *ContentExtractor) CalculateBestNode(document *goquery.Document, wg *sync.WaitGroup, channel chan (*goquery.Selection))  {
+func (extr *ContentExtractor) CalculateBestNode(document *goquery.Document, wg *sync.WaitGroup, channel chan (*goquery.Selection)) {
+	defer wg.Done()
 	var topNode *goquery.Selection
 	nodesToCheck := extr.nodesToCheck(document)
 	if extr.config.debug {
@@ -467,8 +461,6 @@ func (extr *ContentExtractor) CalculateBestNode(document *goquery.Document, wg *
 		}
 	}
 	channel <- topNode
-	wg.Done()
-	return 
 }
 
 //returns the gravityScore as an integer from this node
