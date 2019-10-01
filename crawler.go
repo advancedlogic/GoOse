@@ -134,6 +134,7 @@ func (c Crawler) Crawl() (*Article, error) {
 
 	startTime := time.Now().UnixNano()
 
+	// TODO: Check on heckersday something is wrong here
 	article.RawHTML, err = document.Html()
 	if err != nil {
 		return nil, err
