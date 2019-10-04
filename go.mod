@@ -1,4 +1,4 @@
-module goose
+module github.com/fino-digital/GoOse
 
 go 1.13
 
@@ -8,7 +8,6 @@ require (
 	github.com/andybalholm/cascadia v1.0.0 // indirect
 	github.com/araddon/dateparse v0.0.0-20180729174819-cfd92a431d0e
 	github.com/fatih/set v0.2.1
-	github.com/fino-digital/GoOse v0.0.0-20191002132243-e8e8ea7033f3 // indirect
 	github.com/gigawattio/window v0.0.0-20180317192513-0f5467e35573
 	github.com/go-resty/resty/v2 v2.0.0
 	github.com/jaytaylor/html2text v0.0.0-20180606194806-57d518f124b0
