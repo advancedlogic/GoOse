@@ -4,7 +4,6 @@ go 1.13
 
 require (
 	github.com/PuerkitoBio/goquery v1.4.1
-	github.com/SVilgelm/bumptag v1.0.0 // indirect
 	github.com/andybalholm/cascadia v1.0.0 // indirect
 	github.com/araddon/dateparse v0.0.0-20180729174819-cfd92a431d0e
 	github.com/fatih/set v0.2.1
