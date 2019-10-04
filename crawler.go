@@ -1,6 +1,7 @@
 package goose
 
 import (
+	"errors"
 	"strings"
 	"time"
 
@@ -76,6 +77,10 @@ func (c Crawler) GetCharset(document *goquery.Document) string {
 // some text normalisation to guarantee better results when extracting the content
 func (c *Crawler) Preprocess(RawHTML string) (*goquery.Document, error) {
 	var err error
+
+	if RawHTML == "" {
+		return nil, errors.New("cannot process empty HTML content")
+	}
 
 	RawHTML = c.addSpacesBetweenTags(RawHTML)
 
