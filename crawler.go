@@ -108,29 +108,25 @@ func (c *Crawler) Preprocess(RawHTML string) (*goquery.Document, error) {
 // Crawl fetches the HTML body and returns an Article
 func (c Crawler) Crawl(RawHTML string, url string) (*Article, error) {
 	article := new(Article)
-	fmt.Println(0)
-	document, err := c.Preprocess(RawHTML)
+
 	fmt.Println(1)
+	document, err := c.Preprocess(RawHTML)
+	fmt.Println(len(RawHTML))
+	if nil != err {
+		return nil, err
+	}
+	if nil == document {
+		return article, nil
+	}
+	extractor := NewExtractor(c.config)
+	startTime := time.Now().UnixNano()
+
+	article.RawHTML, err = document.Html()
 	if nil != err {
 		return nil, err
 	}
 	fmt.Println(2)
-	if nil == document {
-		return article, nil
-	}
-	fmt.Println(3)
-	extractor := NewExtractor(c.config)
-	fmt.Println(4)
-	startTime := time.Now().UnixNano()
-
-	article.RawHTML, err = document.Html()
-	fmt.Println(5)
-	if nil != err {
-		return nil, err
-	}
-	fmt.Println(6)
 	fmt.Println(len(article.RawHTML))
-	fmt.Println(article.RawHTML)
 	article.FinalURL = url
 	article.Doc = document
 
@@ -139,8 +135,6 @@ func (c Crawler) Crawl(RawHTML string, url string) (*Article, error) {
 	article.MetaFavicon = extractor.GetFavicon(document)
 
 	article.MetaDescription = extractor.GetMetaContentWithSelector(document, "meta[name#=(?i)^description$]")
-	fmt.Println(7)
-	fmt.Println(len(article.MetaDescription))
 	article.MetaKeywords = extractor.GetMetaContentWithSelector(document, "meta[name#=(?i)^keywords$]")
 	article.CanonicalLink = extractor.GetCanonicalLink(document)
 	if "" == article.CanonicalLink {
@@ -172,7 +166,6 @@ func (c Crawler) Crawl(RawHTML string, url string) (*Article, error) {
 		videoExtractor := NewVideoExtractor()
 		article.Movies = videoExtractor.GetVideos(document)
 	}
-	fmt.Println(len(article.CleanedText))
 
 	article.Delta = time.Now().UnixNano() - startTime
 
