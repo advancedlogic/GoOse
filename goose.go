@@ -38,14 +38,14 @@ func (g Goose) ExtractFromURLShort(url string) (*Article, error) {
 	HtmlRequester := NewHtmlRequester(g.config)
 	html, err := HtmlRequester.fetchHTML(url)
 	if err != nil {
-		return nil, errors.Wrap(err, "could not get htnk from site")
+		return nil, errors.Wrap(err, "could not get html from from url: "+url)
 	}
 	cc := NewCrawlerShort(g.config)
-	return cc.Crawl(html,url)
+	return cc.Crawl(html, url)
 }
 
 // ExtractFromRawHTML returns an article object from the raw HTML content
-func (g Goose) ExtractFromRawHTMLShort(RawHTML string,url string) (*Article, error) {
+func (g Goose) ExtractFromRawHTMLShort(RawHTML string, url string) (*Article, error) {
 	cc := NewCrawlerShort(g.config)
-	return cc.Crawl(RawHTML,url)
+	return cc.Crawl(RawHTML, url)
 }

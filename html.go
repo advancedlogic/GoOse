@@ -2,6 +2,7 @@ package goose
 
 import (
 	resty "github.com/go-resty/resty/v2"
+	"github.com/pkg/errors"
 )
 
 type HtmlRequester interface {
@@ -22,28 +23,25 @@ func NewHtmlRequester(config Configuration) HtmlRequester {
 
 func (hr htmlrequester) fetchHTML(url string) (string, error) {
 	client := resty.New()
+	client.SetTimeout(hr.config.timeout)
 	resp, err := client.R().
 		SetHeader("Content-Type", "application/json").
-		//TODO:Set timeout
-		// req.Header.Set("User-Agent", "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_6_7) AppleWebKit/534.30 (KHTML, like Gecko) Chrome/12.0.742.91 Safari/534.30")
+		SetHeader("User-Agent", "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_6_7) AppleWebKit/534.30 (KHTML, like Gecko) Chrome/12.0.742.91 Safari/534.30").
 		Get(url)
 
-	// 	contents, err := ioutil.ReadAll(resp.Body)
-	// if err != nil {
-	// 	return "", err
-	// }
-	// c.RawHTML = string(contents)
-
-	// if err = resp.Body.Close(); err != nil {
-	// 	return "", err
-	// }
-
 	if err != nil {
-		return "", err
+		return "", errors.Wrap(err, "could not perform request on "+url)
 	}
 	if resp.IsError() {
-		// TODO: real error return
-		return "", nil
+		return "", &badRequest{Message: "could not perform request with " + url + " status code " + string(resp.StatusCode())}
 	}
 	return resp.String(), nil
+}
+
+type badRequest struct {
+	Message string `json:"message,omitempty"`
+}
+
+func (BadRequest *badRequest) Error() string {
+	return "Required request fields are not filled"
 }

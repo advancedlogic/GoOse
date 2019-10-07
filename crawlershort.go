@@ -5,6 +5,7 @@ import (
 	"time"
 
 	"github.com/PuerkitoBio/goquery"
+	"github.com/pkg/errors"
 )
 
 // Crawler can fetch the target HTML page
@@ -74,7 +75,7 @@ func (c *CrawlerShort) Preprocess(RawHTML string) (*goquery.Document, error) {
 	reader := strings.NewReader(RawHTML)
 	document, err := goquery.NewDocumentFromReader(reader)
 	if err != nil {
-		return nil, err
+		return nil, errors.Wrap(err, "could not perform goquery.NewDocumentFromReader(reader)")
 	}
 
 	cs := c.GetCharset(document)
@@ -84,7 +85,7 @@ func (c *CrawlerShort) Preprocess(RawHTML string) (*goquery.Document, error) {
 		RawHTML = UTF8encode(RawHTML, cs)
 		reader = strings.NewReader(RawHTML)
 		if document, err = goquery.NewDocumentFromReader(reader); err != nil {
-			return nil, err
+			return nil, errors.Wrap(err, "could not perform goquery.NewDocumentFromReader(reader)")
 		}
 	}
 
@@ -97,7 +98,7 @@ func (c CrawlerShort) Crawl(RawHTML, url string) (*Article, error) {
 
 	document, err := c.Preprocess(RawHTML)
 	if err != nil {
-		return nil, err
+		return nil, errors.Wrap(err, "could not Preprocess RawHTML")
 	}
 	if document == nil {
 		return article, nil
@@ -109,7 +110,7 @@ func (c CrawlerShort) Crawl(RawHTML, url string) (*Article, error) {
 
 	article.RawHTML, err = document.Html()
 	if err != nil {
-		return nil, err
+		return nil, errors.Wrap(err, "could not get html from document")
 	}
 	article.FinalURL = url
 
