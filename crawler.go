@@ -2,6 +2,7 @@ package goose
 
 import (
 	"errors"
+	"fmt"
 	"strings"
 	"time"
 
@@ -107,23 +108,28 @@ func (c *Crawler) Preprocess(RawHTML string) (*goquery.Document, error) {
 // Crawl fetches the HTML body and returns an Article
 func (c Crawler) Crawl(RawHTML string, url string) (*Article, error) {
 	article := new(Article)
-
+	fmt.Println(0)
 	document, err := c.Preprocess(RawHTML)
+	fmt.Println(1)
 	if nil != err {
 		return nil, err
 	}
+	fmt.Println(2)
 	if nil == document {
 		return article, nil
 	}
-
+	fmt.Println(3)
 	extractor := NewExtractor(c.config)
-
+	fmt.Println(4)
 	startTime := time.Now().UnixNano()
 
 	article.RawHTML, err = document.Html()
+	fmt.Println(5)
 	if nil != err {
 		return nil, err
 	}
+	fmt.Println(6)
+	fmt.Println("len of url is ", string(len(article.RawHTML)))
 	article.FinalURL = url
 	article.Doc = document
 
