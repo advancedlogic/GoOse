@@ -129,7 +129,8 @@ func (c Crawler) Crawl(RawHTML string, url string) (*Article, error) {
 		return nil, err
 	}
 	fmt.Println(6)
-	fmt.Println("len of url is ", string(len(article.RawHTML)))
+	fmt.Println(len(article.RawHTML))
+	fmt.Println(article.RawHTML)
 	article.FinalURL = url
 	article.Doc = document
 
@@ -138,6 +139,8 @@ func (c Crawler) Crawl(RawHTML string, url string) (*Article, error) {
 	article.MetaFavicon = extractor.GetFavicon(document)
 
 	article.MetaDescription = extractor.GetMetaContentWithSelector(document, "meta[name#=(?i)^description$]")
+	fmt.Println(7)
+	fmt.Println(len(article.MetaDescription))
 	article.MetaKeywords = extractor.GetMetaContentWithSelector(document, "meta[name#=(?i)^keywords$]")
 	article.CanonicalLink = extractor.GetCanonicalLink(document)
 	if "" == article.CanonicalLink {
@@ -169,6 +172,7 @@ func (c Crawler) Crawl(RawHTML string, url string) (*Article, error) {
 		videoExtractor := NewVideoExtractor()
 		article.Movies = videoExtractor.GetVideos(document)
 	}
+	fmt.Println(len(article.CleanedText))
 
 	article.Delta = time.Now().UnixNano() - startTime
 
