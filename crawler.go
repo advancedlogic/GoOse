@@ -2,7 +2,6 @@ package goose
 
 import (
 	"errors"
-	"fmt"
 	"strings"
 	"time"
 
@@ -109,9 +108,7 @@ func (c *Crawler) Preprocess(RawHTML string) (*goquery.Document, error) {
 func (c Crawler) Crawl(RawHTML string, url string) (*Article, error) {
 	article := new(Article)
 
-	fmt.Println(1)
 	document, err := c.Preprocess(RawHTML)
-	fmt.Println(len(RawHTML))
 	if nil != err {
 		return nil, err
 	}
@@ -125,8 +122,6 @@ func (c Crawler) Crawl(RawHTML string, url string) (*Article, error) {
 	if nil != err {
 		return nil, err
 	}
-	fmt.Println(2)
-	fmt.Println(len(article.RawHTML))
 	article.FinalURL = url
 	article.Doc = document
 
