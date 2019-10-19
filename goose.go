@@ -1,5 +1,9 @@
 package goose
 
+import (
+	"github.com/pkg/errors"
+)
+
 // Goose is the main entry point of the program
 type Goose struct {
 	config Configuration
@@ -14,12 +18,17 @@ func New(args ...string) Goose {
 
 // ExtractFromURL follows the URL, fetches the HTML page and returns an article object
 func (g Goose) ExtractFromURL(url string) (*Article, error) {
-	cc := NewCrawler(g.config, url, "")
-	return cc.Crawl()
+	HtmlRequester := NewHtmlRequester(g.config)
+	html, err := HtmlRequester.fetchHTML(url)
+	if err != nil {
+		return nil, errors.Wrap(err, "could not get htnk from site")
+	}
+	cc := NewCrawler(g.config)
+	return cc.Crawl(html, url)
 }
 
 // ExtractFromRawHTML returns an article object from the raw HTML content
-func (g Goose) ExtractFromRawHTML(url string, RawHTML string) (*Article, error) {
-	cc := NewCrawler(g.config, url, RawHTML)
-	return cc.Crawl()
+func (g Goose) ExtractFromRawHTML(RawHTML string, url string) (*Article, error) {
+	cc := NewCrawler(g.config)
+	return cc.Crawl(RawHTML, url)
 }

@@ -1,43 +1,35 @@
 package goose
 
 import (
-	"errors"
 	"strings"
 	"time"
 
 	"github.com/PuerkitoBio/goquery"
+	"github.com/pkg/errors"
 )
 
 // Crawler can fetch the target HTML page
-type Crawler struct {
+type CrawlerShort struct {
 	config  Configuration
 	Charset string
 }
 
 // NewCrawler returns a crawler object initialised with the URL and the [optional] raw HTML body
-func NewCrawler(config Configuration) Crawler {
-	return Crawler{
+func NewCrawlerShort(config Configuration) CrawlerShort {
+	return CrawlerShort{
 		config:  config,
 		Charset: "",
 	}
 }
 
-func getCharsetFromContentType(cs string) string {
-	cs = strings.ToLower(strings.Replace(cs, " ", "", -1))
-	cs = strings.TrimPrefix(cs, "text/html;charset=")
-	cs = strings.TrimPrefix(cs, "text/xhtml;charset=")
-	cs = strings.TrimPrefix(cs, "application/xhtml+xml;charset=")
-	return NormaliseCharset(cs)
-}
-
 // SetCharset can be used to force a charset (e.g. when read from the HTTP headers)
 // rather than relying on the detection from the HTML meta tags
-func (c *Crawler) SetCharset(cs string) {
+func (c *CrawlerShort) SetCharset(cs string) {
 	c.Charset = getCharsetFromContentType(cs)
 }
 
 // GetContentType returns the Content-Type string extracted from the meta tags
-func (c Crawler) GetContentType(document *goquery.Document) string {
+func (c CrawlerShort) GetContentType(document *goquery.Document) string {
 	var attr string
 	// <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 	document.Find("meta[http-equiv#=(?i)^Content\\-type$]").Each(func(i int, s *goquery.Selection) {
@@ -47,7 +39,7 @@ func (c Crawler) GetContentType(document *goquery.Document) string {
 }
 
 // GetCharset returns a normalised charset string extracted from the meta tags
-func (c Crawler) GetCharset(document *goquery.Document) string {
+func (c CrawlerShort) GetCharset(document *goquery.Document) string {
 	// manually-provided charset (from HTTP headers?) takes priority
 	if "" != c.Charset {
 		return c.Charset
@@ -75,19 +67,15 @@ func (c Crawler) GetCharset(document *goquery.Document) string {
 
 // Preprocess fetches the HTML page if needed, converts it to UTF-8 and applies
 // some text normalisation to guarantee better results when extracting the content
-func (c *Crawler) Preprocess(RawHTML string) (*goquery.Document, error) {
+func (c *CrawlerShort) Preprocess(RawHTML string) (*goquery.Document, error) {
 	var err error
-
-	if RawHTML == "" {
-		return nil, errors.New("cannot process empty HTML content")
-	}
 
 	RawHTML = c.addSpacesBetweenTags(RawHTML)
 
 	reader := strings.NewReader(RawHTML)
 	document, err := goquery.NewDocumentFromReader(reader)
 	if err != nil {
-		return nil, err
+		return nil, errors.Wrap(err, "could not perform goquery.NewDocumentFromReader(reader)")
 	}
 
 	cs := c.GetCharset(document)
@@ -97,7 +85,7 @@ func (c *Crawler) Preprocess(RawHTML string) (*goquery.Document, error) {
 		RawHTML = UTF8encode(RawHTML, cs)
 		reader = strings.NewReader(RawHTML)
 		if document, err = goquery.NewDocumentFromReader(reader); err != nil {
-			return nil, err
+			return nil, errors.Wrap(err, "could not perform goquery.NewDocumentFromReader(reader)")
 		}
 	}
 
@@ -105,38 +93,29 @@ func (c *Crawler) Preprocess(RawHTML string) (*goquery.Document, error) {
 }
 
 // Crawl fetches the HTML body and returns an Article
-func (c Crawler) Crawl(RawHTML string, url string) (*Article, error) {
+func (c CrawlerShort) Crawl(RawHTML, url string) (*Article, error) {
 	article := new(Article)
 
 	document, err := c.Preprocess(RawHTML)
-	if nil != err {
-		return nil, err
+	if err != nil {
+		return nil, errors.Wrap(err, "could not Preprocess RawHTML")
 	}
-	if nil == document {
+	if document == nil {
 		return article, nil
 	}
+
 	extractor := NewExtractor(c.config)
+
 	startTime := time.Now().UnixNano()
 
 	article.RawHTML, err = document.Html()
-	if nil != err {
-		return nil, err
+	if err != nil {
+		return nil, errors.Wrap(err, "could not get html from document")
 	}
 	article.FinalURL = url
-	article.Doc = document
 
 	article.Title = extractor.GetTitle(document)
-	article.MetaLang = extractor.GetMetaLanguage(document)
-	article.MetaFavicon = extractor.GetFavicon(document)
-
 	article.MetaDescription = extractor.GetMetaContentWithSelector(document, "meta[name#=(?i)^description$]")
-	article.MetaKeywords = extractor.GetMetaContentWithSelector(document, "meta[name#=(?i)^keywords$]")
-	article.CanonicalLink = extractor.GetCanonicalLink(document)
-	if "" == article.CanonicalLink {
-		article.CanonicalLink = article.FinalURL
-	}
-	article.Domain = extractor.GetDomain(article.CanonicalLink)
-	article.Tags = extractor.GetTags(document)
 
 	if c.config.extractPublishDate {
 		if timestamp := extractor.GetPublishDate(document); timestamp != nil {
@@ -158,10 +137,7 @@ func (c Crawler) Crawl(RawHTML string, url string) (*Article, error) {
 
 		article.CleanedText, article.Links = extractor.GetCleanTextAndLinks(article.TopNode, article.MetaLang)
 
-		videoExtractor := NewVideoExtractor()
-		article.Movies = videoExtractor.GetVideos(document)
 	}
-
 	article.Delta = time.Now().UnixNano() - startTime
 
 	return article, nil
@@ -170,7 +146,7 @@ func (c Crawler) Crawl(RawHTML string, url string) (*Article, error) {
 // In many cases, like at the end of each <li> element or between </span><span> tags,
 // we need to add spaces, otherwise the text on either side will get joined together into one word.
 // This method also adds newlines after each </p> tag to preserve paragraphs.
-func (c Crawler) addSpacesBetweenTags(text string) string {
+func (c CrawlerShort) addSpacesBetweenTags(text string) string {
 	text = strings.Replace(text, "><", "> <", -1)
 	text = strings.Replace(text, "</blockquote>", "</blockquote>\n", -1)
 	text = strings.Replace(text, "<img ", "\n<img ", -1)
