@@ -64,6 +64,6 @@ func GetDefaultConfiguration(args ...string) Configuration {
 		stopWordsPath:           "resources/stopwords",
 		stopWords:               NewStopwords(), //TODO with path
 		parser:                  NewParser(),
-		timeout:                 time.Duration(10 * time.Second),
+		timeout:                 time.Duration(5 * time.Second),
 	}
 }
