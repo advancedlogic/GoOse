@@ -10,6 +10,7 @@ import (
 // Article is a collection of properties extracted from the HTML body
 type Article struct {
 	Title           string             `json:"title,omitempty"`
+	TitleUnmodified string             `json:"titleunmodified,omitempty"`
 	CleanedText     string             `json:"content,omitempty"`
 	MetaDescription string             `json:"description,omitempty"`
 	MetaLang        string             `json:"lang,omitempty"`

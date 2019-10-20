@@ -50,8 +50,8 @@ func NewExtractor(config Configuration) ContentExtractor {
 	}
 }
 
-// GetTitle returns the title set in the source, if the article has one
-func (extr *ContentExtractor) GetTitle(document *goquery.Document) string {
+//if the article has a title set in the source, use that
+func (extr *ContentExtractor) getTitleUnmodified(document *goquery.Document) string {
 	title := ""
 
 	titleElement := document.Find("title")
@@ -73,6 +73,12 @@ func (extr *ContentExtractor) GetTitle(document *goquery.Document) string {
 		}
 		title = titleElement.Text()
 	}
+	return title
+}
+
+// GetTitle returns the title set in the source, if the article has one
+func (extr *ContentExtractor) GetTitle(document *goquery.Document) string {
+	title := extr.getTitleUnmodified(document)
 
 	for _, delimiter := range titleDelimiters {
 		if strings.Contains(title, delimiter) {

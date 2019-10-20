@@ -126,6 +126,7 @@ func (c Crawler) Crawl(RawHTML string, url string) (*Article, error) {
 	article.Doc = document
 
 	article.Title = extractor.GetTitle(document)
+	article.TitleUnmodified = extractor.getTitleUnmodified(document)
 	article.MetaLang = extractor.GetMetaLanguage(document)
 	article.MetaFavicon = extractor.GetFavicon(document)
 
