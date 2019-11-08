@@ -50,6 +50,22 @@ func NewExtractor(config Configuration) ContentExtractor {
 	}
 }
 
+// GetH1 ...
+func (extr *ContentExtractor) GetH1(document *goquery.Document) string {
+	h1 := ""
+
+	titleElement := document.Find("h1")
+	if titleElement != nil && titleElement.Size() > 0 {
+		h1 = titleElement.Text()
+	}
+
+	if extr.config.debug {
+		log.Printf("Page title is %s\n", h1)
+	}
+
+	return strings.TrimSpace(h1)
+}
+
 //if the article has a title set in the source, use that
 func (extr *ContentExtractor) getTitleUnmodified(document *goquery.Document) string {
 	title := ""
