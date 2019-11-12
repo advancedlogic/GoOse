@@ -76,10 +76,8 @@ func (extr *ContentExtractor) getTitleUnmodified(document *goquery.Document) str
 	return title
 }
 
-// GetTitle returns the title set in the source, if the article has one
-func (extr *ContentExtractor) GetTitle(document *goquery.Document) string {
-	title := extr.getTitleUnmodified(document)
-
+// GetTitleFromUnmodifiedTitle returns the title from the unmodified one
+func (extr *ContentExtractor) GetTitleFromUnmodifiedTitle(title string) string {
 	for _, delimiter := range titleDelimiters {
 		if strings.Contains(title, delimiter) {
 			title = extr.splitTitle(strings.Split(title, delimiter))
@@ -94,6 +92,12 @@ func (extr *ContentExtractor) GetTitle(document *goquery.Document) string {
 	}
 
 	return strings.TrimSpace(title)
+}
+
+// GetTitle returns the title set in the source, if the article has one
+func (extr *ContentExtractor) GetTitle(document *goquery.Document) string {
+	title := extr.getTitleUnmodified(document)
+	return extr.GetTitleFromUnmodifiedTitle(title)
 }
 
 func (extr *ContentExtractor) splitTitle(titles []string) string {
