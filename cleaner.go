@@ -99,7 +99,8 @@ var divToPElementsPattern = regexp.MustCompile("<(a|blockquote|dl|div|img|ol|p|p
 var tabsRegEx = regexp.MustCompile(`\t|^\s+$]`)
 var removeVisibilityStyleRegEx = regexp.MustCompile("visibility:[ ]*hidden|display:[ ]*none")
 var keepNodesRegEx = regexp.MustCompile(`\b(` +
-	`article` +
+	`article|` + // theguardian.com and newyorker.com (preventing match of "commercial" or "...-ad-...")
+	`field--label-hidden` + // eff.org (preventing match of "hidden")
 	`)\b`)
 var removeNodesRegEx = regexp.MustCompile("" +
 	"[Cc]omentario|" +
