@@ -3,201 +3,189 @@
 # @author      Nicola Asuni <info@tecnick.com>
 # @link        https://github.com/advancedlogic/GoOse
 #
-# This file is intended to be executed in a Linux-compatible system.
-# It also assumes that the project has been cloned in the right path under GOPATH:
-# $GOPATH/src/github.com/advancedlogic/GoOse
+# Modern Makefile for Go modules project
 #
 # ------------------------------------------------------------------------------
 
 # List special make targets that are not associated with files
-.PHONY: help all test format fmtcheck vet lint coverage cyclo ineffassign misspell structcheck varcheck errcheck gosimple astscan qa deps clean nuke
+.PHONY: help all build build-cli install test test-verbose test-race format fmt-check vet lint coverage qa deps clean nuke tidy run version
 
 # Use bash as shell (Note: Ubuntu now uses dash which doesn't support PIPESTATUS).
 SHELL=/bin/bash
 
-# CVS path (path to the parent dir containing the project)
-CVSPATH=github.com/advancedlogic
-
-# Project owner
-OWNER=advancedlogic
-
-# Project vendor
-VENDOR=advancedlogic
-
-# Project name
+# Project details
 PROJECT=GoOse
-
-# Project version
+BINARY_NAME=goose
 VERSION=$(shell cat VERSION)
+MODULE=github.com/advancedlogic/GoOse
 
-# Name of RPM or DEB package
-PKGNAME=${VENDOR}-${PROJECT}
+# Build details
+BUILD_DIR=bin
+BUILD_TIME=$(shell date -u '+%Y-%m-%d_%H:%M:%S')
+GIT_COMMIT=$(shell git rev-parse --short HEAD 2>/dev/null || echo "unknown")
+LDFLAGS=-ldflags "-X main.Version=${VERSION} -X main.BuildTime=${BUILD_TIME} -X main.GitCommit=${GIT_COMMIT}"
 
-# Current directory
-CURRENTDIR=$(shell pwd)
-
-# GO lang path
-ifneq ($(GOPATH),)
-	ifeq ($(findstring $(GOPATH),$(CURRENTDIR)),)
-		# the defined GOPATH is not valid
-		GOPATH=
-	endif
-endif
-ifeq ($(GOPATH),)
-	# extract the GOPATH
-	GOPATH=$(firstword $(subst /src/, ,$(CURRENTDIR)))
-endif
+# Test settings
+COVERAGE_DIR=coverage
+COVERAGE_PROFILE=${COVERAGE_DIR}/coverage.out
+COVERAGE_HTML=${COVERAGE_DIR}/coverage.html
 
 # --- MAKE TARGETS ---
 
 # Display general help about this command
 help:
 	@echo ""
-	@echo "$(PROJECT) Makefile."
-	@echo "GOPATH=$(GOPATH)"
-	@echo "The following commands are available:"
+	@echo "$(PROJECT) Makefile - Go Modules Project"
+	@echo "Version: $(VERSION)"
 	@echo ""
-	@echo "    make qa          : Run all the tests"
-	@echo "    make test        : Run the unit tests"
+	@echo "Available commands:"
 	@echo ""
-	@echo "    make format      : Format the source code"
-	@echo "    make fmtcheck    : Check if the source code has been formatted"
-	@echo "    make vet         : Check for suspicious constructs"
-	@echo "    make lint        : Check for style errors"
-	@echo "    make coverage    : Generate the coverage report"
-	@echo "    make cyclo       : Generate the cyclomatic complexity report"
-	@echo "    make ineffassign : Detect ineffectual assignments"
-	@echo "    make misspell    : Detect commonly misspelled words in source files"
-	@echo "    make structcheck : Find unused struct fields"
-	@echo "    make varcheck    : Find unused global variables and constants"
-	@echo "    make errcheck    : Check that error return values are used"
-	@echo "    make gosimple    : Suggest code simplifications"
-	@echo "    make astscan     : GO AST scanner"
+	@echo "  BUILD COMMANDS:"
+	@echo "    make build       : Build the CLI binary"
+	@echo "    make build-cli   : Build the CLI binary (alias)"
+	@echo "    make install     : Install the CLI binary to GOPATH/bin"
 	@echo ""
-	@echo "    make docs        : Generate source code documentation"
+	@echo "  DEVELOPMENT COMMANDS:"
+	@echo "    make run         : Run the CLI with arguments (use ARGS=...)"
+	@echo "    make version     : Show version information"
 	@echo ""
-	@echo "    make deps        : Get the dependencies"
-	@echo "    make clean       : Remove any build artifact"
-	@echo "    make nuke        : Deletes any intermediate file"
+	@echo "  TESTING COMMANDS:"
+	@echo "    make test        : Run all tests"
+	@echo "    make test-verbose: Run tests with verbose output"
+	@echo "    make test-race   : Run tests with race detection"
+	@echo "    make coverage    : Generate test coverage report"
 	@echo ""
-
+	@echo "  CODE QUALITY COMMANDS:"
+	@echo "    make format      : Format source code"
+	@echo "    make fmt-check   : Check if source code is formatted"
+	@echo "    make vet         : Run go vet"
+	@echo "    make lint        : Run golangci-lint"
+	@echo "    make qa          : Run all quality assurance checks"
+	@echo ""
+	@echo "  DEPENDENCY COMMANDS:"
+	@echo "    make deps        : Download dependencies"
+	@echo "    make tidy        : Tidy go.mod and go.sum"
+	@echo ""
+	@echo "  CLEANUP COMMANDS:"
+	@echo "    make clean       : Remove build artifacts"
+	@echo "    make nuke        : Remove all generated files"
+	@echo ""
+	@echo "Examples:"
+	@echo "  make build"
+	@echo "  make run ARGS='convert https://example.com'"
+	@echo "  make test"
+	@echo ""
 
 # Alias for help target
 all: help
 
+# Build the CLI binary
+build: build-cli
+
+build-cli:
+	@echo "Building $(BINARY_NAME) v$(VERSION)..."
+	@mkdir -p $(BUILD_DIR)
+	go build $(LDFLAGS) -o $(BUILD_DIR)/$(BINARY_NAME) ./cmd/goose
+
+# Install the CLI binary
+install:
+	@echo "Installing $(BINARY_NAME)..."
+	go install $(LDFLAGS) ./cmd/goose
+
+# Run the CLI (use ARGS="..." to pass arguments)
+run:
+	@go run ./cmd/goose $(ARGS)
+
+# Show version information
+version:
+	@echo "Project: $(PROJECT)"
+	@echo "Version: $(VERSION)"
+	@echo "Module:  $(MODULE)"
+	@echo "Git:     $(GIT_COMMIT)"
+
 # Run the unit tests
 test:
-	@mkdir -p target/test
-	@mkdir -p target/report
-	GOPATH=$(GOPATH) \
-	go test \
-	-covermode=atomic \
-	-bench=. \
-	-race \
-	-cpuprofile=target/report/cpu.out \
-	-memprofile=target/report/mem.out \
-	-mutexprofile=target/report/mutex.out \
-	-coverprofile=target/report/coverage.out \
-	-v ./... | \
-	tee >(PATH=$(GOPATH)/bin:$(PATH) go-junit-report > target/test/report.xml); \
-	test $${PIPESTATUS[0]} -eq 0
+	@echo "Running tests..."
+	go test ./...
+
+# Run tests with verbose output
+test-verbose:
+	@echo "Running tests with verbose output..."
+	go test -v ./...
+
+# Run tests with race detection
+test-race:
+	@echo "Running tests with race detection..."
+	go test -race ./...
+
+# Generate test coverage report
+coverage:
+	@echo "Generating coverage report..."
+	@mkdir -p $(COVERAGE_DIR)
+	go test -coverprofile=$(COVERAGE_PROFILE) ./...
+	go tool cover -html=$(COVERAGE_PROFILE) -o $(COVERAGE_HTML)
+	@echo "Coverage report generated: $(COVERAGE_HTML)"
 
 # Format the source code
 format:
-	@find . -type f -name "*.go" -exec gofmt -s -w {} \;
+	@echo "Formatting source code..."
+	go fmt ./...
 
 # Check if the source code has been formatted
-fmtcheck:
-	@mkdir -p target
-	@find . -type f -name "*.go" -exec gofmt -s -d {} \; | tee target/format.diff
-	@test ! -s target/format.diff || { echo "ERROR: the source code has not been formatted - please use 'make format' or 'gofmt'"; exit 1; }
+fmt-check:
+	@echo "Checking code formatting..."
+	@if [ "$$(gofmt -s -l . | wc -l)" -gt 0 ]; then \
+		echo "The following files need formatting:"; \
+		gofmt -s -l .; \
+		echo "Please run 'make format' to fix formatting issues."; \
+		exit 1; \
+	else \
+		echo "All files are properly formatted."; \
+	fi
 
-# Check for syntax errors
+# Check for suspicious constructs
 vet:
-	GOPATH=$(GOPATH) go vet .
+	@echo "Running go vet..."
+	go vet ./...
 
-# Check for style errors
+# Run golangci-lint (requires golangci-lint to be installed)
 lint:
-	GOPATH=$(GOPATH) PATH=$(GOPATH)/bin:$(PATH) golint .
+	@echo "Running golangci-lint..."
+	@if command -v golangci-lint >/dev/null 2>&1; then \
+		golangci-lint run; \
+	else \
+		echo "golangci-lint not found. Please install it:"; \
+		echo "  go install github.com/golangci/golangci-lint/cmd/golangci-lint@latest"; \
+		echo "Or run: make deps"; \
+	fi
 
-# Generate the coverage report
-coverage:
-	@mkdir -p target/report
-	GOPATH=$(GOPATH) \
-	go tool cover -html=target/report/coverage.out -o target/report/coverage.html
+# Run all quality assurance checks
+qa: fmt-check vet lint test coverage
+	@echo "All quality assurance checks completed!"
 
-# Report cyclomatic complexity
-cyclo:
-	@mkdir -p target/report
-	GOPATH=$(GOPATH) gocyclo -avg ./ | tee target/report/cyclo.txt ; test $${PIPESTATUS[0]} -eq 0
+# --- DEPENDENCIES AND CLEANUP ---
 
-# Detect ineffectual assignments
-ineffassign:
-	@mkdir -p target/report
-	GOPATH=$(GOPATH) ineffassign ./ | tee target/report/ineffassign.txt ; test $${PIPESTATUS[0]} -eq 0
-
-# Detect commonly misspelled words in source files
-misspell:
-	@mkdir -p target/report
-	GOPATH=$(GOPATH) misspell -error ./*.go | tee target/report/misspell.txt
-
-# Find unused struct fields
-structcheck:
-	@mkdir -p target/report
-	GOPATH=$(GOPATH) structcheck -a ./ | tee target/report/structcheck.txt
-
-# Find unused global variables and constants
-varcheck:
-	@mkdir -p target/report
-	GOPATH=$(GOPATH) varcheck -e ./ | tee target/report/varcheck.txt
-
-# Check that error return values are used
-errcheck:
-	@mkdir -p target/report
-	GOPATH=$(GOPATH) errcheck ./ | tee target/report/errcheck.txt
-
-# Suggest code simplifications
-gosimple:
-	@mkdir -p target/report
-	GOPATH=$(GOPATH) gosimple ./ | tee target/report/gosimple.txt
-
-# AST scanner
-astscan:
-	@mkdir -p target/report
-	GOPATH=$(GOPATH) gas .//*.go | tee target/report/astscan.txt
-
-# Generate source docs
-docs:
-	@mkdir -p target/docs
-	nohup sh -c 'GOPATH=$(GOPATH) godoc -http=127.0.0.1:6060' > target/godoc_server.log 2>&1 &
-	wget --directory-prefix=target/docs/ --execute robots=off --retry-connrefused --recursive --no-parent --adjust-extension --page-requisites --convert-links http://127.0.0.1:6060/pkg/github.com/${VENDOR}/${PROJECT}/ ; kill -9 `lsof -ti :6060`
-	@echo '<html><head><meta http-equiv="refresh" content="0;./127.0.0.1:6060/pkg/'${CVSPATH}'/'${PROJECT}'/index.html"/></head><a href="./127.0.0.1:6060/pkg/'${CVSPATH}'/'${PROJECT}'/index.html">'${PKGNAME}' Documentation ...</a></html>' > target/docs/index.html
-
-# Alias to run all quality-assurance checks
-qa: fmtcheck test vet lint coverage cyclo ineffassign misspell structcheck varcheck errcheck gosimple astscan
-
-# --- INSTALL ---
-
-# Get the dependencies
+# Download dependencies
 deps:
-	GOPATH=$(GOPATH) go get ./...
-	GOPATH=$(GOPATH) go get github.com/golang/lint/golint
-	GOPATH=$(GOPATH) go get github.com/jstemmer/go-junit-report
-	GOPATH=$(GOPATH) go get github.com/axw/gocov/gocov
-	GOPATH=$(GOPATH) go get github.com/fzipp/gocyclo
-	GOPATH=$(GOPATH) go get github.com/gordonklaus/ineffassign
-	GOPATH=$(GOPATH) go get github.com/client9/misspell/cmd/misspell
-	GOPATH=$(GOPATH) go get github.com/opennota/check/cmd/structcheck
-	GOPATH=$(GOPATH) go get github.com/opennota/check/cmd/varcheck
-	GOPATH=$(GOPATH) go get github.com/kisielk/errcheck
-	GOPATH=$(GOPATH) go get honnef.co/go/tools/cmd/gosimple
-	GOPATH=$(GOPATH) go get github.com/GoASTScanner/gas
+	@echo "Downloading dependencies..."
+	go mod download
+	@echo "Installing development tools..."
+	@go install github.com/golangci/golangci-lint/cmd/golangci-lint@latest
 
-# Remove any build artifact
+# Tidy go.mod and go.sum
+tidy:
+	@echo "Tidying go.mod and go.sum..."
+	go mod tidy
+
+# Remove build artifacts
 clean:
-	GOPATH=$(GOPATH) go clean ./...
+	@echo "Cleaning build artifacts..."
+	rm -rf $(BUILD_DIR)
+	rm -rf $(COVERAGE_DIR)
+	go clean ./...
 
-# Deletes any intermediate file
-nuke:
-	rm -rf ./target
-	GOPATH=$(GOPATH) go clean -i ./...
+# Remove all generated files
+nuke: clean
+	@echo "Removing all generated files..."
+	go clean -cache -testcache -modcache
+	rm -rf vendor/
