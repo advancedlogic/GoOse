@@ -3,6 +3,8 @@ package cmd
 import (
 	"fmt"
 	"os"
+	"regexp"
+	"strings"
 
 	"github.com/advancedlogic/GoOse/pkg/goose"
 	"github.com/spf13/cobra"
@@ -93,9 +95,45 @@ func formatText(article *goose.Article, showMeta bool) string {
 		result += "\n"
 	}
 
-	result += article.CleanedText
+	// Clean up the extracted text more aggressively
+	cleanedText := cleanupExtractedText(article.CleanedText, article.Title)
+	result += cleanedText
 
 	return result
+}
+
+// cleanupExtractedText performs additional cleanup on extracted text
+func cleanupExtractedText(text, title string) string {
+	// Split into lines and clean each one
+	lines := strings.Split(text, "\n")
+	var cleanedLines []string
+	seenLines := make(map[string]bool)
+	
+	for _, line := range lines {
+		line = strings.TrimSpace(line)
+		
+		// Skip empty lines, duplicate lines, and lines that are just the title
+		if line == "" {
+			// Only add empty line if the last line wasn't empty
+			if len(cleanedLines) > 0 && cleanedLines[len(cleanedLines)-1] != "" {
+				cleanedLines = append(cleanedLines, "")
+			}
+		} else if line == title {
+			// Skip lines that are just the title repeated
+			continue
+		} else if !seenLines[line] {
+			cleanedLines = append(cleanedLines, line)
+			seenLines[line] = true
+		}
+	}
+	
+	// Join lines back together
+	result := strings.Join(cleanedLines, "\n")
+	
+	// Remove excessive blank lines
+	result = regexp.MustCompile(`\n{3,}`).ReplaceAllString(result, "\n\n")
+	
+	return strings.TrimSpace(result)
 }
 
 func formatJSON(article *goose.Article, showMeta bool) string {

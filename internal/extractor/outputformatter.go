@@ -12,7 +12,8 @@ import (
 )
 
 var normalizeWhitespaceRegexp = regexp.MustCompile(`[ \r\f\v\t]+`)
-var normalizeNl = regexp.MustCompile(`[\n]+`)
+var normalizeNl = regexp.MustCompile(`\n{3,}`)
+var multipleSpaces = regexp.MustCompile(`\n\s*\n\s*\n`)
 var validURLRegex = regexp.MustCompile("^http[s]?://")
 
 type outputFormatter struct {
@@ -123,20 +124,49 @@ func (formatter *outputFormatter) getOutputText() string {
 
 	strArr := strings.Split(out, "\n")
 	resArr := []string{}
+	lastWasEmpty := false
 
-	for i, v := range strArr {
+	for _, v := range strArr {
 		v = strings.TrimSpace(v)
 		if v != "" {
 			resArr = append(resArr, v)
-		} else if i > 2 && strArr[i-2] != "" {
+			lastWasEmpty = false
+		} else if !lastWasEmpty && len(resArr) > 0 {
+			// Only add one empty line between paragraphs
 			resArr = append(resArr, "")
+			lastWasEmpty = true
 		}
 	}
 
 	out = strings.Join(resArr, "\n")
+	// More aggressive whitespace cleanup
 	out = normalizeNl.ReplaceAllString(out, "\n\n")
-
+	out = multipleSpaces.ReplaceAllString(out, "\n\n")
+	
+	// Final cleanup: remove leading/trailing whitespace
 	out = strings.TrimSpace(out)
+	
+	// Additional cleanup for cases where content extraction has issues
+	lines := strings.Split(out, "\n")
+	cleanedLines := []string{}
+	seenContent := make(map[string]bool)
+	
+	for _, line := range lines {
+		line = strings.TrimSpace(line)
+		
+		// Skip lines that are clearly navigation or metadata
+		if line != "" && !seenContent[line] && !formatter.isNavigationLine(line) {
+			cleanedLines = append(cleanedLines, line)
+			seenContent[line] = true
+		} else if line == "" && len(cleanedLines) > 0 && cleanedLines[len(cleanedLines)-1] != "" {
+			// Only add empty lines between different content blocks
+			cleanedLines = append(cleanedLines, "")
+		}
+	}
+	
+	out = strings.Join(cleanedLines, "\n")
+	out = strings.TrimSpace(out)
+	
 	return out
 }
 
@@ -172,10 +202,93 @@ func (formatter *outputFormatter) removeParagraphsWithFewWords() {
 	}
 	allNodes := formatter.topNode.Children()
 	allNodes.Each(func(i int, s *goquery.Selection) {
-		sw := formatter.config.StopWords.stopWordsCount(language, s.Text())
-		if sw.wordCount < 5 && s.Find("object").Length() == 0 && s.Find("em").Length() == 0 {
+		text := s.Text()
+		wordCount := len(strings.Fields(text))
+		if wordCount < 5 && s.Find("object").Length() == 0 && s.Find("em").Length() == 0 {
 			node := s.Get(0)
-			node.Parent.RemoveChild(node)
+			if node.Parent != nil {
+				node.Parent.RemoveChild(node)
+			}
 		}
 	})
+}
+
+// isNavigationLine checks if a line of text is likely navigation or metadata
+func (formatter *outputFormatter) isNavigationLine(line string) bool {
+	if len(line) == 0 {
+		return false
+	}
+	
+	lowerLine := strings.ToLower(line)
+	
+	// Exact matches for navigation elements
+	navExact := []string{
+		"ad feedback", "cnn values your feedback", "how relevant is this ad to you?",
+		"did you encounter any technical issues?", "video player was slow to load content",
+		"video content never loaded", "ad froze or did not finish loading",
+		"video content did not start after ad", "audio on ad was too loud",
+		"other issues", "ad never loaded", "ad prevented/slowed the page from loading",
+		"content moved around while ad loaded", "ad was repetitive to ads i've seen previously",
+		"cancel", "submit", "thank you!", "your effort and contribution in providing this feedback is much appreciated.",
+		"close", "close icon", "politics", "trump", "facts first", "cnn polls", "2025 elections",
+		"more", "watch", "listen", "live tv", "subscribe", "sign in", "my account",
+		"settings", "newsletters", "topics you follow", "sign out", "your cnn account",
+		"sign in to your cnn account", "edition", "us", "international", "arabic", "español",
+		"follow cnn politics", "crime + justice", "world", "africa", "americas", "asia",
+		"australia", "china", "europe", "india", "middle east", "united kingdom",
+		"business", "tech", "media", "calculators", "videos", "markets", "pre-markets",
+		"after-hours", "fear & greed", "investing", "markets now", "nightcap", "health",
+		"life, but better", "fitness", "food", "sleep", "mindfulness", "relationships",
+		"cnn underscored", "electronics", "fashion", "beauty", "health & fitness",
+		"home", "reviews", "deals", "gifts", "travel", "outdoors", "pets",
+		"entertainment", "movies", "television", "celebrity", "innovate",
+		"foreseeable future", "mission: ahead", "work transformed", "innovative cities",
+		"style", "arts", "design", "architecture", "luxury", "video", "destinations",
+		"food & drink", "stay", "sports", "pro football", "college football",
+		"basketball", "baseball", "soccer", "olympics", "hockey", "science", "space",
+		"life", "unearthed", "climate", "solutions", "weather", "ukraine-russia war",
+		"israel-hamas war", "cnn headlines", "cnn shorts", "shows a-z", "cnn10",
+		"cnn max", "cnn tv schedules", "flashdocs", "cnn 5 things",
+		"chasing life with dr. sanjay gupta", "the assignment with audie cornish",
+		"one thing", "tug of war", "cnn political briefing", "the axe files",
+		"all there is with anderson cooper", "all cnn audio podcasts", "games",
+		"daily crossword", "jumble crossword", "photo shuffle", "sudoblock", "sudoku",
+		"5 things quiz", "about cnn", "photos", "investigations", "cnn profiles",
+		"cnn leadership", "cnn newsletters", "work for cnn", "news", "terms of use",
+		"privacy policy", "ad choices", "accessibility & cc", "about", "transcripts",
+		"help center", "© 2025 cable news network. a warner bros. discovery company. all rights reserved.",
+		"cnn sans ™ & © 2016 cable news network.", "facebook", "tweet", "email",
+		"link", "link copied!", "follow", "see all topics", "donald trump",
+	}
+	
+	for _, exact := range navExact {
+		if lowerLine == exact {
+			return true
+		}
+	}
+	
+	// Pattern matches
+	navPatterns := []string{
+		"min read", "updated", "published", "analysis by", "getty images",
+		"reuters", "bloomberg", "afp", "via getty images", "jim watson/afp/getty images",
+		"annabelle gordon/reuters", "jamie kelter davis/bloomberg/getty images",
+	}
+	
+	for _, pattern := range navPatterns {
+		if strings.Contains(lowerLine, pattern) {
+			return true
+		}
+	}
+	
+	// Check for very short lines that are likely navigation
+	if len(strings.TrimSpace(line)) < 3 {
+		return true
+	}
+	
+	// Check for lines that are just numbers or punctuation
+	if strings.TrimSpace(line) == "•" || strings.TrimSpace(line) == "1." || strings.TrimSpace(line) == "2." {
+		return true
+	}
+	
+	return false
 }

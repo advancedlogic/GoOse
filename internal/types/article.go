@@ -1,4 +1,4 @@
-package goose
+package types
 
 import (
 	"time"

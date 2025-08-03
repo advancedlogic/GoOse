@@ -7,6 +7,7 @@ import (
 	"strings"
 
 	"github.com/PuerkitoBio/goquery"
+	"github.com/advancedlogic/GoOse/pkg/goose"
 )
 
 type candidate struct {
@@ -171,7 +172,7 @@ func WebPageImageResolver(doc *goquery.Document) ([]candidate, int) {
 }
 
 // WebPageResolver fetches the main image from the HTML page
-func WebPageResolver(article *Article) string {
+func WebPageResolver(article *goose.Article) string {
 	candidates, significantSurfaceCount := WebPageImageResolver(article.Doc)
 	if candidates == nil {
 		return ""

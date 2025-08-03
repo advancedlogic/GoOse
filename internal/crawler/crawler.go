@@ -6,16 +6,19 @@ import (
 	"time"
 
 	"github.com/PuerkitoBio/goquery"
+	"github.com/advancedlogic/GoOse/internal/extractor"
+	"github.com/advancedlogic/GoOse/internal/utils"
+	"github.com/advancedlogic/GoOse/pkg/goose"
 )
 
 // Crawler can fetch the target HTML page
 type Crawler struct {
-	config  Configuration
+	config  goose.Configuration
 	Charset string
 }
 
 // NewCrawler returns a crawler object initialised with the URL and the [optional] raw HTML body
-func NewCrawler(config Configuration) Crawler {
+func NewCrawler(config goose.Configuration) Crawler {
 	return Crawler{
 		config:  config,
 		Charset: "",
@@ -27,7 +30,7 @@ func getCharsetFromContentType(cs string) string {
 	cs = strings.TrimPrefix(cs, "text/html;charset=")
 	cs = strings.TrimPrefix(cs, "text/xhtml;charset=")
 	cs = strings.TrimPrefix(cs, "application/xhtml+xml;charset=")
-	return NormaliseCharset(cs)
+	return utils.NormaliseCharset(cs)
 }
 
 // SetCharset can be used to force a charset (e.g. when read from the HTTP headers)
@@ -67,7 +70,7 @@ func (c Crawler) GetCharset(document *goquery.Document) string {
 
 	if selection != nil {
 		cs, _ := selection.Attr("charset")
-		return NormaliseCharset(cs)
+		return utils.NormaliseCharset(cs)
 	}
 
 	return ""
@@ -94,7 +97,7 @@ func (c *Crawler) Preprocess(RawHTML string) (*goquery.Document, error) {
 	//log.Println("-------------------------------------------CHARSET:", cs)
 	if "" != cs && "UTF-8" != cs {
 		// the net/html parser and goquery require UTF-8 data
-		RawHTML = UTF8encode(RawHTML, cs)
+		RawHTML = utils.UTF8encode(RawHTML, cs)
 		reader = strings.NewReader(RawHTML)
 		if document, err = goquery.NewDocumentFromReader(reader); err != nil {
 			return nil, err
@@ -105,8 +108,8 @@ func (c *Crawler) Preprocess(RawHTML string) (*goquery.Document, error) {
 }
 
 // Crawl fetches the HTML body and returns an Article
-func (c Crawler) Crawl(RawHTML string, url string) (*Article, error) {
-	article := new(Article)
+func (c Crawler) Crawl(RawHTML string, url string) (*goose.Article, error) {
+	article := new(goose.Article)
 
 	document, err := c.Preprocess(RawHTML)
 	if nil != err {
@@ -115,7 +118,7 @@ func (c Crawler) Crawl(RawHTML string, url string) (*Article, error) {
 	if nil == document {
 		return article, nil
 	}
-	extractor := NewExtractor(c.config)
+	extr := extractor.NewExtractor(c.config)
 	startTime := time.Now().UnixNano()
 
 	article.RawHTML, err = document.Html()
@@ -125,41 +128,41 @@ func (c Crawler) Crawl(RawHTML string, url string) (*Article, error) {
 	article.FinalURL = url
 	article.Doc = document
 
-	article.TitleUnmodified = extractor.getTitleUnmodified(document)
-	article.Title = extractor.GetTitleFromUnmodifiedTitle(article.TitleUnmodified)
-	article.MetaLang = extractor.GetMetaLanguage(document)
-	article.MetaFavicon = extractor.GetFavicon(document)
+	article.Title = extr.GetTitle(document)
+	article.TitleUnmodified = article.Title
+	article.MetaLang = extr.GetMetaLanguage(document)
+	article.MetaFavicon = extr.GetFavicon(document)
 
-	article.MetaDescription = extractor.GetMetaContentWithSelector(document, "meta[name#=(?i)^description$]")
-	article.MetaKeywords = extractor.GetMetaContentWithSelector(document, "meta[name#=(?i)^keywords$]")
-	article.CanonicalLink = extractor.GetCanonicalLink(document)
+	article.MetaDescription = extr.GetMetaContentWithSelector(document, "meta[name#=(?i)^description$]")
+	article.MetaKeywords = extr.GetMetaContentWithSelector(document, "meta[name#=(?i)^keywords$]")
+	article.CanonicalLink = extr.GetCanonicalLink(document)
 	if "" == article.CanonicalLink {
 		article.CanonicalLink = article.FinalURL
 	}
-	article.Domain = extractor.GetDomain(article.CanonicalLink)
-	article.Tags = extractor.GetTags(document)
+	article.Domain = extr.GetDomain(article.CanonicalLink)
+	article.Tags = extr.GetTags(document)
 
-	if c.config.extractPublishDate {
-		if timestamp := extractor.GetPublishDate(document); timestamp != nil {
+	if c.config.ExtractPublishDate {
+		if timestamp := extr.GetPublishDate(document); timestamp != nil {
 			article.PublishDate = timestamp
 		}
 	}
 
-	cleaner := NewCleaner(c.config)
+	cleaner := extractor.NewCleaner(c.config)
 	article.Doc = cleaner.Clean(article.Doc)
 
-	article.TopImage = OpenGraphResolver(document)
+	article.TopImage = extractor.OpenGraphResolver(document)
 	if article.TopImage == "" {
-		article.TopImage = WebPageResolver(article)
+		article.TopImage = extractor.WebPageResolver(article)
 	}
 
-	article.TopNode = extractor.CalculateBestNode(document)
+	article.TopNode = extr.CalculateBestNode(document)
 	if article.TopNode != nil {
-		article.TopNode = extractor.PostCleanup(article.TopNode)
+		article.TopNode = extr.PostCleanup(article.TopNode)
 
-		article.CleanedText, article.Links = extractor.GetCleanTextAndLinks(article.TopNode, article.MetaLang)
+		article.CleanedText, article.Links = extr.GetCleanTextAndLinks(article.TopNode, article.MetaLang)
 
-		videoExtractor := NewVideoExtractor()
+		videoExtractor := extractor.NewVideoExtractor()
 		article.Movies = videoExtractor.GetVideos(document)
 	}
 

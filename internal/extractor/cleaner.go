@@ -9,6 +9,7 @@ import (
 	"github.com/PuerkitoBio/goquery"
 	"golang.org/x/net/html"
 	"golang.org/x/net/html/atom"
+	"github.com/advancedlogic/GoOse/pkg/goose"
 )
 
 var whitelistedTextAtomTypes = []atom.Atom{atom.Span, atom.Em, atom.I, atom.Strong, atom.B, atom.P, atom.H1, atom.H2, atom.H3, atom.H4}
@@ -16,11 +17,11 @@ var whitelistedExtAtomTypes = []atom.Atom{atom.A, atom.Span, atom.Em, atom.I, at
 
 // Cleaner removes menus, ads, sidebars, etc. and leaves the main content
 type Cleaner struct {
-	config Configuration
+	config goose.Configuration
 }
 
 // NewCleaner returns a new instance of a Cleaner
-func NewCleaner(config Configuration) Cleaner {
+func NewCleaner(config goose.Configuration) Cleaner {
 	return Cleaner{
 		config: config,
 	}
@@ -283,11 +284,111 @@ var removeNodesRegEx = regexp.MustCompile("" +
 	"^watch-discussion$|" +
 	"welcome_form|" +
 	"^whats[_-]next$|" +
-	"wp-caption-text")
+	"wp-caption-text|" +
+	"feedback|" +
+	"edition|" +
+	"newsletter|" +
+	"follow|" +
+	"signin|" +
+	"sign-in|" +
+	"account|" +
+	"settings|" +
+	"topics|" +
+	"calculators|" +
+	"markets|" +
+	"pre-markets|" +
+	"after-hours|" +
+	"fear|" +
+	"greed|" +
+	"investing|" +
+	"nightcap|" +
+	"underscored|" +
+	"electronics|" +
+	"fashion|" +
+	"beauty|" +
+	"fitness|" +
+	"reviews|" +
+	"deals|" +
+	"gifts|" +
+	"travel|" +
+	"outdoors|" +
+	"pets|" +
+	"entertainment|" +
+	"movies|" +
+	"television|" +
+	"celebrity|" +
+	"innovate|" +
+	"foreseeable|" +
+	"mission|" +
+	"work-transformed|" +
+	"innovative|" +
+	"cities|" +
+	"style|" +
+	"arts|" +
+	"design|" +
+	"architecture|" +
+	"luxury|" +
+	"destinations|" +
+	"drink|" +
+	"stay|" +
+	"sports|" +
+	"football|" +
+	"basketball|" +
+	"baseball|" +
+	"soccer|" +
+	"olympics|" +
+	"hockey|" +
+	"science|" +
+	"space|" +
+	"life|" +
+	"unearthed|" +
+	"climate|" +
+	"solutions|" +
+	"weather|" +
+	"ukraine|" +
+	"russia|" +
+	"israel|" +
+	"hamas|" +
+	"headlines|" +
+	"shorts|" +
+	"shows|" +
+	"cnn10|" +
+	"schedules|" +
+	"flashdocs|" +
+	"things|" +
+	"chasing|" +
+	"sanjay|" +
+	"gupta|" +
+	"assignment|" +
+	"audie|" +
+	"cornish|" +
+	"thing|" +
+	"political|" +
+	"briefing|" +
+	"files|" +
+	"anderson|" +
+	"cooper|" +
+	"audio|" +
+	"podcasts|" +
+	"games|" +
+	"crossword|" +
+	"jumble|" +
+	"photo|" +
+	"shuffle|" +
+	"sudoblock|" +
+	"sudoku|" +
+	"quiz|" +
+	"about|" +
+	"photos|" +
+	"investigations|" +
+	"profiles|" +
+	"leadership|" +
+	"newsletters|" +
+	"work-for")
 
 // Clean removes HTML elements around the main content and prepares the document for parsing
 func (c *Cleaner) Clean(docToClean *goquery.Document) *goquery.Document {
-	if c.config.debug {
+	if c.config.Debug {
 		log.Println("Starting cleaning phase with Cleaner")
 	}
 	docToClean = c.cleanBr(docToClean)
@@ -298,6 +399,7 @@ func (c *Cleaner) Clean(docToClean *goquery.Document) *goquery.Document {
 	docToClean = c.cleanBadTags(docToClean, keepNodesRegEx, removeNodesRegEx, &[]string{"id", "class", "name"})
 	docToClean = c.cleanBadTags(docToClean, nil, removeVisibilityStyleRegEx, &[]string{"style"})
 	docToClean = c.removeTags(docToClean, &[]string{"nav", "footer", "aside", "cite"})
+	docToClean = c.removeNavigationElements(docToClean)
 	docToClean = c.cleanParaSpans(docToClean)
 
 	docToClean = c.convertDivsToParagraphs(docToClean, "div")
@@ -314,7 +416,7 @@ func (c *Cleaner) cleanArticleTags(doc *goquery.Document) *goquery.Document {
 	articles := doc.Find("article")
 	articles.Each(func(i int, s *goquery.Selection) {
 		for _, tag := range tags {
-			c.config.parser.delAttr(s, tag)
+			c.config.Parser.DelAttr(s, tag)
 		}
 	})
 	return doc
@@ -340,10 +442,10 @@ func (c *Cleaner) cleanEMTags(doc *goquery.Document) *goquery.Document {
 	ems.Each(func(i int, s *goquery.Selection) {
 		images := s.Find("img")
 		if images.Length() == 0 {
-			c.config.parser.dropTag(s)
+			c.config.Parser.DropTag(s)
 		}
 	})
-	if c.config.debug {
+	if c.config.Debug {
 		log.Printf("Cleaning %d EM tags\n", ems.Size())
 	}
 	return doc
@@ -353,7 +455,7 @@ func (c *Cleaner) removeTags(doc *goquery.Document, tags *[]string) *goquery.Doc
 	for _, tag := range *tags {
 		node := doc.Find(tag)
 		node.Each(func(i int, s *goquery.Selection) {
-			c.config.parser.removeNode(s)
+			c.config.Parser.RemoveNode(s)
 		})
 	}
 	return doc
@@ -380,7 +482,7 @@ func (c *Cleaner) cleanDivs(doc *goquery.Document) *goquery.Document {
 			selections := framesNodes[text]
 			for s := selections.Front(); s != nil; s = s.Next() {
 				selection := s.Value.(*goquery.Selection)
-				c.config.parser.removeNode(selection)
+				c.config.Parser.RemoveNode(selection)
 			}
 		}
 	}
@@ -393,27 +495,27 @@ func (c *Cleaner) dropCaps(doc *goquery.Document) *goquery.Document {
 	items.Each(func(i int, s *goquery.Selection) {
 		attribute, exists := s.Attr("class")
 		if exists && (strings.Contains(attribute, "dropcap") || strings.Contains(attribute, "drop_cap")) {
-			c.config.parser.dropTag(s)
+			c.config.Parser.DropTag(s)
 			count++
 		}
 	})
-	if c.config.debug && count > 0 {
+	if c.config.Debug && count > 0 {
 		log.Printf("Cleaned %d dropcap tags\n", count)
 	}
 	return doc
 }
 
 func (c *Cleaner) removeScriptsStyle(doc *goquery.Document) *goquery.Document {
-	if c.config.debug {
+	if c.config.Debug {
 		log.Println("Starting to remove script tags")
 	}
 	count := 0 // number of removed nodes
 	scripts := doc.Find("script,noscript,style")
 	scripts.Each(func(i int, s *goquery.Selection) {
-		c.config.parser.removeNode(s)
+		c.config.Parser.RemoveNode(s)
 		count++
 	})
-	if c.config.debug && count > 0 {
+	if c.config.Debug && count > 0 {
 		log.Printf("Removed %d script and style tags\n", scripts.Size())
 	}
 	return doc
@@ -429,18 +531,69 @@ func (c *Cleaner) cleanBadTags(doc *goquery.Document, keepPattern *regexp.Regexp
 			naughtyList.Each(func(j int, node *goquery.Selection) {
 				attribute, _ := node.Attr(selector)
 				if (keepPattern == nil || !keepPattern.MatchString(attribute)) && pattern.MatchString(attribute) {
-					if c.config.debug {
-						log.Printf("Cleaning: Removing node with %s: %s => matched %s\n", selector, c.config.parser.name(selector, node), strings.Join(pattern.FindAllString(attribute, 100), ", "))
+					if c.config.Debug {
+						log.Printf("Cleaning: Removing node with %s: %s => matched %s\n", selector, c.config.Parser.Name(selector, node), strings.Join(pattern.FindAllString(attribute, 100), ", "))
 					}
-					c.config.parser.removeNode(node)
+					c.config.Parser.RemoveNode(node)
 					count++
 				}
 			})
-			if c.config.debug && count > 0 {
+			if c.config.Debug && count > 0 {
 				log.Printf("%d naughty %s elements found", count, selector)
 			}
 		}
 	})
+	return doc
+}
+
+// removeNavigationElements removes elements that are likely navigation based on content patterns
+func (c *Cleaner) removeNavigationElements(doc *goquery.Document) *goquery.Document {
+	// Remove elements with short text that are likely navigation links
+	doc.Find("div, span, li, ul").Each(func(i int, s *goquery.Selection) {
+		text := strings.TrimSpace(s.Text())
+		if len(text) > 0 && len(text) < 100 {
+			// Check for navigation-like patterns
+			lowerText := strings.ToLower(text)
+			navPatterns := []string{
+				"sign in", "sign out", "subscribe", "newsletter", "my account",
+				"settings", "topics you follow", "edition", "follow cnn",
+				"watch", "listen", "live tv", "more", "about cnn",
+				"terms of use", "privacy policy", "ad choices", "help center",
+				"profiles", "leadership", "work for cnn", "newsletters",
+				"close icon", "close", "submit", "cancel", "feedback",
+				"facebook", "tweet", "email", "link", "link copied",
+				"see all topics", "updated", "published", "min read",
+			}
+			
+			for _, pattern := range navPatterns {
+				if strings.Contains(lowerText, pattern) {
+					c.config.Parser.RemoveNode(s)
+					return
+				}
+			}
+			
+			// Remove elements that are mostly numbers or short phrases
+			words := strings.Fields(text)
+			if len(words) < 4 && len(text) < 50 {
+				// Check if it looks like a navigation element
+				hasNavWords := false
+				for _, word := range words {
+					word = strings.ToLower(word)
+					if word == "news" || word == "sports" || word == "weather" || 
+					   word == "politics" || word == "business" || word == "health" ||
+					   word == "entertainment" || word == "travel" || word == "more" {
+						hasNavWords = true
+						break
+					}
+				}
+				if hasNavWords {
+					c.config.Parser.RemoveNode(s)
+					return
+				}
+			}
+		}
+	})
+	
 	return doc
 }
 
@@ -489,7 +642,7 @@ func (c *Cleaner) tabsAndNewLinesReplacements(text string) string {
 }
 
 func (c *Cleaner) convertDivsToParagraphs(doc *goquery.Document, domType string) *goquery.Document {
-	if c.config.debug {
+	if c.config.Debug {
 		log.Println("Starting to replace bad divs...")
 	}
 	badDivs := 0
@@ -505,7 +658,7 @@ func (c *Cleaner) convertDivsToParagraphs(doc *goquery.Document, domType string)
 			var replacementText []string
 			nodesToRemove := list.New()
 			children := div.Contents()
-			if c.config.debug {
+			if c.config.Debug {
 				log.Printf("Found %d children of div\n", children.Size())
 			}
 			children.EachWithBreak(func(i int, kid *goquery.Selection) bool {
@@ -523,15 +676,15 @@ func (c *Cleaner) convertDivsToParagraphs(doc *goquery.Document, domType string)
 					}
 					if len(text) > 1 {
 						prev := kidNode.PrevSibling
-						if c.config.debug {
-							log.Printf("PARENT CLASS: %s NODENAME: %s\n", c.config.parser.name("class", div), tag)
+						if c.config.Debug {
+							log.Printf("PARENT CLASS: %s NODENAME: %s\n", c.config.Parser.Name("class", div), tag)
 							log.Printf("TEXTREPLACE: %s\n", strings.Replace(text, "\n", "", -1))
 						}
 						if prev != nil && prev.DataAtom == atom.A {
 							nodeSelection := kid.HasNodes(prev)
 							html, _ := nodeSelection.Html()
 							replacementText = append(replacementText, html)
-							if c.config.debug {
+							if c.config.Debug {
 								log.Printf("SIBLING NODENAME ADDITION: %s TEXT: %s\n", prev.Data, html)
 							}
 						}
@@ -564,7 +717,7 @@ func (c *Cleaner) convertDivsToParagraphs(doc *goquery.Document, domType string)
 			}
 		}
 	})
-	if c.config.debug {
+	if c.config.Debug {
 		log.Printf("Found %d total divs with %d bad divs replaced and %d textnodes converted inside divs", divs.Size(), badDivs, convertedTextNodes)
 	}
 	return doc

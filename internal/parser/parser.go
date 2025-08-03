@@ -3,7 +3,10 @@ package parser
 import (
 	"github.com/PuerkitoBio/goquery"
 	"golang.org/x/net/html"
+	"golang.org/x/net/html/atom"
 )
+
+var whitelistedTextAtomTypes = []atom.Atom{atom.Span, atom.Em, atom.I, atom.Strong, atom.B, atom.P, atom.H1, atom.H2, atom.H3, atom.H4}
 
 // Parser is an HTML parser specialised in extraction of main content and other properties
 type Parser struct{}
@@ -11,6 +14,27 @@ type Parser struct{}
 // NewParser returns an HTML parser
 func NewParser() *Parser {
 	return &Parser{}
+}
+
+func replaceTagWithContents(tagSelection *goquery.Selection, collapsibleAtomTypes []atom.Atom) {
+	tagSelection.Each(func(i int, s *goquery.Selection) {
+		node := s.Get(0)
+		if node != nil && node.Type == html.ElementNode && node.DataAtom == atom.Lookup([]byte(node.Data)) {
+			shouldCollapse := false
+			for _, collapsibleType := range collapsibleAtomTypes {
+				if node.DataAtom == collapsibleType {
+					shouldCollapse = true
+					break
+				}
+			}
+			if shouldCollapse {
+				for node.FirstChild != nil {
+					node.Parent.InsertBefore(node.FirstChild, node)
+				}
+				node.Parent.RemoveChild(node)
+			}
+		}
+	})
 }
 
 func (p Parser) dropTag(selection *goquery.Selection) {

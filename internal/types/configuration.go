@@ -1,7 +1,8 @@
-package goose
+package types
 
 import (
 	"time"
+	"github.com/advancedlogic/GoOse/pkg/goose"
 )
 
 const defaultUserAgent = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_7_2) AppleWebKit/534.52.7 (KHTML, like Gecko) Version/5.1.2 Safari/534.52.7"
@@ -22,8 +23,8 @@ type Configuration struct {
 
 	//path to the stopwords folder
 	stopWordsPath string
-	StopWords     StopWords
-	Parser        *Parser
+	StopWords     goose.StopWords
+	Parser        *goose.Parser
 
 	Timeout time.Duration
 }
@@ -44,8 +45,8 @@ func GetDefaultConfiguration(args ...string) Configuration {
 			ExtractPublishDate:      true,
 			AdditionalDataExtractor: false,
 			stopWordsPath:           "resources/stopwords",
-			StopWords:               NewStopwords(), //TODO with path
-			Parser:                  NewParser(),
+			StopWords:               goose.NewStopwords(), //TODO with path
+			Parser:                  goose.NewParser(),
 			Timeout:                 time.Duration(5 * time.Second),
 		}
 	}
@@ -62,8 +63,8 @@ func GetDefaultConfiguration(args ...string) Configuration {
 		ExtractPublishDate:      true,
 		AdditionalDataExtractor: false,
 		stopWordsPath:           "resources/stopwords",
-		StopWords:               NewStopwords(), //TODO with path
-		Parser:                  NewParser(),
+		StopWords:               goose.NewStopwords(), //TODO with path
+		Parser:                  goose.NewParser(),
 		Timeout:                 time.Duration(5 * time.Second),
 	}
 }

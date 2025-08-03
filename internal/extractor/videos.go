@@ -6,12 +6,13 @@ import (
 
 	"github.com/PuerkitoBio/goquery"
 	"github.com/fatih/set"
+	"github.com/advancedlogic/GoOse/pkg/goose"
 )
 
 // VideoExtractor can extract the main video from an HTML page
 type VideoExtractor struct {
-	article    *Article
-	config     Configuration
+	article    *goose.Article
+	config     goose.Configuration
 	candidates *set.Set
 	movies     *set.Set
 }

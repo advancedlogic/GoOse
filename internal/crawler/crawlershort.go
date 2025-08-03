@@ -6,16 +6,19 @@ import (
 
 	"github.com/PuerkitoBio/goquery"
 	"github.com/pkg/errors"
+	"github.com/advancedlogic/GoOse/internal/extractor"
+	"github.com/advancedlogic/GoOse/internal/utils"
+	"github.com/advancedlogic/GoOse/pkg/goose"
 )
 
 // Crawler can fetch the target HTML page
 type CrawlerShort struct {
-	config  Configuration
+	config  goose.Configuration
 	Charset string
 }
 
 // NewCrawler returns a crawler object initialised with the URL and the [optional] raw HTML body
-func NewCrawlerShort(config Configuration) CrawlerShort {
+func NewCrawlerShort(config goose.Configuration) CrawlerShort {
 	return CrawlerShort{
 		config:  config,
 		Charset: "",
@@ -59,7 +62,7 @@ func (c CrawlerShort) GetCharset(document *goquery.Document) string {
 
 	if selection != nil {
 		cs, _ := selection.Attr("charset")
-		return NormaliseCharset(cs)
+		return utils.NormaliseCharset(cs)
 	}
 
 	return ""
@@ -82,7 +85,7 @@ func (c *CrawlerShort) Preprocess(RawHTML string) (*goquery.Document, error) {
 	//log.Println("-------------------------------------------CHARSET:", cs)
 	if "" != cs && "UTF-8" != cs {
 		// the net/html parser and goquery require UTF-8 data
-		RawHTML = UTF8encode(RawHTML, cs)
+		RawHTML = utils.UTF8encode(RawHTML, cs)
 		reader = strings.NewReader(RawHTML)
 		if document, err = goquery.NewDocumentFromReader(reader); err != nil {
 			return nil, errors.Wrap(err, "could not perform goquery.NewDocumentFromReader(reader)")
@@ -93,8 +96,8 @@ func (c *CrawlerShort) Preprocess(RawHTML string) (*goquery.Document, error) {
 }
 
 // Crawl fetches the HTML body and returns an Article
-func (c CrawlerShort) Crawl(RawHTML, url string) (*Article, error) {
-	article := new(Article)
+func (c CrawlerShort) Crawl(RawHTML, url string) (*goose.Article, error) {
+	article := new(goose.Article)
 
 	document, err := c.Preprocess(RawHTML)
 	if err != nil {
@@ -104,7 +107,7 @@ func (c CrawlerShort) Crawl(RawHTML, url string) (*Article, error) {
 		return article, nil
 	}
 
-	extractor := NewExtractor(c.config)
+	extr := extractor.NewExtractor(c.config)
 
 	startTime := time.Now().UnixNano()
 
@@ -114,28 +117,28 @@ func (c CrawlerShort) Crawl(RawHTML, url string) (*Article, error) {
 	}
 	article.FinalURL = url
 
-	article.Title = extractor.GetTitle(document)
-	article.MetaDescription = extractor.GetMetaContentWithSelector(document, "meta[name#=(?i)^description$]")
+	article.Title = extr.GetTitle(document)
+	article.MetaDescription = extr.GetMetaContentWithSelector(document, "meta[name#=(?i)^description$]")
 
-	if c.config.extractPublishDate {
-		if timestamp := extractor.GetPublishDate(document); timestamp != nil {
+	if c.config.ExtractPublishDate {
+		if timestamp := extr.GetPublishDate(document); timestamp != nil {
 			article.PublishDate = timestamp
 		}
 	}
 
-	cleaner := NewCleaner(c.config)
+	cleaner := extractor.NewCleaner(c.config)
 	article.Doc = cleaner.Clean(article.Doc)
 
-	article.TopImage = OpenGraphResolver(document)
+	article.TopImage = extractor.OpenGraphResolver(document)
 	if article.TopImage == "" {
-		article.TopImage = WebPageResolver(article)
+		article.TopImage = extractor.WebPageResolver(article)
 	}
 
-	article.TopNode = extractor.CalculateBestNode(document)
+	article.TopNode = extr.CalculateBestNode(document)
 	if article.TopNode != nil {
-		article.TopNode = extractor.PostCleanup(article.TopNode)
+		article.TopNode = extr.PostCleanup(article.TopNode)
 
-		article.CleanedText, article.Links = extractor.GetCleanTextAndLinks(article.TopNode, article.MetaLang)
+		article.CleanedText, article.Links = extr.GetCleanTextAndLinks(article.TopNode, article.MetaLang)
 
 	}
 	article.Delta = time.Now().UnixNano() - startTime
