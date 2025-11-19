@@ -14,7 +14,7 @@ import (
 	"github.com/araddon/dateparse"
 	"github.com/fatih/set"
 	"github.com/gigawattio/window"
-	"github.com/jaytaylor/html2text"
+	"github.com/inbucket/html2text"
 	"golang.org/x/net/html"
 	"golang.org/x/net/html/atom"
 
@@ -125,16 +125,16 @@ func (extr *ContentExtractor) splitTitle(titles []string) string {
 		for i := range titles {
 			titles[i] = strings.TrimSpace(titles[i])
 		}
-		
+
 		// Check if last part looks like a site name (common pattern)
 		lastPart := titles[len(titles)-1]
 		// Common site name patterns
-		if len(titles) == 2 && (strings.Contains(lastPart, "News") || 
-			strings.Contains(lastPart, "BBC") || 
-			strings.Contains(lastPart, "CNN") || 
+		if len(titles) == 2 && (strings.Contains(lastPart, "News") ||
+			strings.Contains(lastPart, "BBC") ||
+			strings.Contains(lastPart, "CNN") ||
 			strings.Contains(lastPart, "ABC") ||
-			strings.Contains(lastPart, "Times") || 
-			strings.Contains(lastPart, "Post") || 
+			strings.Contains(lastPart, "Times") ||
+			strings.Contains(lastPart, "Post") ||
 			strings.Contains(lastPart, "Journal") ||
 			len(lastPart) < 20) {
 			// Return the first part
@@ -142,7 +142,7 @@ func (extr *ContentExtractor) splitTitle(titles []string) string {
 			return title
 		}
 	}
-	
+
 	// Fallback to the original logic - choose the longest part
 	largeTextLength := 0
 	largeTextIndex := 0
@@ -417,7 +417,7 @@ func (extr *ContentExtractor) CalculateBestNode(document *goquery.Document) *goq
 	if siteSpecificNode := extr.tryNewsSelectors(document); siteSpecificNode != nil {
 		return siteSpecificNode
 	}
-	
+
 	var topNode *goquery.Selection
 	nodesToCheck := extr.nodesToCheck(document)
 	if extr.config.Debug {
@@ -432,11 +432,11 @@ func (extr *ContentExtractor) CalculateBestNode(document *goquery.Document) *goq
 		textNode := node.Text()
 		ws := extr.config.StopWords.StopWordsCount(extr.config.TargetLanguage, textNode)
 		highLinkDensity := extr.isHighLinkDensity(node)
-		
+
 		// Boost scoring for nodes that look like article content
 		articleBoost := extr.getArticleContentBoost(node)
 		adjustedWs := ws + articleBoost
-		
+
 		if adjustedWs > 2 && !highLinkDensity {
 			nodesWithText.PushBack(node)
 		}
@@ -619,90 +619,90 @@ func (extr *ContentExtractor) isLikelyNonContent(node *goquery.Selection) bool {
 	for parent := node.Parent(); parent != nil && parent.Length() > 0; parent = parent.Parent() {
 		class, hasClass := parent.Attr("class")
 		id, hasId := parent.Attr("id")
-		
+
 		if hasClass {
 			class = strings.ToLower(class)
-			if strings.Contains(class, "nav") || strings.Contains(class, "menu") || 
-			   strings.Contains(class, "header") || strings.Contains(class, "footer") ||
-			   strings.Contains(class, "sidebar") || strings.Contains(class, "aside") ||
-			   strings.Contains(class, "ad") || strings.Contains(class, "banner") ||
-			   strings.Contains(class, "breadcrumb") || strings.Contains(class, "related") {
+			if strings.Contains(class, "nav") || strings.Contains(class, "menu") ||
+				strings.Contains(class, "header") || strings.Contains(class, "footer") ||
+				strings.Contains(class, "sidebar") || strings.Contains(class, "aside") ||
+				strings.Contains(class, "ad") || strings.Contains(class, "banner") ||
+				strings.Contains(class, "breadcrumb") || strings.Contains(class, "related") {
 				return true
 			}
 		}
-		
+
 		if hasId {
 			id = strings.ToLower(id)
-			if strings.Contains(id, "nav") || strings.Contains(id, "menu") || 
-			   strings.Contains(id, "header") || strings.Contains(id, "footer") ||
-			   strings.Contains(id, "sidebar") || strings.Contains(id, "aside") ||
-			   strings.Contains(id, "ad") || strings.Contains(id, "banner") {
+			if strings.Contains(id, "nav") || strings.Contains(id, "menu") ||
+				strings.Contains(id, "header") || strings.Contains(id, "footer") ||
+				strings.Contains(id, "sidebar") || strings.Contains(id, "aside") ||
+				strings.Contains(id, "ad") || strings.Contains(id, "banner") {
 				return true
 			}
 		}
-		
+
 		// Check tag type
 		tagName := parent.Get(0).DataAtom.String()
 		if tagName == "nav" || tagName == "header" || tagName == "footer" || tagName == "aside" {
 			return true
 		}
 	}
-	
+
 	// Check if the node itself has very short text (likely navigation link)
 	text := strings.TrimSpace(node.Text())
 	if len(text) < 10 {
 		return true
 	}
-	
+
 	return false
 }
 
 // getArticleContentBoost provides additional scoring for nodes that appear to be article content
 func (extr *ContentExtractor) getArticleContentBoost(node *goquery.Selection) int {
 	boost := 0
-	
+
 	// Check parent hierarchy for article-related classes/ids
 	for parent := node.Parent(); parent != nil && parent.Length() > 0; parent = parent.Parent() {
 		class, hasClass := parent.Attr("class")
 		id, hasId := parent.Attr("id")
-		
+
 		if hasClass {
 			class = strings.ToLower(class)
 			if strings.Contains(class, "article") || strings.Contains(class, "content") ||
-			   strings.Contains(class, "story") || strings.Contains(class, "post") ||
-			   strings.Contains(class, "entry") || strings.Contains(class, "main") ||
-			   strings.Contains(class, "body") || strings.Contains(class, "text") {
+				strings.Contains(class, "story") || strings.Contains(class, "post") ||
+				strings.Contains(class, "entry") || strings.Contains(class, "main") ||
+				strings.Contains(class, "body") || strings.Contains(class, "text") {
 				boost += 10
 			}
 		}
-		
+
 		if hasId {
 			id = strings.ToLower(id)
 			if strings.Contains(id, "article") || strings.Contains(id, "content") ||
-			   strings.Contains(id, "story") || strings.Contains(id, "post") ||
-			   strings.Contains(id, "entry") || strings.Contains(id, "main") {
+				strings.Contains(id, "story") || strings.Contains(id, "post") ||
+				strings.Contains(id, "entry") || strings.Contains(id, "main") {
 				boost += 10
 			}
 		}
-		
+
 		// Check for semantic HTML5 tags
 		tagName := parent.Get(0).DataAtom.String()
 		if tagName == "article" || tagName == "main" {
 			boost += 15
 		}
 	}
-	
+
 	// Penalize nodes that seem to be in navigation or sidebars
 	text := strings.TrimSpace(node.Text())
 	if len(text) > 100 { // Long text is more likely to be content
 		boost += 5
 	}
-	
+
 	// Look for paragraph length - articles typically have substantial paragraphs
 	if len(text) > 200 {
 		boost += 5
 	}
-	
+
 	return boost
 }
 
@@ -716,7 +716,7 @@ func (extr *ContentExtractor) tryNewsSelectors(document *goquery.Document) *goqu
 		".article-body",
 		".story-body",
 		".post-content",
-		".entry-content", 
+		".entry-content",
 		".content-body",
 		"main article",
 		"[role='main'] article",
@@ -731,7 +731,7 @@ func (extr *ContentExtractor) tryNewsSelectors(document *goquery.Document) *goqu
 		"[data-testid='article-body']",
 		"[data-testid='story-body']",
 	}
-	
+
 	for _, selector := range selectors {
 		selection := document.Find(selector)
 		if selection.Length() > 0 {
@@ -744,7 +744,7 @@ func (extr *ContentExtractor) tryNewsSelectors(document *goquery.Document) *goqu
 					// Additional validation: ensure it's not mostly navigation
 					if !extr.isHighLinkDensity(selection) && extr.hasGoodContentSignals(selection) {
 						if extr.config.Debug {
-							log.Printf("Found article content using selector: %s (text length: %d, paragraphs: %d)\n", 
+							log.Printf("Found article content using selector: %s (text length: %d, paragraphs: %d)\n",
 								selector, len(text), paragraphs.Length())
 						}
 						// Extract only the paragraph content, not the entire container
@@ -754,23 +754,23 @@ func (extr *ContentExtractor) tryNewsSelectors(document *goquery.Document) *goqu
 			}
 		}
 	}
-	
+
 	// Try looking for elements with substantial text content that aren't navigation
 	var bestCandidate *goquery.Selection
 	var bestScore int
-	
+
 	document.Find("div, article, section").Each(func(i int, s *goquery.Selection) {
 		class, _ := s.Attr("class")
 		id, _ := s.Attr("id")
-		
+
 		// Look for likely content containers
-		if strings.Contains(strings.ToLower(class), "content") || 
-		   strings.Contains(strings.ToLower(class), "article") ||
-		   strings.Contains(strings.ToLower(class), "story") ||
-		   strings.Contains(strings.ToLower(id), "content") ||
-		   strings.Contains(strings.ToLower(id), "article") ||
-		   strings.Contains(strings.ToLower(id), "story") {
-			
+		if strings.Contains(strings.ToLower(class), "content") ||
+			strings.Contains(strings.ToLower(class), "article") ||
+			strings.Contains(strings.ToLower(class), "story") ||
+			strings.Contains(strings.ToLower(id), "content") ||
+			strings.Contains(strings.ToLower(id), "article") ||
+			strings.Contains(strings.ToLower(id), "story") {
+
 			text := strings.TrimSpace(s.Text())
 			if len(text) > 500 { // Substantial content
 				paragraphs := s.Find("p")
@@ -782,7 +782,7 @@ func (extr *ContentExtractor) tryNewsSelectors(document *goquery.Document) *goqu
 							bestCandidate = s
 							bestScore = score
 							if extr.config.Debug {
-								log.Printf("Found potential article content by class/id: %s %s (text length: %d, score: %d)\n", 
+								log.Printf("Found potential article content by class/id: %s %s (text length: %d, score: %d)\n",
 									class, id, len(text), score)
 							}
 						}
@@ -791,20 +791,20 @@ func (extr *ContentExtractor) tryNewsSelectors(document *goquery.Document) *goqu
 			}
 		}
 	})
-	
+
 	return bestCandidate
 }
 
 // hasGoodContentSignals checks if a node contains signals that indicate it's article content
 func (extr *ContentExtractor) hasGoodContentSignals(node *goquery.Selection) bool {
 	text := strings.TrimSpace(node.Text())
-	
+
 	// Check for article-like sentence structure (sentences ending with periods)
 	sentences := strings.Split(text, ".")
 	if len(sentences) < 3 {
 		return false // Too few sentences for an article
 	}
-	
+
 	// Check average sentence length (articles have substantial sentences)
 	totalLength := 0
 	validSentences := 0
@@ -815,16 +815,16 @@ func (extr *ContentExtractor) hasGoodContentSignals(node *goquery.Selection) boo
 			validSentences++
 		}
 	}
-	
+
 	if validSentences < 3 {
 		return false
 	}
-	
+
 	avgSentenceLength := totalLength / validSentences
 	if avgSentenceLength < 50 { // Articles typically have longer sentences
 		return false
 	}
-	
+
 	// Check for common navigation patterns to exclude
 	lowerText := strings.ToLower(text)
 	navigationWords := []string{
@@ -835,19 +835,19 @@ func (extr *ContentExtractor) hasGoodContentSignals(node *goquery.Selection) boo
 		"calculators", "markets", "investing", "fashion", "beauty",
 		"games", "crossword", "photos", "investigations", "profiles",
 	}
-	
+
 	navigationCount := 0
 	for _, word := range navigationWords {
 		if strings.Contains(lowerText, word) {
 			navigationCount++
 		}
 	}
-	
+
 	// If it contains many navigation words, it's likely not article content
 	if navigationCount > 5 {
 		return false
 	}
-	
+
 	return true
 }
 
@@ -856,26 +856,26 @@ func (extr *ContentExtractor) extractParagraphContent(selection *goquery.Selecti
 	// Create a new document fragment with only the article paragraphs
 	paragraphs := selection.Find("p")
 	var cleanParagraphs []*goquery.Selection
-	
+
 	paragraphs.Each(func(i int, p *goquery.Selection) {
 		text := strings.TrimSpace(p.Text())
 		// Only include paragraphs with substantial content
 		if len(text) > 30 {
 			// Skip paragraphs that look like metadata or navigation
 			lowerText := strings.ToLower(text)
-			if !strings.Contains(lowerText, "updated") && 
-			   !strings.Contains(lowerText, "published") &&
-			   !strings.Contains(lowerText, "min read") &&
-			   !strings.Contains(lowerText, "follow") &&
-			   !strings.Contains(lowerText, "subscribe") &&
-			   !strings.Contains(lowerText, "sign in") &&
-			   !strings.Contains(lowerText, "analysis by") &&
-			   !strings.Contains(lowerText, "see all topics") {
+			if !strings.Contains(lowerText, "updated") &&
+				!strings.Contains(lowerText, "published") &&
+				!strings.Contains(lowerText, "min read") &&
+				!strings.Contains(lowerText, "follow") &&
+				!strings.Contains(lowerText, "subscribe") &&
+				!strings.Contains(lowerText, "sign in") &&
+				!strings.Contains(lowerText, "analysis by") &&
+				!strings.Contains(lowerText, "see all topics") {
 				cleanParagraphs = append(cleanParagraphs, p)
 			}
 		}
 	})
-	
+
 	// If we found good paragraphs, return the first one's parent and modify it
 	if len(cleanParagraphs) > 0 {
 		// Return the original selection but with filtered content
@@ -897,7 +897,7 @@ func (extr *ContentExtractor) extractParagraphContent(selection *goquery.Selecti
 		})
 		return selection
 	}
-	
+
 	return selection
 }
 
@@ -920,12 +920,12 @@ func (extr *ContentExtractor) isHighLinkDensity(node *goquery.Selection) bool {
 	linkWords := strings.Split(linkText, " ")
 	nlinkWords := len(linkWords)
 	nlinks := links.Size()
-	
+
 	// Avoid division by zero
 	if nwords == 0 {
 		return true
 	}
-	
+
 	linkDivisor := float64(nlinkWords) / float64(nwords)
 	score := linkDivisor * float64(nlinks)
 
@@ -934,7 +934,7 @@ func (extr *ContentExtractor) isHighLinkDensity(node *goquery.Selection) bool {
 	if nlinks > 5 && linkDivisor > 0.3 {
 		return true
 	}
-	
+
 	// If more than 60% of words are in links, it's likely navigation
 	if linkDivisor > 0.6 {
 		return true
@@ -949,7 +949,7 @@ func (extr *ContentExtractor) isHighLinkDensity(node *goquery.Selection) bool {
 		}
 		log.Printf("Calculated link density score as %1.5f for node %s (links: %d, linkDivisor: %1.3f)\n", score, logText, nlinks, linkDivisor)
 	}
-	if score > 0.8 {  // Lowered from 1.0 to be more aggressive
+	if score > 0.8 { // Lowered from 1.0 to be more aggressive
 		return true
 	}
 	return false
